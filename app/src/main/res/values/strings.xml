@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">UghMe</string>
+    <string name="tab_title_location">Location</string>
+    <string name="tab_title_sms">Sms</string>
+    <string name="tab_title_chart">Chart</string>
+    <string name="ok">OK</string>
+    <string name="location_permission_granted">location permission granted</string>
+    <string name="location_permission_denied">location permission denied</string>
+    <string name="btn_sms_backup">Backup sms</string>
+    <string name="btn_sms_backup_view">View sms backup</string>
+    <string name="btn_sms_export">Export sms</string>
+    <string name="btn_sms_clipboard">Copy to clipboard</string>
+    <string name="btn_get_location">Get Location</string>
+    <string name="btn_view_location_history">View Location History</string>
+</resources>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frame_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragment.SmsFragment">
+
+    <LinearLayout
+        android:id="@+id/linear_layout_btn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/inp_sms_mobile_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:text="" />
+
+        <Button
+            android:id="@+id/btn_sms_clipboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_sms_clipboard" />
+
+        <Button
+            android:id="@+id/btn_sms_export"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_sms_export" />
+
+        <Button
+            android:id="@+id/btn_sms_backup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_sms_backup" />
+
+        <Button
+            android:id="@+id/btn_sms_backup_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_sms_backup_view" />
+
+        <Button
+            android:id="@+id/btn_sms_backup_files_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View backup files" />
+
+        <Button
+            android:id="@+id/btn_sms_delete_backup_file"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Delete backup file" />
+
+        <Button
+            android:id="@+id/btn_sms_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Search sms" />
+
+        <TextView
+            android:id="@+id/txt_sms_view"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:background="#C0CDBB"
+            android:text="TextView" />
+
+    </LinearLayout>
+</FrameLayout>
