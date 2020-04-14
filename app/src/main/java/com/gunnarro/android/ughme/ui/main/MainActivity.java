@@ -15,11 +15,13 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.gunnarro.android.ughme.R;
+import com.gunnarro.android.ughme.ui.fragment.ListFragmentInteractionListener;
+import com.gunnarro.android.ughme.ui.fragment.domain.ListItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ListFragmentInteractionListener {
 
     public static final int PERMISSION_REQUEST = 1;
 
@@ -87,5 +89,10 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(activity, new String[]{permission}, permissionId);
             }
         }
+    }
+
+    @Override
+    public void onListFragmentInteraction(ListItem item) {
+        Log.d("MainActivty", String.format("onListFragmentInteraction: %s", item));
     }
 }

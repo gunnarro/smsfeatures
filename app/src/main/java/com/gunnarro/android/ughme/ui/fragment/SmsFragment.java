@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
  * Use the {@link SmsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SmsFragment extends Fragment implements View.OnClickListener {
+public class SmsFragment extends Fragment implements View.OnClickListener, DialogActionListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -247,20 +248,19 @@ public class SmsFragment extends Fragment implements View.OnClickListener {
                     Log.d("SmsFragment", String.format("deleteSmsBackupFiles: Deleted file: %s", f.getName()));
                 }
             }
-            TextView dd = getActivity().findViewById(R.id.txt_sms_view);
-            dd.setText(String.format("deleteSmsBackupFiles: Deleted all json backup files: %s", bckDir.getPath()));
         } catch (Exception e) {
             Log.e("SmsFragment", String.format("deleteSmsBackupFiles: Error deleting backup file", e.getLocalizedMessage()));
         }
     }
 
-    private void searchSms() {
+    private List<Sms> searchSms() {
         TextView seaarchAfter = getActivity().findViewById(R.id.inp_sms_mobile_number);
         List<Sms> smsList = getSmsInbox(null);
         Log.d("SmsFragment", String.format("searchSms: number of sms: %s, search after: %s", smsList.size(), seaarchAfter.getText().toString()));
-        List<Sms> results = smsList.stream().filter(sms -> sms.getBody().contains(seaarchAfter.getText().toString())).collect(Collectors.toList());
+        List<Sms> result = smsList.stream().filter(sms -> sms.getBody().contains(seaarchAfter.getText().toString())).collect(Collectors.toList());
         TextView view = getActivity().findViewById(R.id.txt_sms_view);
-        view.setText(String.format("Search after: %s\n %s", seaarchAfter.getText().toString(), results));
+        view.setText(String.format("Search after: %s\n %s", seaarchAfter.getText().toString(), result));
+        return result;
     }
 
     @Override
@@ -284,11 +284,26 @@ public class SmsFragment extends Fragment implements View.OnClickListener {
                 viewSmsBackupFiles();
                 break;
             case R.id.btn_sms_delete_backup_file:
-                deleteSmsBackupFiles();
+                //deleteSmsBackupFiles();
+                DialogFragment newFragment = ConfirmDialogFragment.newInstance("Confirm Delete SMS Backup Files","Are You Sure?");
+                newFragment.show(getChildFragmentManager(), "dialog");
                 break;
             case R.id.btn_sms_search:
-                searchSms();
+                RxBus.getInstance().publish(searchSms());
+                Snackbar.make(getView(), "Published sms search result", Snackbar.LENGTH_LONG).show();
                 break;
+        }
+    }
+
+    @Override
+    public void onDialogAction(int actionCode) {
+        Log.d("SmsFragment", String.format("onDialogAction: action: %s", actionCode));
+        if (actionCode == DialogActionListener.OK_ACTION) {
+            // the user confirmed the operation
+           // deleteSmsBackupFiles();
+            Snackbar.make(getView(), String.format("Deleted sms backup files."), Snackbar.LENGTH_LONG).show();
+        } else {
+            // dismiss, do nothing, the user canceled the operation
         }
     }
 }

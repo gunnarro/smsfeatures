@@ -247,7 +247,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
 
             @Override
             public void onComplete() {
-                Log.d("BarChartFragment", "onComplete");
+                Log.d("BarChartFragment", "onComplete:");
             }
         };
     }

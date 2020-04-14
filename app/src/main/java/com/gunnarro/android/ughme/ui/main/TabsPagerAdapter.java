@@ -2,7 +2,6 @@ package com.gunnarro.android.ughme.ui.main;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -10,6 +9,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.ui.fragment.BarChartFragment;
+import com.gunnarro.android.ughme.ui.fragment.ListItemFragment;
 import com.gunnarro.android.ughme.ui.fragment.LocationFragment;
 import com.gunnarro.android.ughme.ui.fragment.SmsFragment;
 
@@ -20,7 +20,7 @@ import com.gunnarro.android.ughme.ui.fragment.SmsFragment;
 class TabsPagerAdapter extends FragmentPagerAdapter {
     @StringRes
     private static final int[] TAB_TITLES =
-            new int[]{R.string.tab_title_sms, R.string.tab_title_location, R.string.tab_title_chart};
+            new int[]{R.string.tab_title_sms, R.string.tab_title_location, R.string.tab_title_chart, R.string.tab_title_list};
 
     private final Context mContext;
 
@@ -38,12 +38,13 @@ class TabsPagerAdapter extends FragmentPagerAdapter {
                 return LocationFragment.newInstance(null, null);
             case 2:
                 return BarChartFragment.newInstance();
+            case 3:
+                return ListItemFragment.newInstance("SMS Search Result");
             default:
-                return SmsFragment.newInstance(null, null);
+                return null;
         }
     }
 
-    @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
         return mContext.getResources().getString(TAB_TITLES[position]);
@@ -51,7 +52,6 @@ class TabsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
-        return 3;
+        return TAB_TITLES.length;
     }
 }
