@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Space;
 
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.observable.RxBus;

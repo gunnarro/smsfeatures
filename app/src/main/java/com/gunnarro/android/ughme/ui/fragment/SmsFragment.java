@@ -31,7 +31,9 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +42,7 @@ import java.util.stream.Collectors;
  * create an instance of this fragment.
  */
 public class SmsFragment extends Fragment implements View.OnClickListener, DialogActionListener {
+    private static final String LOG_TAG = SmsFragment.class.getSimpleName();
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -78,7 +81,7 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        Log.d("SmsFragment", "onCreate");
+        Log.d(LOG_TAG, "onCreate");
     }
 
     @Override
@@ -97,30 +100,23 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
     }
 
     private List<Sms> getSmsInbox(String mobileNumber) {
-        SmsReader smsReader = new SmsReader(getActivity().getApplicationContext());
+        SmsReader smsReader = new SmsReader(Objects.requireNonNull(getActivity()).getApplicationContext());
         List<Sms> inbox = smsReader.getSMSInbox(false, mobileNumber);
-        Log.d("getSmsInbox", "sms for mobile number: " + mobileNumber + ", number of sms: " + inbox.size());
+        Log.d(LOG_TAG, "getSmsInbox: sms for mobile number: " + mobileNumber + ", number of sms: " + inbox.size());
         return inbox;
     }
 
-    private void viewSmsInbox(String mobileNumber) {
-        List<Sms> inbox = getSmsInbox(mobileNumber);
-        Snackbar.make(getView(), "Sms inbox, number of messages: " + inbox.size(), Snackbar.LENGTH_LONG).show();
-        TextView view = getActivity().findViewById(R.id.txt_sms_view);
-        view.setText(String.format("%s", inbox));
-    }
-
     private void copyToClipboard() {
-        TextView view = getActivity().findViewById(R.id.txt_sms_view);
+        TextView view = Objects.requireNonNull(getActivity()).findViewById(R.id.txt_sms_view);
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("smsinbox", view.getText());
-        if (clipboard != null) clipboard.setPrimaryClip(clip);
-        Snackbar.make(getView(), "Copied sms to clipboard", Snackbar.LENGTH_LONG).show();
+        if (clipboard != null) { clipboard.setPrimaryClip(clip); };
+        Snackbar.make(Objects.requireNonNull(getView()), "Copied sms to clipboard", Snackbar.LENGTH_LONG).show();
     }
 
     private void backupSmsInbox(String mobileNumber) {
         try {
-            Log.d("SmsFragment", String.format("backup sms, %s", mobileNumber));
+            Log.d(LOG_TAG, String.format("backup sms, %s", mobileNumber));
             String filePath = getSmsBackupFilePath(mobileNumber);
             Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
             List<Sms> inbox = getSmsInbox(mobileNumber);
@@ -129,28 +125,28 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
             if (!newSmsList.isEmpty()) {
                 smsBackupList.addAll(newSmsList);
                 smsBackupList.sort((Sms s1, Sms s2) -> s1.getTimeMs().compareTo(s2.getTimeMs()));
-                Log.d("SmsFragment", String.format("backupSmsInbox: Update backup, new sms: %s, current: %s", newSmsList.size(), smsBackupList.size()));
+                Log.d(LOG_TAG, String.format("backupSmsInbox: Update backup, new sms: %s, current: %s", newSmsList.size(), smsBackupList.size()));
                 FileWriter fw = new FileWriter(filePath, false);
                 gson.toJson(smsBackupList, fw);
                 fw.flush();
                 fw.close();
-                Log.d("SmsFragment", String.format("backupSmsInbox: Saved sms (%s) backup, path: %s", inbox.size(), filePath));
-                Snackbar.make(getView(), String.format("Saved sms (%s) backup to %s", inbox.size(), filePath), Snackbar.LENGTH_LONG).show();
+                Log.d(LOG_TAG, String.format("backupSmsInbox: Saved sms (%s) backup, path: %s", inbox.size(), filePath));
+                Snackbar.make(Objects.requireNonNull(getView()), String.format("Saved sms (%s) backup to %s", inbox.size(), filePath), Snackbar.LENGTH_LONG).show();
             } else {
-                Log.d("SmsFragment", String.format("backupSmsInbox: Backup up to date, %s", filePath));
-                Snackbar.make(getView(), String.format("Backup up to date, %s", filePath), Snackbar.LENGTH_LONG).show();
+                Log.d(LOG_TAG, String.format("backupSmsInbox: Backup up to date, %s", filePath));
+                Snackbar.make(Objects.requireNonNull(getView()), String.format("Backup up to date, %s", filePath), Snackbar.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            Snackbar.make(getView(), "sms backup failed! Error: " + e.getMessage(), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(Objects.requireNonNull(getView()), "sms backup failed! Error: " + e.getMessage(), Snackbar.LENGTH_LONG).show();
         }
     }
 
     private List<Sms> diffLists(List<Sms> smsInbox, List<Sms> smsBackup) {
         if (smsBackup == null) {
-            Log.d("SmsFragment", "diffLists: no backup, return inbox");
+            Log.d(LOG_TAG, "diffLists: no backup, return inbox");
             return smsInbox;
         }
-        Log.d("SmsFragment", String.format("diffLists: diff sms inbox (%s) and sms backup (%s)", smsInbox.size(), smsBackup.size()));
+        Log.d(LOG_TAG, String.format("diffLists: diff sms inbox (%s) and sms backup (%s)", smsInbox.size(), smsBackup.size()));
         List<Sms> diffList = new ArrayList<>();
         // Get already backed sms from inbox,
         List<Sms> unChangedObjects = smsInbox.stream().filter(smsBackup::contains).distinct().collect(Collectors.toList());
@@ -158,44 +154,85 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
         smsInbox.removeAll(unChangedObjects);
         smsBackup.removeAll(unChangedObjects);
         if (smsInbox.equals(smsBackup)) {
-            Log.d("SmsFragment", "diffLists: sms inbox and sms backup are equal!");
+            Log.d(LOG_TAG, "diffLists: sms inbox and sms backup are equal!");
         } else {
             diffList = smsInbox;
         }
-        Log.d("SmsFragment", String.format("diffLists: Number of sms diff: %s", diffList.size()));
+        Log.d(LOG_TAG, String.format("diffLists: Number of sms diff: %s", diffList.size()));
         return diffList;
+    }
+
+    private String getSmsBackupFilePath(String mobileNumber) throws FileNotFoundException {
+        File appDir = getSmsBackupDir();
+        if (mobileNumber == null || mobileNumber.isEmpty()) {
+            throw new FileNotFoundException("No sms backup file for mobile number found!");
+        }
+        String filePath = String.format("%s/sms-backup-%s.json", appDir.getPath(), mobileNumber);
+        Log.d(LOG_TAG, String.format("getSmsBackupFilePath: %s", filePath));
+        return filePath;
+    }
+
+    private String getInputMobileNumber() {
+        EditText mobileNumber = Objects.requireNonNull(getActivity()).findViewById(R.id.inp_sms_mobile_number);
+        if (mobileNumber.getText().toString().isEmpty()) {
+            return "all";
+        }
+        return mobileNumber.getText().toString();
     }
 
     private List<Sms> getSmsBackup(String mobileNumber) {
         Gson gson = new GsonBuilder().setLenient().create();
         Type smsListType = new TypeToken<ArrayList<Sms>>() {
         }.getType();
-
         try {
             File f = new File(getSmsBackupFilePath(mobileNumber));
             return gson.fromJson(new FileReader(f.getPath()), smsListType);
         } catch (FileNotFoundException e) {
-            Snackbar.make(getView(), "sms backup file not found! error: " + e.getMessage(), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(Objects.requireNonNull(getView()), "sms backup file not found! error: " + e.getMessage(), Snackbar.LENGTH_LONG).show();
             return new ArrayList<>();
         }
     }
 
-    private String getSmsBackupFilePath(String mobileNumber) throws FileNotFoundException {
-        File appDir = getActivity().getFilesDir();
-        if (mobileNumber == null || mobileNumber.isEmpty()) {
-            throw new FileNotFoundException("No sms backup file for mobile number found!");
-        }
-        String filePath = String.format("%s/sms-backup-%s.json", appDir.getPath(), mobileNumber);
-        Log.d("SmsFragment", String.format("getSmsBackupFilePath: %s", filePath));
-        return filePath;
+    private void viewSmsBackupFiles() {
+        File appDir =  getSmsBackupDir();
+        TextView tv = Objects.requireNonNull(getActivity()).findViewById(R.id.txt_sms_view);
+        List<String> files = Arrays.asList(Objects.requireNonNull(appDir.list(getJsonFileNameFilter())));
+        tv.setText(String.format("%s", files));
+        Log.d(LOG_TAG, String.format("viewSmsBackupFiles: number of files: %s", files.size()));
     }
 
-    private String getInputMobileNumber() {
-        EditText mobileNumber = getActivity().findViewById(R.id.inp_sms_mobile_number);
-        if (mobileNumber.getText().toString().isEmpty()) {
-            return "all";
+    private List<Sms> searchSms() {
+        TextView searchAfter = Objects.requireNonNull(getActivity()).findViewById(R.id.inp_sms_mobile_number);
+        List<Sms> smsList = getSmsInbox(null);
+        Log.d(LOG_TAG, String.format("searchSms: number of sms: %s, search after: %s", smsList.size(), searchAfter.getText().toString()));
+        List<Sms> result = smsList.stream().filter(sms -> sms.getBody().contains(searchAfter.getText().toString())).collect(Collectors.toList());
+        TextView view = getActivity().findViewById(R.id.txt_sms_view);
+        view.setText(String.format("Search after: %s\n %s", searchAfter.getText().toString(), result));
+        return result;
+    }
+
+    private void deleteSmsBackupFiles() {
+        try {
+            File bckDir =  getSmsBackupDir();
+            if (bckDir.exists()) {
+                for (File f : Objects.requireNonNull(bckDir.listFiles(getJsonFileNameFilter()))) {
+                    f.delete();
+                    Log.d(LOG_TAG, String.format("deleteSmsBackupFiles: Deleted file: %s", f.getName()));
+                }
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, String.format("deleteSmsBackupFiles: Error deleting backup file! %s", e.getLocalizedMessage()));
         }
-        return mobileNumber.getText().toString();
+    }
+
+    private FilenameFilter getJsonFileNameFilter() {
+        return (dir, name) -> {
+            String lowercaseName = name.toLowerCase();
+            return lowercaseName.endsWith(".json");
+        };
+    }
+    private File getSmsBackupDir() {
+        return Objects.requireNonNull(getActivity()).getFilesDir();
     }
 
     private String getFileContent(String filePath) throws FileNotFoundException {
@@ -204,63 +241,15 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         while (true) {
             try {
-                if ((line = reader.readLine()) == null) break;
+                if ((line = reader.readLine()) == null){
+                    break;
+                }
             } catch (Exception e) {
-                Log.e("getFileContent", e.getMessage());
+                Log.e(LOG_TAG, Objects.requireNonNull(e.getMessage()));
             }
             stringBuilder.append(line);
         }
         return stringBuilder.toString();
-    }
-
-    private void viewSmsBackupFiles() {
-        FilenameFilter jsonFilter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                String lowercaseName = name.toLowerCase();
-                if (lowercaseName.endsWith(".json")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        };
-        File appDir = getActivity().getFilesDir();
-        TextView tv = getActivity().findViewById(R.id.txt_sms_view);
-        tv.setText(String.format("%s", appDir.list(jsonFilter).toString()));
-    }
-
-    private void deleteSmsBackupFiles() {
-        FilenameFilter jsonFilter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                String lowercaseName = name.toLowerCase();
-                if (lowercaseName.endsWith(".json")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        };
-        try {
-            File bckDir = getActivity().getFilesDir();
-            if (bckDir.exists()) {
-                for (File f : bckDir.listFiles(jsonFilter)) {
-                    f.delete();
-                    Log.d("SmsFragment", String.format("deleteSmsBackupFiles: Deleted file: %s", f.getName()));
-                }
-            }
-        } catch (Exception e) {
-            Log.e("SmsFragment", String.format("deleteSmsBackupFiles: Error deleting backup file", e.getLocalizedMessage()));
-        }
-    }
-
-    private List<Sms> searchSms() {
-        TextView seaarchAfter = getActivity().findViewById(R.id.inp_sms_mobile_number);
-        List<Sms> smsList = getSmsInbox(null);
-        Log.d("SmsFragment", String.format("searchSms: number of sms: %s, search after: %s", smsList.size(), seaarchAfter.getText().toString()));
-        List<Sms> result = smsList.stream().filter(sms -> sms.getBody().contains(seaarchAfter.getText().toString())).collect(Collectors.toList());
-        TextView view = getActivity().findViewById(R.id.txt_sms_view);
-        view.setText(String.format("Search after: %s\n %s", seaarchAfter.getText().toString(), result));
-        return result;
     }
 
     @Override
@@ -270,7 +259,9 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
                 copyToClipboard();
                 break;
             case R.id.btn_sms_export:
-                viewSmsInbox(getInputMobileNumber());
+                List<Sms> inbox = getSmsInbox(getInputMobileNumber());
+                RxBus.getInstance().publish(inbox);
+                Snackbar.make(Objects.requireNonNull(getView()), String.format("Published sms backup history (%s)", inbox.size()), Snackbar.LENGTH_LONG).show();
                 break;
             case R.id.btn_sms_backup:
                 backupSmsInbox(getInputMobileNumber());
@@ -278,7 +269,7 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
             case R.id.btn_sms_backup_view:
                 List<Sms> smsList = getSmsBackup(getInputMobileNumber());
                 RxBus.getInstance().publish(smsList);
-                Snackbar.make(getView(), String.format("Published sms backup history (%s)", smsList.size()), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(Objects.requireNonNull(getView()), String.format("Published sms backup history (%s)", smsList.size()), Snackbar.LENGTH_LONG).show();
                 break;
             case R.id.btn_sms_backup_files_view:
                 viewSmsBackupFiles();
@@ -290,20 +281,18 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
                 break;
             case R.id.btn_sms_search:
                 RxBus.getInstance().publish(searchSms());
-                Snackbar.make(getView(), "Published sms search result", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(Objects.requireNonNull(getView()), "Published sms search result", Snackbar.LENGTH_LONG).show();
                 break;
         }
     }
 
     @Override
     public void onDialogAction(int actionCode) {
-        Log.d("SmsFragment", String.format("onDialogAction: action: %s", actionCode));
+        Log.d(LOG_TAG, String.format("onDialogAction: action: %s", actionCode));
         if (actionCode == DialogActionListener.OK_ACTION) {
             // the user confirmed the operation
            // deleteSmsBackupFiles();
-            Snackbar.make(getView(), String.format("Deleted sms backup files."), Snackbar.LENGTH_LONG).show();
-        } else {
-            // dismiss, do nothing, the user canceled the operation
-        }
+            Snackbar.make(Objects.requireNonNull(getView()), "Deleted sms backup files.", Snackbar.LENGTH_LONG).show();
+        }  // dismiss, do nothing, the user canceled the operation
     }
 }

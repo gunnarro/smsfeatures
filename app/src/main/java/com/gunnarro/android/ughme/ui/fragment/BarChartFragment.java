@@ -97,7 +97,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         parent.addView(chart);
         chart.setFitBars(true);
         // chart.animateXY(5000, 5000);
-        updateChartData(getSmsBackup("45465500"));
+        updateChartData(getSmsBackup("all"));
         Log.d("BarChartFragment", "onCreateView: finished");
         return view;
     }
@@ -184,7 +184,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
 
     private void updateChartData(List<Sms> smsList) {
         List<IBarDataSet> barDataSets = mapToBarDataSets(smsList);
-        Log.d("BarChartFragment", String.format("updateChartData: Update chart data, %s", barDataSets.size()));
+        Log.d("BarChartFragment", String.format("updateChartData: Update chart data, data sets: %s", barDataSets.size()));
         if (chart.getData() != null && chart.getBarData().getDataSetCount() > 0) {
             Log.d("BarChartFragment", "updateChartData: chart data not set");
             // BarDataSet currentBarDataSet = (BarDataSet) chart.getBarData().getDataSetByIndex(0);
@@ -201,13 +201,13 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         chart.invalidate();
     }
 
-    private List<Sms> getSmsBackup(String mobileNumber) {
+    private List<Sms> getSmsBackup(Object o) {
         Gson gson = new GsonBuilder().setLenient().create();
         Type smsListType = new TypeToken<ArrayList<Sms>>() {
         }.getType();
 
         try {
-            File f = new File(getSmsBackupFilePath(mobileNumber));
+            File f = new File(getSmsBackupFilePath("all"));
             return gson.fromJson(new FileReader(f.getPath()), smsListType);
         } catch (FileNotFoundException e) {
             Log.d("BarChartFragment", String.format("sms backup file not found! error: %s", e.getMessage()));
@@ -228,26 +228,26 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         return new Observer<Object>() {
             @Override
             public void onSubscribe(Disposable d) {
-                Log.d("BarChartFragment", "onSubscribe:");
+                Log.d("BarChartFragment", "getInputObserver.onSubscribe:");
             }
 
             @Override
             public void onNext(Object obj) {
-                Log.d("BarChartFragment", String.format("onNext: Received new data event of type %s", obj.getClass().getSimpleName()));
+                Log.d("BarChartFragment", String.format("getInputObserver.onNext: Received new data event of type %s", obj.getClass().getSimpleName()));
                 if (obj instanceof List<?>) {
-                    Log.d("BarChartFragment", "onNext: update bar chart data");
+                    Log.d("BarChartFragment", "getInputObserver.onNext: update bar chart data");
                     updateChartData((List<Sms>) obj);
                 }
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.e("BarChartFragment", String.format("onError: %s", e.getMessage()));
+                Log.e("BarChartFragment", String.format("getInputObserver.onError: %s", e.getMessage()));
             }
 
             @Override
             public void onComplete() {
-                Log.d("BarChartFragment", "onComplete:");
+                Log.d("BarChartFragment", "getInputObserver.onComplete:");
             }
         };
     }
