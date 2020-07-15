@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,16 +51,13 @@ public class MainActivity extends AppCompatActivity implements ListFragmentInter
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d("onRequestPermission", String.format("%s, %s", requestCode, new ArrayList<String>(Arrays.asList(permissions))));
-        switch (requestCode) {
-            case PERMISSION_REQUEST:
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i("onRequestPermissions", "permission granted for LOCATION");
-                } else {
-                    Log.i("onRequestPermissions", "permission denied for LOCATION");
-                }
-                return;
+        Log.d("onRequestPermission", String.format("%s, %s", requestCode, new ArrayList<>(Arrays.asList(permissions))));
+        if (requestCode == PERMISSION_REQUEST) {// If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("onRequestPermissions", "permission granted for LOCATION");
+            } else {
+                Log.i("onRequestPermissions", "permission denied for LOCATION");
+            }
         }
     }
 
@@ -77,12 +73,7 @@ public class MainActivity extends AppCompatActivity implements ListFragmentInter
                 // Provide an additional rationale to the user if the permission was not granted
                 // and the user would benefit from additional context for the use of the permission.
                 // Display a SnackBar with cda button to request the missing permission.
-                Snackbar.make(findViewById(R.id.content), accessRequired, Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ActivityCompat.requestPermissions(activity, new String[]{permission}, permissionId);
-                    }
-                }).show();
+                Snackbar.make(findViewById(R.id.content), accessRequired, Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view -> ActivityCompat.requestPermissions(activity, new String[]{permission}, permissionId)).show();
             } else {
                 Snackbar.make(findViewById(R.id.content), unavailable, Snackbar.LENGTH_LONG).show();
                 // Request the permission. The result will be received in onRequestPermissionResult().

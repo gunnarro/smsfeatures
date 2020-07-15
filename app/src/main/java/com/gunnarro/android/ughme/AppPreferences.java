@@ -9,11 +9,9 @@ import java.util.List;
 public abstract class AppPreferences {
     public static final String SMS_BLACK_LIST = "sms_blacklist";
     public static final String AUTHENTICATED_USERS = "autenticated_users";
-
-    private static final String APP_SHARED_PREFS = "user_preferences";
     static final String DEFAULT_VALUE = "";
     static final String SEPARATOR = ",";
-
+    private static final String APP_SHARED_PREFS = "user_preferences";
     private final SharedPreferences appSharedPrefs;
     private final SharedPreferences.Editor prefsEditor;
 

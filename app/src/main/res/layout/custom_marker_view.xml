@@ -19,5 +19,4 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white"
         android:textSize="12sp" />
-
 </RelativeLayout>

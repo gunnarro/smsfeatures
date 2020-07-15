@@ -16,10 +16,7 @@ public class ListAppPreferencesImpl extends AppPreferences {
 
     public List<String> getList() {
         String list = getAppSharedPrefs().getString(type, DEFAULT_VALUE);
-        if (list != null) {
-            return new ArrayList<>(Arrays.asList(list.split(SEPARATOR)));
-        }
-        return new ArrayList<>();
+        return new ArrayList<>(Arrays.asList(list.split(SEPARATOR)));
     }
 
     public String getListAsString() {

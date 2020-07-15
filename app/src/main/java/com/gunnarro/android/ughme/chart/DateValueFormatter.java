@@ -2,6 +2,8 @@ package com.gunnarro.android.ughme.chart;
 
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import static java.lang.Float.valueOf;
+
 public class DateValueFormatter extends ValueFormatter {
 
     private static final String[] WEEK_DAYS = new String[]{"Mo", "Tu", "Wed", "Th", "Fr", "Sa", "Su"};
@@ -11,6 +13,6 @@ public class DateValueFormatter extends ValueFormatter {
     @Override
     public String getFormattedValue(float value) {
         // LocalDateTime d = LocalDateTime.ofInstant(Instant.ofEpochMilli(value),null);
-        return WEEK_DAYS[new Float(value).intValue()];
+        return WEEK_DAYS[valueOf(value).intValue()];
     }
 }

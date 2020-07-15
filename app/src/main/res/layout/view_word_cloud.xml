@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bar_chart_parentLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.view.WordCloudFragment">
+
+    <RadioGroup
+        android:id="@+id/radio_btn_grp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/sms_msg_radio_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_sms_msg" />
+
+        <RadioButton
+            android:id="@+id/sms_datetime_radio_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_sms_datetime" />
+
+        <RadioButton
+            android:id="@+id/sms_number_radio_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_sms_number" />
+    </RadioGroup>
+
+    <com.gunnarro.android.ughme.ui.view.WordCloudView
+        android:id="@+id/wordCloudView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <!--
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    -->
+</RelativeLayout>

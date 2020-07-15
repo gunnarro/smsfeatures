@@ -9,14 +9,14 @@ public class RxBus {
     private static RxBus mInstance;
     private PublishSubject<Object> publisher = PublishSubject.create();
 
+    private RxBus() {
+    }
+
     public static RxBus getInstance() {
         if (mInstance == null) {
             mInstance = new RxBus();
         }
         return mInstance;
-    }
-
-    private RxBus() {
     }
 
     public void publish(Object data) {

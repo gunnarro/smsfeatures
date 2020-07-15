@@ -46,22 +46,16 @@ public class SmsReader {
     /**
      * Inbox columns names: _id, thread_id address person date protocol read
      * status type subject body service_center locked error_code seen
-     *
-     * @return
      */
     public List<Sms> getSMSInbox(boolean isOnlyUnread, String filterByNumber) {
         List<Sms> smsInbox = new ArrayList<>();
         Uri smsUri = Uri.parse(CONTENT_SMS_INBOX);
         String[] projection = new String[]{ID, ADDRESS, BODY, DATE, READ, STATUS, SEEN, TYPE, "datetime(julianday(date)) AS group_by"};
-        Cursor cursor = null;
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss", Locale.ENGLISH);
-        try {
-            cursor = context.getContentResolver().query(smsUri
-                    , projection
-                    , null // selection
-                    , null // selectionArgs
-                    , SORT_ORDER); // sortOrder
-
+        try (Cursor cursor = context.getContentResolver().query(smsUri
+                , projection
+                , null
+                , null
+                , SORT_ORDER)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     int read = cursor.getInt(cursor.getColumnIndex(READ));
@@ -95,10 +89,6 @@ public class SmsReader {
 
                 } while (cursor.moveToNext());
             }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
         }
         return smsInbox;
     }
@@ -112,8 +102,6 @@ public class SmsReader {
      * hour: 00-24 %j day of year: 001-366 %J Julian day number %m month: 01-12
      * %M minute: 00-59 %s seconds since 1970-01-01 %S seconds: 00-59 %w day of
      * week 0-6 with Sunday==0 %W week of year: 00-53 %Y year: 0000-9999 %% %
-     *
-     * @return
      */
     public List<Sms> getSMSOutboxGroupBy(String period, boolean isGroupByAddress) {
         String groupByPeriod = "%Y";
@@ -145,12 +133,9 @@ public class SmsReader {
         SimpleDateFormat formatter = new SimpleDateFormat(groupByPeriod, Locale.ENGLISH);
         Map<String, Sms> smsInboxMap = new HashMap<>();
         Uri smsUri = Uri.parse(CONTENT_SMS_INBOX);
-        Cursor cursor = null;
-        try {
-            cursor = context.getContentResolver().query(smsUri, projection, selection // selection
-                    , null // selectionArgs
-                    , SORT_ORDER); // sortOrder
-
+        try (Cursor cursor = context.getContentResolver().query(smsUri, projection, selection
+                , null
+                , SORT_ORDER)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     String p = cursor.getString(cursor.getColumnIndex(DATE));
@@ -164,15 +149,11 @@ public class SmsReader {
                         smsInboxMap.put(sms.getPeriod(), sms);
                     }
                     if (msgType == MESSAGE_TYPE_INBOX) {
-                        //  sms.increaseNumberOfReceived();
+                        // sms.increaseNumberOfReceived();
                     } else if (msgType == MESSAGE_TYPE_SENT) {
                         //   sms.increaseNumberOfSent();
                     }
                 } while (cursor.moveToNext());
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
             }
         }
         // return smsInbox;

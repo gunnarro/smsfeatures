@@ -1,11 +1,11 @@
 package com.gunnarro.android.ughme.ui.fragment;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.ui.fragment.domain.ListItem;
@@ -19,12 +19,10 @@ import java.util.List;
  */
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
-    private static final String LOG_TAG = MyItemRecyclerViewAdapter.class.getSimpleName();
-
     private final List<ListItem> mValues;
     private final ListFragmentInteractionListener mListener;
 
-    public MyItemRecyclerViewAdapter(List<ListItem> items, ListFragmentInteractionListener listener) {
+    MyItemRecyclerViewAdapter(List<ListItem> items, ListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -39,15 +37,15 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<ListViewHold
     @Override
     public void onBindViewHolder(final ListViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        //holder.mContentView.setText(mValues.get(position).content);
-        //holder.mDetailsView.setText(mValues.get(position).details);
+        holder.mIdView.setText(mValues.get(position).getId());
+        //holder.mContentView.setText(mValues.get(position).getContent());
+        //holder.mDetailsView.setText(mValues.get(position).getDetails());
 
         holder.mView.setOnClickListener(v -> {
             if (null != mListener) {
                 // Notify the active callbacks interface (the activity, if the
                 // fragment is attached to one) that an item has been selected.
-                mListener.onListFragmentInteraction(holder.mItem);
+                mListener.onListFragmentInteraction(holder.getmItem());
             }
         });
     }

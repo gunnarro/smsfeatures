@@ -1,14 +1,11 @@
 package com.gunnarro.android.ughme.sms;
 
-public class SmsMsg {
+import androidx.annotation.NonNull;
 
-    private enum ActionEnum {
-        TRACE, ALARM, WAKEUP, FORWARD
-    }
+public class SmsMsg {
 
     private final String toMobilePhoneNumber;
     private final String msg;
-
     public SmsMsg(String toMobilePhoneNumber, String msg) {
         this.toMobilePhoneNumber = toMobilePhoneNumber;
         this.msg = msg;
@@ -31,7 +28,12 @@ public class SmsMsg {
     }
 
     @Override
+    @NonNull
     public String toString() {
         return toMobilePhoneNumber + ": " + msg;
+    }
+
+    private enum ActionEnum {
+        TRACE, ALARM, WAKEUP, FORWARD
     }
 }

@@ -170,7 +170,7 @@ public class LocationFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private String getLocationHistoryFilePath() throws FileNotFoundException {
+    private String getLocationHistoryFilePath() {
         File appDir = getActivity().getFilesDir();
         return String.format("%s/location-history.json", appDir.getPath());
     }

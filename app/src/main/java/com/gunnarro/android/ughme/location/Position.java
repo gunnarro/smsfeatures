@@ -1,5 +1,7 @@
 package com.gunnarro.android.ughme.location;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Position {
     public static final String URL_GOOGLE_MAPS = "http://maps.google.com/maps?q=%s,%s";
 
@@ -67,11 +69,12 @@ public class Position {
 
     public String createGoogleMapUrl() {
         // Latitude and longitude
-        return String.format(URL_GOOGLE_MAPS, Double.toString(latitude), Double.toString(longitude));
+        return String.format(URL_GOOGLE_MAPS, latitude, longitude);
     }
 
 
     @Override
+    @NotNull
     public String toString() {
         final StringBuilder sb = new StringBuilder("Position{");
         sb.append("time=").append(time);

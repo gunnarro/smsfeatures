@@ -2,15 +2,15 @@ package com.gunnarro.android.ughme.ui.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.observable.RxBus;
@@ -20,8 +20,10 @@ import com.gunnarro.android.ughme.ui.fragment.domain.ListItem;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -83,7 +85,7 @@ public class ListItemFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof ListFragmentInteractionListener) {
             mListener = (ListFragmentInteractionListener) context;
@@ -114,10 +116,10 @@ public class ListItemFragment extends Fragment {
                 Log.d(LOG_TAG, String.format("onNext: Received new data event of type %s", obj.getClass().getSimpleName()));
                 if (obj instanceof List<?>) {
                     Log.d(LOG_TAG, "onNext: update list");
-                    List<Sms> smsList = (List<Sms>)obj;
+                    List<Sms> smsList = Collections.unmodifiableList((List<Sms>) obj);
                     itemList.clear();
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    smsList.forEach( s -> itemList.add(new ListItem(dateFormat.format(new Date(s.getTimeMs()))+ " from " + s.getAddress() + "\n" + s.getBody())));
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    smsList.forEach(s -> itemList.add(new ListItem(dateFormat.format(new Date(s.getTimeMs())) + " from " + s.getAddress() + "\n" + s.getBody())));
                     listItemAdapter.notifyDataSetChanged();
                 }
             }

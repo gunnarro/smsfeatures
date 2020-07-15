@@ -22,6 +22,10 @@ public class SmsHandler extends BroadcastReceiver {
     private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
     private static final String PDUS = "pdus";
 
+    private static String createLogTag(Class<?> clazz) {
+        return DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.ENGLISH).format(new Date()) + " " + clazz.getSimpleName();
+    }
+
     /**
      * A PDU is a "protocol description unit", which is the industry format for
      * an SMS message. because SMSMessage reads/writes them you shouldn't need
@@ -65,9 +69,5 @@ public class SmsHandler extends BroadcastReceiver {
 
     private boolean isBlackListed(Context context, String phoneNumber) {
         return new ListAppPreferencesImpl(context, AppPreferences.SMS_BLACK_LIST).listContains(phoneNumber);
-    }
-
-    private static String createLogTag(Class clazz) {
-        return DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.ENGLISH).format(new Date()) + " " + clazz.getSimpleName();
     }
 }

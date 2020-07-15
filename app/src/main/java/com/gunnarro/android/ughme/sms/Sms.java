@@ -1,6 +1,10 @@
 package com.gunnarro.android.ughme.sms;
 
+import androidx.core.app.NotificationCompat;
+
 import com.google.gson.annotations.Expose;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -17,7 +21,7 @@ public class Sms implements Serializable {
     private final String body;
     @Expose(serialize = false)
     private final String type;
-    @Expose(serialize = true)
+    @Expose
     private final String period;
     @Expose(serialize = false)
     private int numberOfReceived;
@@ -25,7 +29,7 @@ public class Sms implements Serializable {
     private int numberOfSent;
     @Expose(serialize = false)
     private int numberOfBlocked;
-    @Expose(serialize = true)
+    @Expose
     private int count;
 
     private Sms(Builder builder) {
@@ -98,8 +102,9 @@ public class Sms implements Serializable {
 
 
     @Override
+    @NotNull
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Sms{");
+        final StringBuilder sb = new StringBuilder("Sms{");
         sb.append("timeMs='").append(timeMs).append('\'');
         sb.append(", address='").append(address).append('\'');
         sb.append(", body='").append(body);
@@ -139,13 +144,13 @@ public class Sms implements Serializable {
         @Expose(serialize = false)
         private String period;
         @Expose(serialize = false)
-        private Integer numberOfReceived = new Integer(0);
+        private Integer numberOfReceived = 0;
         @Expose(serialize = false)
-        private Integer numberOfSent = new Integer(0);
+        private Integer numberOfSent = 0;
         @Expose(serialize = false)
-        private Integer numberOfBlocked = new Integer(0);
+        private Integer numberOfBlocked = 0;
         @Expose(serialize = false)
-        private Integer count = new Integer(0);
+        private Integer count = 0;
 
         private Builder() {
         }

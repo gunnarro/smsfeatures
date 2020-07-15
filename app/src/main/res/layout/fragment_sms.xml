@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frame_layout"
+    android:id="@+id/sms_frame_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.SmsFragment">
@@ -39,10 +39,10 @@
             android:text="@string/btn_sms_backup" />
 
         <Button
-            android:id="@+id/btn_sms_backup_view"
+            android:id="@+id/btn_sms_chart_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/btn_sms_backup_view" />
+            android:text="@string/btn_sms_chart_view" />
 
         <Button
             android:id="@+id/btn_sms_backup_files_view"
@@ -54,7 +54,7 @@
             android:id="@+id/btn_sms_delete_backup_file"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Delete backup file" />
+            android:text="Delete backup files" />
 
         <Button
             android:id="@+id/btn_sms_search"

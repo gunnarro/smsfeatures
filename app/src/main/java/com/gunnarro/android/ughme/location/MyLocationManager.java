@@ -76,10 +76,6 @@ public class MyLocationManager {
         }
     }
 
-    public List<Position> getPositions(String mobileNumber) {
-        return historyMap.get(mobileNumber);
-    }
-
     /**
      * google maps lookup:
      * http://maps.googleapis.com/maps/api/geocode/json?latlng
@@ -117,6 +113,9 @@ public class MyLocationManager {
         }
     }
 
+    public List<Position> getPositions(String mobileNumber) {
+        return historyMap.get(mobileNumber);
+    }
 
     /**
      * @author gunnarro

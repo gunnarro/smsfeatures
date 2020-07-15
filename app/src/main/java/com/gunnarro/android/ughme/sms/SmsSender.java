@@ -3,6 +3,8 @@ package com.gunnarro.android.ughme.sms;
 import android.telephony.SmsManager;
 import android.util.Log;
 
+import java.util.Objects;
+
 public class SmsSender {
 
     /**
@@ -15,7 +17,7 @@ public class SmsSender {
             smsManager.sendTextMessage(phoneNumber, null, message, null, null);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("ERROR send sms", e.getMessage());
+            Log.e("ERROR send sms", Objects.requireNonNull(e.getMessage()));
         }
     }
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.fragment.LocationFragment">
+    tools:context=".ui.fragment.BarChartFragment">
 
-    <!-- We add the chart programmatically here. See BarChartFrag.java -->
+    <!-- We add the chart programmatically here. See BarChartFragment.java -->
 </FrameLayout>

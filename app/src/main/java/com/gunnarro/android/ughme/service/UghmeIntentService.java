@@ -30,6 +30,8 @@ import com.gunnarro.android.ughme.sms.SmsSender;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class UghmeIntentService extends IntentService {
 
@@ -47,12 +49,7 @@ public class UghmeIntentService extends IntentService {
     private void log(final String msg, boolean isToast) {
         Log.i(TAG, msg);
         if (isToast) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(UghmeIntentService.this, msg, Toast.LENGTH_LONG).show();
-                }
-            });
+            handler.post(() -> Toast.makeText(UghmeIntentService.this, msg, Toast.LENGTH_LONG).show());
         }
     }
 
@@ -114,8 +111,7 @@ public class UghmeIntentService extends IntentService {
     }
 
     /**
-     * @param receivedSMSMsg
-     * @param context
+     *
      */
     private void handleTraceSMS(SmsMsg receivedSMSMsg, Context context) {
         //if (new ListAppPreferencesImpl(context, AppPreferences.AUTHENTICATED_USERS).listContains(receivedSMSMsg.getToMobilePhoneNumber())) {
@@ -126,14 +122,14 @@ public class UghmeIntentService extends IntentService {
         try {
             myPosition = MyLocationManager.getLocationLastKnown(context, receivedSMSMsg.getToMobilePhoneNumber());
         } catch (Exception e) {
-            Log.e("sms", e.getMessage());
+            Log.e("sms", Objects.requireNonNull(e.getMessage()));
         }
         String from = lookupContactName(receivedSMSMsg.getToMobilePhoneNumber());
         if (from == null) {
             from = receivedSMSMsg.getToMobilePhoneNumber();
         }
         alertUser("Sent trace sms to: " + from + ", url: " + myPosition);
-        SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy hh:ss:mm");
+        SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy hh:ss:mm", Locale.getDefault());
         StringBuilder msg = new StringBuilder();
         if (myPosition != null) {
             msg.append("time: ").append(sd.format(myPosition.getTime())).append("\n");
@@ -146,12 +142,11 @@ public class UghmeIntentService extends IntentService {
     }
 
     private void handleForwardSMS(SmsMsg receivedSMSMsg, Context context) {
-        boolean onlyUnread = true;
         if (new ListAppPreferencesImpl(context, AppPreferences.AUTHENTICATED_USERS).listContains(receivedSMSMsg.getToMobilePhoneNumber())) {
             MailSender mailSender = new MailSender("username@gmail.com", "userpass");
             try {
                 SmsReader smsReader = new SmsReader(context);
-                List<Sms> unreadSms = smsReader.getSMSInbox(onlyUnread, "");
+                List<Sms> unreadSms = smsReader.getSMSInbox(true, "");
                 String missesCalls = "";//CallRegister.getMissedCalls(context);
                 StringBuilder msg = new StringBuilder();
                 msg.append("-------------------------------------------\n");
@@ -190,7 +185,7 @@ public class UghmeIntentService extends IntentService {
                 cursor.close();
             }
         } catch (Exception e) {
-            Log.e("sms", e.getMessage());
+            Log.e("sms", Objects.requireNonNull(e.getMessage()));
         }
         return contactDisplayName;
     }
