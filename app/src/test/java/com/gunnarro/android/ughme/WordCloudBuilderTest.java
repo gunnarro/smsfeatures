@@ -1,5 +1,6 @@
 package com.gunnarro.android.ughme;
 
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -60,7 +61,7 @@ public class WordCloudBuilderTest {
         smsPlainTxt.append("Dette, dette, dette er kun en enhets test, og dette er ingenting å tulle med, spør du meg. antall enhets tester er kun 1");
 
 
-        TextAnalyzer textAnalyzer = new TextAnalyzer("Sms Word Cloud");
+        TextAnalyzer textAnalyzer = new TextAnalyzer();
         textAnalyzer.analyzeText(smsPlainTxt.toString(), null);
 
         WordCloudBuilder builder = new WordCloudBuilder(1440, 1944);

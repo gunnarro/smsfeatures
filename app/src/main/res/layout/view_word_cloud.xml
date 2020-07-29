@@ -10,25 +10,46 @@
         android:id="@+id/radio_btn_grp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorToolbarBackground"
         android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/sms_msg_radio_btn"
+        <Spinner
+            android:id="@+id/sms_mobile_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_sms_msg" />
+            android:textColor="@color/colorToolbarText"
+            android:layout_marginLeft="5dp"
+            android:buttonTint="@color/colorRadioBtn"
+            android:spinnerMode="dropdown"
+            android:background="@color/colorToolbarText"
+            android:backgroundTint="@color/colorToolbarText" />
+
+        <CheckBox
+            android:id="@+id/sms_in_out_box_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="@string/btn_sms_in_out_box"
+            android:textColor="@color/colorToolbarText"
+            android:buttonTint="@color/colorRadioBtn"/>
 
         <RadioButton
             android:id="@+id/sms_datetime_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_sms_datetime" />
+            android:layout_marginLeft="5dp"
+            android:text="@string/btn_sms_datetime"
+            android:textColor="@color/colorToolbarText"
+            android:buttonTint="@color/colorRadioBtn"/>
 
         <RadioButton
             android:id="@+id/sms_number_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_sms_number" />
+            android:layout_marginLeft="5dp"
+            android:text="@string/btn_sms_number"
+            android:textColor="@color/colorToolbarText"
+            android:buttonTint="@color/colorRadioBtn"/>
     </RadioGroup>
 
     <com.gunnarro.android.ughme.ui.view.WordCloudView

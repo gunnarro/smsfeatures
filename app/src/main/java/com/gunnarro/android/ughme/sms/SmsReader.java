@@ -18,16 +18,9 @@ public class SmsReader {
     private static final String CONTENT_SMS_INBOX = "content://sms/inbox";
     private static final String CONTENT_SMS_OUTBOX = "content://sms/inbox";
     private static final String ID = "_id";
-    private static final String ADDRESS = "address";
-    private static final String PERSON = "person";
-    private static final String DATE = "date";
-    private static final String READ = "read";
-    private static final String STATUS = "status";
-    private static final String TYPE = "type";
-    private static final String BODY = "body";
-    private static final String SEEN = "seen";
-    private static final String SORT_ORDER = "date DESC";
+    private static final String SORT_ORDER = Telephony.Sms.DATE + " DESC";
 
+    private static final int MESSAGE_TYPE_ALL = 0;
     private static final int MESSAGE_TYPE_INBOX = 1;
     private static final int MESSAGE_TYPE_SENT = 2;
 
@@ -49,16 +42,15 @@ public class SmsReader {
      */
     public List<Sms> getSMSInbox(boolean isOnlyUnread, String filterByNumber) {
         List<Sms> smsInbox = new ArrayList<>();
-        Uri smsUri = Uri.parse(CONTENT_SMS_INBOX);
-        String[] projection = new String[]{ID, ADDRESS, BODY, DATE, READ, STATUS, SEEN, TYPE, "datetime(julianday(date)) AS group_by"};
-        try (Cursor cursor = context.getContentResolver().query(smsUri
+        String[] projection = new String[]{ID, Telephony.Sms.ADDRESS, Telephony.Sms.BODY, Telephony.Sms.DATE, Telephony.Sms.READ, Telephony.Sms.STATUS, Telephony.Sms.SEEN, Telephony.Sms.TYPE, "datetime(julianday(date)) AS group_by"};
+        try (Cursor cursor = context.getContentResolver().query(Telephony.Sms.CONTENT_URI
                 , projection
                 , null
                 , null
                 , SORT_ORDER)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    int read = cursor.getInt(cursor.getColumnIndex(READ));
+                    int read = cursor.getInt(cursor.getColumnIndex(Telephony.Sms.READ));
                     if (isOnlyUnread) {
                         if (read == MESSAGE_IS_READ) {
                             // Skip read sms
@@ -86,7 +78,6 @@ public class SmsReader {
                         // no filter, add all
                         smsInbox.add(sms);
                     }
-
                 } while (cursor.moveToNext());
             }
         }
@@ -123,7 +114,7 @@ public class SmsReader {
         // "count(date) AS number_of_sms"};
         // String selection = "type == 1) GROUP BY (strftime('" + groupByPeriod
         // + "', dateTime(julianday(date)))";
-        String[] projection = new String[]{DATE, TYPE};
+        String[] projection = new String[]{Telephony.Sms.DATE, Telephony.Sms.TYPE};
         String selection = null;
 
         if (isGroupByAddress) {
@@ -138,10 +129,8 @@ public class SmsReader {
                 , SORT_ORDER)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    String p = cursor.getString(cursor.getColumnIndex(DATE));
-                    int msgType = cursor.getInt(cursor.getColumnIndex(TYPE));
-                    // int numberOfSms =
-                    // cursor.getInt(cursor.getColumnIndex("number_of_sms"));
+                    String p = cursor.getString(cursor.getColumnIndex(Telephony.Sms.DATE));
+                    int msgType = cursor.getInt(cursor.getColumnIndex(Telephony.Sms.TYPE));
                     String datePeriod = formatter.format(new Date(Long.parseLong(p)));
                     Sms sms = smsInboxMap.get(datePeriod);
                     if (sms == null) {

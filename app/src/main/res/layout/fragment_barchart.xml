@@ -8,45 +8,55 @@
 
     <RadioGroup
         android:id="@+id/radio_btn_grp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/colorToolbarBackground">
 
         <RadioButton
             android:id="@+id/day_radio_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/day" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/day"
+            android:textColor="@color/colorToolbarText"
+            android:buttonTint="@color/colorRadioBtn"/>
 
         <RadioButton
             android:id="@+id/week_radio_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/week" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/week"
+            android:textColor="@color/colorToolbarText"
+            android:buttonTint="@color/colorRadioBtn"/>
 
         <RadioButton
             android:id="@+id/year_radio_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/year" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/year"
+            android:textColor="@color/colorToolbarText"
+            android:buttonTint="@color/colorRadioBtn"/>
 
         <RadioButton
             android:id="@+id/number_radio_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/number" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/number"
+            android:textColor="@color/colorToolbarText"
+            android:buttonTint="@color/colorRadioBtn"/>
 
         <Spinner
             android:id="@+id/number_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorToolbarText"
+            android:buttonTint="@color/colorRadioBtn"/>
     </RadioGroup>
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barchart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/radio_btn_grp">
-    </com.github.mikephil.charting.charts.BarChart>
+        android:layout_below="@id/radio_btn_grp"></com.github.mikephil.charting.charts.BarChart>
 
 </RelativeLayout>

@@ -1,36 +1,35 @@
 package com.gunnarro.android.ughme.ui.view;
 
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.Log;
 
-import com.mordred.wordcloud.WordCloud;
-
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 public class WordCloudBuilder {
 
-    private static final String TAG = WordCloud.class.getSimpleName();
+    private final static String TAG = WordCloudBuilder.class.getSimpleName();
     private final Random rnd = new Random();
     private static final int MAX_WORD_SIZE = 150;
     private static final int MIN_WORD_SIZE = 50;
-
     private final int width;
     private final int height;
     private final int centerX;
     private final int centerY;
 
-    private List<String> xyCoordinateList = new ArrayList<>();
+    private static String buildTag(String tagName) {
+        return new StringBuilder(TAG).append(".").append(tagName).toString();
+    }
 
     /**
-     *
-     * @param width - length of x.axis, none negative values only
+     * @param width  - length of x.axis, none negative values only
      * @param height - Length of y-axis, none negative values only
      */
     public WordCloudBuilder(int width, int height) {
@@ -41,148 +40,199 @@ public class WordCloudBuilder {
         this.height = height;
         this.centerX = this.width / 2;
         this.centerY = this.height / 2;
-        Log.i(TAG, String.format("init, width=%s, height=%s", this.width, this.height));
+        Log.i(buildTag("WordCloudBuilder"), String.format("init, width=%s, height=%s", this.width, this.height));
     }
 
     public List<Word> buildWordCloud(Map<String, Integer> wordMap, Integer mostFrequentWordCount) {
-        Log.d(TAG, String.format("word map size=%s", wordMap.size()));
-        Log.d(TAG, String.format("word map: %s", wordMap));
+        Log.d(buildTag("buildWordCloud"), String.format("word map size=%s", wordMap.size()));
+        Log.d(buildTag("buildWordCloud"), String.format("word map: %s", wordMap));
 
         int numberOfCollisions = 0;
         List<Word> wordList = new ArrayList<>();
         Random rand = new Random();
-        List<Double> radians = getNumberList(20);
+        List<Double> radians = getNumberList(25);
         int i = 0;
         Double rad = 0d;
         int radius = 0;
-        int previousWordSize = 0;
+        Word previousWord = null;
         for (Map.Entry<String, Integer> entry : wordMap.entrySet()) {
-            Log.d(TAG, String.format("buildWordCloud, start build, key=%s, value=%s", entry.getKey(), entry.getValue()));
             int wordSize = determineWordSize(entry.getValue(), mostFrequentWordCount);
-            // skip first element, which is the most used word
-            if (i>0) {
-                rad = radians.get(rand.nextInt(radians.size()));
-            }
             // if rotated all round the circle, time increase radius and start a new circle
-            // skip first element, which is the most used word
-            if (i==1 || i % 5 == 0) {
+            // skip first element, which is the most used word and should always be at center
+            if (previousWord != null || i / 25 > 1) {
                 // increase radius with wordSize of the biggest word in the inner circle
-                radius += previousWordSize;
+                radius += 10;
+                Log.d(buildTag("buildWordCloud"), String.format("new radius=%s, loop=%s", radius, i));
             }
-            previousWordSize = wordSize;
-            Rect wordRect = calculateCoordinates(radius, rad, entry.getKey());
-            Log.d(TAG, String.format("buildWordCloud, rect word=%s, x=%s, y=%s", entry.getKey(), wordRect.left, wordRect.top));
-            Paint.Align align = Paint.Align.LEFT;
+            Log.d(buildTag("buildWordCloud"), String.format("start build, i=%s, key=%s, value=%s, wordSize=%s, radius=%s", i, entry.getKey(), entry.getValue(), wordSize, radius));
+            Paint.Align align = Paint.Align.CENTER;
             // align most used word with center
-            if (i==0) {
-                align = Paint.Align.CENTER;
-            }
+            //if (i == 0) {
+            //    align = Paint.Align.CENTER;
+            //}
+            Point startPoint = calculateXYCoordinates(radius, rad, entry.getKey());
             Paint wordPaint = createPaint(wordSize, align);
-            wordPaint.getTextBounds(entry.getKey(), 0, entry.getKey().length(), new Rect());
-            Log.d(TAG, String.format("buildWordCloud, rect word=%s, x=%s, y=%s", entry.getKey(), wordRect.left, wordRect.top));
+            // Need this only to determine the size of the text rectangle
+            Rect wordRect = new Rect();
+            wordPaint.getTextBounds(entry.getKey(), 0, entry.getKey().length(), wordRect);
+            Log.d(buildTag("buildWordCloud"), String.format("text bounds, word=%s ,rect=%s, width=%s(%s), height=%s(%s)", entry.getKey(), wordRect.toShortString(), wordRect.width(), wordRect.right - wordRect.left, wordRect.bottom - wordRect.top, wordRect.height()));
+            // Offset the rectangle to the determined (left, top) position
+            // The distance from the baseline to the center
+            int baseLine = (int)((wordPaint.descent() + wordPaint.ascent())/2);
+            wordRect.offsetTo(startPoint.x, startPoint.y);
+            Log.d(buildTag("buildWordCloud"), String.format("word-rect i=%s, coordinates=%s, w=%s, h=%s, word=%s", i, wordRect.toShortString(), wordRect.width(), wordRect.height(), entry.getKey()));
             Word newWord = Word.builder()
                     .setText(entry.getKey())
                     .setSize(wordSize)
                     .setCount(entry.getValue())
                     .setPaint(wordPaint)
                     .setRect(wordRect)
-                    .setYOffset(Math.abs(wordRect.top))
                     .build();
 
-            Log.d(TAG, String.format("buildWordCloud, radius=%d, angle=%s, wordSize=%s, degrees=%s, loop=%s, word=%s, x0=%s, y0=%s, w=%s, h=%s", radius, rad, wordSize, radians.size(), i, entry.getKey(), centerX, centerY, width, height));
-            Log.d(TAG, String.format("buildWordCloud, rect word=%s, w=%s, h=%s, x=%s, y=%s", newWord.getText(), newWord.getRect().width(), newWord.getRect().height(), newWord.getRect().left, newWord.getRect().top));
+            Log.d(buildTag("buildWordCloud"), String.format("rect radius=%d, angle=%s, wordSize=%s, degrees=%s, loop=%s, word=%s, x0=%s, y0=%s, w=%s, h=%s", radius, rad, wordSize, radians.size(), i, entry.getKey(), centerX, centerY, width, height));
+            Log.d(buildTag("buildWordCloud"), String.format("rect word=%s, w=%s, h=%s, coordinates=%s", newWord.getText(), newWord.getRect().width(), newWord.getRect().height(), newWord.getRect().toShortString()));
 
-           //  Word word = checkWordCollision(newWord, wordList, radius);
-           // Log.d(TAG, String.format("is equal: %s", newWord.toString().equals(word.toString())));
-           // if (word != null) {
-                wordList.add(newWord);
-            //} else {
-            //    numberOfCollisions++;
-            //}
+            Word word = checkWordCollision(newWord, wordList, radius);
+            if (word != null) {
+                wordList.add(word);
+            } else {
+                numberOfCollisions++;
+                Log.d(buildTag("buildWordCloud"), String.format("skipped word due to collision! word=%s, count=%s", newWord.getText(), newWord.getCount()));
+            }
+            Log.d(buildTag("buildWordCloud"), String.format("added new word! i=%s,  %s", i, newWord));
+            previousWord = wordList.size() > 0 ? wordList.get(wordList.size() - 1) : null;
             i++;
         }
         List<Word> sortedWordList = wordList.stream()
-                .sorted((w1,w2)-> w2.getCount().compareTo(w1.getCount()))
+                .sorted((w1, w2) -> w2.getCount().compareTo(w1.getCount()))
                 .collect(Collectors.toList());
 
         // for debug only
-        sortedWordList.forEach(w -> Log.i(TAG, String.format("buildWordCloud, x=%s, y=%s, size=%s, word=%s, occurrences=%s", w.getRect().left, w.getRect().top, w.getSize(), w.getText(), w.getCount())));
-        Log.d(TAG, String.format("build word cloud finished! numberOfWords=%s, numberOfCollisions=%s", wordList.size(), numberOfCollisions));
+        sortedWordList.forEach(w -> Log.i(buildTag("buildWordCloud"), String.format("coordinates=%s, size=%s, word=%s, occurrences=%s", w.getRect().toShortString(), w.getSize(), w.getText(), w.getCount())));
+        Log.d(buildTag("buildWordCloud"), String.format("finished! numberOfWords=%s, numberOfCollisions=%s, totalNumberOfWords=%s", wordList.size(), numberOfCollisions, wordMap.size()));
         return sortedWordList;
     }
 
-    private Word checkWordCollision(Word word, List<Word> wordList, int radius) {
+    private Word checkWordCollision(Word word, final List<Word> wordList, int radius) {
         Random rand = new Random();
         List<Double> radianers = getNumberList(20);
         Rect colRect = checkCollision(word, wordList);
         int newRadius = radius;
         int attempts = 0;
-        while (colRect != null && attempts < 5) {
-            attempts++;
+        while (colRect != null && attempts < 6) {
+            Log.d(buildTag("checkWordCollision"), String.format("rect=%s, colRect=%s", word.getRect().toShortString(), colRect.toShortString()));
             // increase radius
-            newRadius += colRect.height();
-            double newRad = radianers.get(rand.nextInt(radianers.size()));
-            Rect newRect = calculateCoordinates(newRadius, newRad, word.getText());
-            while (xyCoordinateList.contains(colRect.toShortString())) {
-                newRect = calculateCoordinates(newRadius, newRad, word.getText());
-                Log.d(TAG, String.format("crash regenerate coordinates...", word.getText()));
+            //if (attempts % 3 == 0) {
+            //    newRadius += colRect.height();
+            //}
+            //double newRad = radianers.get(rand.nextInt(radianers.size()));
+            //Point newPoint = calculateXYCoordinates(newRadius, newRad, word.getText());
+            Point offsetPoint = calculateOffset(word.getRect(), getRandomNumberInRange(0,3), word.getText() );
+            //word.getRect().offset(offsetPoint.x, offsetPoint.y);
+            word.getRect().set(colRect.left + offsetPoint.x, colRect.top + offsetPoint.y, colRect.right + offsetPoint.x, colRect.bottom + offsetPoint.y);
+            int i = 1;
+            while (!isInsideCanvasBounds(word.getRect())) {
+                // revert previous offset
+                word.getRect().offset(-offsetPoint.x, -offsetPoint.y);
+                offsetPoint = calculateOffset(colRect, getRandomNumberInRange(0,3), word.getText() );
+                word.getRect().offset(offsetPoint.x, offsetPoint.y);
+                Log.d(buildTag("checkWordCollision"), String.format("exceeded canvas, try rotate one more time! i=%s, word=%s, coordinates=%s",i, word.getText(), word.getRect().toShortString()));
+                i++;
+                if (i > 3) {
+                   // word.setRotationDegree(90 * getRandomNumberInRange(-1,1));
+                    break;
+                }
             }
-            word.getRect().set(newRect);
-            // try to rotate
-            // w.setRotationDegree(90f);
+            attempts++;
             colRect = checkCollision(word, wordList);
-            Log.d(TAG, String.format("collision attempt: word=%s, attempts=%s", word.toString(), attempts));
+            Log.d(buildTag("checkWordCollision"), String.format("collision attempt: word=%s, attempts=%s", word.toString(), attempts));
         }
+
         if (colRect == null) {
-            Log.d(TAG, String.format("collision fixed, word=%s, attempts=%s", word.toString(), attempts));
+            Log.d(buildTag("checkWordCollision"), String.format("collision fixed, word=%s, attempts=%s", word.toString(), attempts));
             return word;
         }
-        Log.d(TAG, String.format("collision, skipped word! word: %s, attempts=%s", word.toString(), attempts));
+        Log.d(buildTag("checkWordCollision"), String.format("collision skipped word! word: %s, attempts=%s", word.toString(), attempts));
         return null;
     }
 
     /**
-     *
-     * @param newWord
-     * @param list
      * @return returns the rectangle the new word collided with
      */
-    private Rect checkCollision(Word newWord, List<Word> list) {
-        Log.d(TAG, String.format("checkCollision! newWord=%s, numberOfWords=%s", newWord, list.size()));
+    private Rect checkCollision(final Word newWord, final List<Word> list) {
+        Log.d(buildTag("checkCollision"), String.format("newWord=%s, numberOfWordsInList=%s", newWord, list.size()));
         for (Word w : list) {
             if (!newWord.getText().equals(w.getText()) && Rect.intersects(newWord.getRect(), w.getRect())) {
                 // return coordinates of the word that the new word collision with
-                Log.d(TAG, String.format("checkCollision, collision!, newWord=%s, newRect=%s, existingRect=%s, word=%s", newWord.getText(), newWord.getRect().toShortString(), w.getRect().toShortString(), w.getText()));
+                Log.d(buildTag("checkCollision"), String.format("collision! wordListSize=%s, newWord=%s, newRect=%s, existingWord=%s, existingRect=%s", list.size(), newWord.getText(), newWord.getRect().toShortString(), w.getText(), w.getRect().toShortString()));
+                // return the coordinate to the word that the new word collided with
                 return w.getRect();
-            } else {
-                Log.d(TAG, String.format("checkCollision No collision, newWord=%s, newRect=%s, existingRect=%s, word=%s", newWord.getText(), newWord.getRect().toShortString(), w.getRect().toShortString(), w.getText()));
             }
         }
         return null;
     }
 
-    private Rect calculateCoordinates(int radius, Double theta, String word) {
+    private Point calculateXYCoordinates(int radius, Double theta, String word) {
         int eclipseFactor = 5;
-        Double x = centerX + (radius * Math.cos(theta));
-        Double y = centerY + (radius * Math.sin(theta));
-        Log.d(TAG, String.format("calculated coordinates x,y! x=%s, y=%s, radius=%s, angle=%s, word=%s center=%s,%s", x.intValue(), y.intValue(), radius, theta, word, centerX, centerY));
-        // Offset the rectangle to a specific (x, y) position, keeping its width and height the same
-        Rect rect = new Rect();
-        rect.offsetTo(x.intValue(), y.intValue());
-        Log.d(TAG, String.format("calculated coordinates! left=%s, top=%s, right=%s, bottom=%s, radius=%s, angle=%s, word=%s", rect.left, rect.top, rect.right, rect.bottom, radius, theta, word));
-        xyCoordinateList.add(rect.toShortString());
-        return rect;
+        // convert from polar to cartesian coordinates when calculating
+        double x = centerX + (radius * Math.cos(theta));
+        double y = centerY + (radius * Math.sin(theta));
+        Rect rect = new Rect((int) x, (int) y, 0, 0);
+        Log.d(buildTag("calculateCoordinates"), String.format("coordinates, word=%s, coordinates=%s, radius=%s, theta=%s", word, rect.toShortString(), radius, theta));
+        return new Point((int) x, (int) y);
+    }
+
+    /**
+     * 0 = move below, y - height + random x between x.left and x.right
+     * 1 = move to left, x + 10 + random y between y.top and y.bottom
+     * 2 = move above, y + 10 + random x between x.left and x.right
+     * 3 = move to right, x - width + random y between y.top and y.bottom
+     */
+    private Point calculateOffset(Rect rect, int direction, String word) {
+        if (rect == null) {
+            return new Point(0, 0);
+        }
+        String moveTo= null;
+        int offsetLeft = 0;
+        int offsetTop = 0;
+        if (direction == 0) { // below
+            offsetLeft = getRandomNumberInRange(0, 3);
+            offsetTop = rect.height();
+            moveTo = "below";
+        } else if (direction == 1) { // right
+            offsetLeft = rect.width();// + rect.right + 10;
+            offsetTop = getRandomNumberInRange(0, 3);
+            moveTo = "right";
+        } else if (direction == 2) { // above
+            offsetLeft = getRandomNumberInRange(0, 3);
+            offsetTop = - rect.height(); //rect.top - rect.height() -10;
+            moveTo = "above";
+        } else if (direction == 3) { // left
+            offsetLeft = - rect.width(); //rect.left - rect.width() + 10;
+            offsetTop = getRandomNumberInRange(0, 3);
+            moveTo = "left";
+        }
+        Log.d(buildTag("calculateXYCoordinatesNew"), String.format("generate coordinates, word=%s, moveTo=%s, from (%s) to (%s, %s)", word, moveTo, rect.toShortString(), offsetLeft, offsetTop));
+        return new Point( offsetLeft, offsetTop);
+    }
+
+    Random r = new Random();
+    private int getRandomNumberInRange(int min, int max) {
+        Log.d(TAG, String.format("min=%s, max=%s", min, max));
+        OptionalInt i = r.ints(min, (max + 1)).findFirst();
+        if (i.isPresent()) {
+            return i.getAsInt();
+        }
+        return -1;
     }
 
     private List<Double> getNumberList(int n) {
         List<Double> randomNumbers = new ArrayList<>();
-        double step = 2*Math.PI/n;
-        int radius = 50;
-        for (double theta = 0; theta < 2*Math.PI; theta += step) {
+        double step = 2 * Math.PI / n;
+        for (double theta = 0; theta < 2 * Math.PI; theta += step) {
             randomNumbers.add(theta);
         }
-        //Collections.shuffle(randomNumbers);
-        Log.d(TAG, String.format("degrees=%s", randomNumbers.size()));
+        Log.d(buildTag("getNumberList"), String.format("random radians=%s", randomNumbers.size()));
         return randomNumbers;
     }
 
@@ -191,13 +241,13 @@ public class WordCloudBuilder {
      */
     private int determineWordSize(int wordCount, int highestWordCount) {
         int wordSize = (int) (((float) wordCount / (float) highestWordCount) * MAX_WORD_SIZE);
-        Log.d(TAG, String.format("wordSize=%s", wordSize));
+        Log.d(buildTag("determineWordSize"), String.format("wordSize=%s", wordSize));
         if (wordSize < MIN_WORD_SIZE) {
             wordSize = MIN_WORD_SIZE;
         } else if (wordSize > MAX_WORD_SIZE) {
             wordSize = MAX_WORD_SIZE;
         }
-        Log.d(TAG, String.format("wordCount=%s, highestWordCount=%s, wordSize=%s", wordCount, highestWordCount, wordSize));
+        Log.d(buildTag("determineWordSize"), String.format("wordCount=%s, highestWordCount=%s, wordSize=%s", wordCount, highestWordCount, wordSize));
         return wordSize;
     }
 
@@ -216,7 +266,30 @@ public class WordCloudBuilder {
             wordPaint.setTextAlign(Paint.Align.LEFT);
         }
 
-        Log.d(TAG, String.format("createPaint wordSize=%s", wordSize));
+        Log.d(buildTag("createPaint"), String.format("wordSize=%s", wordSize));
         return wordPaint;
+    }
+
+    /**
+     * check if rect exceeded canvas width and height
+     *
+     * @return true if exceed, false if not
+     */
+    public boolean isInsideCanvasBounds(Rect rect) {
+        // check for negative values
+        if (rect.left < 0 || rect.top < 0 || rect.right < 0 || rect.bottom < 0) {
+            return false;
+        }
+        // check is inside canvas bounds
+        if (rect.left > this.width || rect.right > this.width ) {
+            Log.d(buildTag("isInsideCanvasBounds"), String.format("width exceeded canvas bounds! rect=%s, canvas w=%s, h=%s", rect.toShortString(), this.width, this.height));
+            return false;
+        }
+
+        if ( rect.top > this.height || rect.bottom > this.height ) {
+            Log.d(buildTag("isInsideCanvasBounds"), String.format("height exceeded canvas bounds! rect=%s, canvas w=%s, h=%s", rect.toShortString(), this.width, this.height));
+            return false;
+        }
+        return true;
     }
 }

@@ -105,9 +105,10 @@ public class Sms implements Serializable {
     @NotNull
     public String toString() {
         final StringBuilder sb = new StringBuilder("Sms{");
-        sb.append("timeMs='").append(timeMs).append('\'');
-        sb.append(", address='").append(address).append('\'');
-        sb.append(", body='").append(body);
+        sb.append("timeMs=").append(timeMs);
+        sb.append(", type=").append(type);
+        sb.append(", address=").append(address);
+        sb.append(", body=").append(body);
         sb.append('}');
         return sb.toString();
     }

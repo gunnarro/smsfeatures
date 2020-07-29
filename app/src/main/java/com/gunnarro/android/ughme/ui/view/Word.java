@@ -3,6 +3,8 @@ package com.gunnarro.android.ughme.ui.view;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class Word {
@@ -12,12 +14,11 @@ public class Word {
     private int count = 1;
     private float size = 0;
     private float rotationDegree = 0f;
-    private float yOffset = 0f;
 
     private Word(Builder builder) {
-        this.text = builder.text;
-        this.paint = builder.paint;
-        this.rect = builder.rect;
+        this.text = Objects.requireNonNull(builder.text);
+        this.paint = Objects.requireNonNull(builder.paint);
+        this.rect = Objects.requireNonNull(builder.rect);
         this.count = Objects.requireNonNull(builder.count, "count");
         this.size = Objects.requireNonNull(builder.size, "size");
     }
@@ -56,28 +57,26 @@ public class Word {
 
     /**
      * x pos for drawing into canvas
-     *
-     * @return
      */
     public float getX() {
-        return (float) rect.left;
+        return rect.left;
     }
 
     /**
      * y pos for drawing into canvas
-     *
-     * @return
      */
     public float getY() {
         return rect.top;
     }
 
+    @NotNull
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Word{");
-        sb.append("text=").append(text);
+        sb.append("word=").append(text);
+        sb.append(", size=").append(size);
         sb.append(", count=").append(count);
-        sb.append(", rect=").append(rect.toShortString());
+        sb.append(", rect=").append(rect.toShortString()).append(" width=").append(rect.width()).append(" height=").append(rect.height());
         sb.append('}');
         return sb.toString();
     }
@@ -88,7 +87,6 @@ public class Word {
         private Rect rect;
         private Integer count;
         private Float size;
-        private Float yOffset;
 
         private Builder() {
         }
@@ -118,18 +116,12 @@ public class Word {
             return this;
         }
 
-        public Builder setYOffset(float yOffset) {
-            this.yOffset = yOffset;
-            return this;
-        }
-
         public Builder of(Word word) {
             this.text = word.text;
             this.paint = word.paint;
             this.rect = word.rect;
             this.count = word.count;
             this.size = word.size;
-            this.yOffset = word.yOffset;
             return this;
         }
 

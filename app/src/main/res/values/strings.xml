@@ -18,6 +18,7 @@
     <string name="btn_sms_msg" translatable="false">Message</string>
     <string name="btn_sms_number" translatable="false">Number</string>
     <string name="btn_sms_datetime" translatable="false">Date</string>
+    <string name="btn_sms_in_out_box" translatable="false">Inbox/Outbox</string>
 
     <string name="btn_ok">OK</string>
     <string name="btn_cancel">Cancel</string>
