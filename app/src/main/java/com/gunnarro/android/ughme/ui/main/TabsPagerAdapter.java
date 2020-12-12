@@ -33,13 +33,6 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         mContext = context;
     }
 
-    public static int getTabNumber(int tabId) {
-        return IntStream.range(0, TAB_TITLES.length)
-                .filter(i -> TAB_TITLES[i] == tabId)
-                .findFirst()
-                .orElse(-1);
-    }
-
     @Override
     @NonNull
     public Fragment getItem(int position) {

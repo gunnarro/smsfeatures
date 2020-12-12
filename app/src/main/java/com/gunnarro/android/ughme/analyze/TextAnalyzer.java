@@ -20,11 +20,13 @@ public class TextAnalyzer {
     private Map<String, Integer> sortedWordMap = new LinkedHashMap<>();
     private Integer numberOfWords = 0;
     private int highestWordCount = 0;
+    private long analyzeTimeMs;
 
     public TextAnalyzer() {
     }
 
     public void analyzeText(final String text, String regexp) {
+        long startTimeMs = System.currentTimeMillis();
         Map<String, Integer> tmpWordMap = new HashMap<>();
         if (text == null || text.isEmpty()) {
             Log.d("TextAnalyzer.analyzeText", "text is null or empty!");
@@ -52,6 +54,7 @@ public class TextAnalyzer {
         if (!sortedWordMap.isEmpty()) {
             highestWordCount = sortedWordMap.values().iterator().next();
         }
+        analyzeTimeMs = System.currentTimeMillis() - startTimeMs;
     }
 
     /**
@@ -75,9 +78,11 @@ public class TextAnalyzer {
         return this.numberOfWords;
     }
 
-    public void printReport() {
-        Log.d(TAG, String.format("Analyze Report: number of words=%s, unique words=%s", numberOfWords, getNumberOfUniqueWords()));
-        sortedWordMap.forEach((k, v) -> Log.i(TAG, String.format("Analyze Report: word=%s, count=%s, percentage=%s", k,v, (v*100/numberOfWords))));
+    public void printReport(boolean isDetails) {
+        Log.d(TAG, String.format("Analyze Report: number of words=%s, unique words=%s, analyzeTime=%s ms", numberOfWords, getNumberOfUniqueWords(), analyzeTimeMs));
+        if (isDetails) {
+            sortedWordMap.forEach((k, v) -> Log.i(TAG, String.format("Analyze Report: word=%s, count=%s, percentage=%s", k, v, (v * 100 / numberOfWords))));
+        }
     }
     /**
      * The word with most occurrences will get the largest font size.

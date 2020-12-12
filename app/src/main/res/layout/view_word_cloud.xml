@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorToolbarText"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:buttonTint="@color/colorRadioBtn"
             android:spinnerMode="dropdown"
             android:background="@color/colorToolbarText"
@@ -28,7 +28,7 @@
             android:id="@+id/sms_in_out_box_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:text="@string/btn_sms_in_out_box"
             android:textColor="@color/colorToolbarText"
             android:buttonTint="@color/colorRadioBtn"/>
@@ -37,7 +37,7 @@
             android:id="@+id/sms_datetime_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:text="@string/btn_sms_datetime"
             android:textColor="@color/colorToolbarText"
             android:buttonTint="@color/colorRadioBtn"/>
@@ -46,7 +46,7 @@
             android:id="@+id/sms_number_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:text="@string/btn_sms_number"
             android:textColor="@color/colorToolbarText"
             android:buttonTint="@color/colorRadioBtn"/>

@@ -165,10 +165,10 @@ public class WordCloudBuilder {
 
             if (placed) {
                 wordList.add(newWord);
-                Log.d(buildTag("buildWordCloud"), String.format("placed, word: %s, rect=%s,%s, placed-words=%s", newWord.getText(), newWord.getRect().left, newWord.getRect().top, numberOfdWords));
+                //Log.d(buildTag("buildWordCloud"), String.format("placed, word: %s, rect=%s,%s, placed-words=%s", newWord.getText(), newWord.getRect().left, newWord.getRect().top, numberOfdWords));
             } else {
                 numberOfCollisions++;
-                Log.d(buildTag("buildWordCloud"), String.format("skipped, word: %s, rect=%s,%s collisions=%s", newWord.getText(), newWord.getRect().left, newWord.getRect().top, numberOfCollisions));
+                //Log.d(buildTag("buildWordCloud"), String.format("skipped, word: %s, rect=%s,%s collisions=%s", newWord.getText(), newWord.getRect().left, newWord.getRect().top, numberOfCollisions));
             }
             numberOfdWords++;
         }

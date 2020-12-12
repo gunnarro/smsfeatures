@@ -8,13 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -25,7 +25,7 @@ import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.sms.Sms;
 import com.gunnarro.android.ughme.sms.SmsBackupInfo;
 import com.gunnarro.android.ughme.sms.SmsReader;
-import com.gunnarro.android.ughme.ui.main.TabsPagerAdapter;
+import com.gunnarro.android.ughme.ui.fragment.domain.Utility;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,35 +49,16 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
 
     private static final int REQUEST_PERMISSIONS_CODE_READ_SMS = 22;
     public static final String ALL = "all";
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private ViewPager viewPager;
-
     private ProgressDialog progressDialog;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1. public SmsFragment() {
-     *         // Required empty public constructor
-     *     }
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SmsFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static SmsFragment newInstance(String param1, String param2) {
         SmsFragment fragment = new SmsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -85,11 +66,6 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        viewPager = Objects.requireNonNull(getActivity()).findViewById(R.id.view_pager);
         Log.d(LOG_TAG, "onCreate");
     }
 
@@ -97,13 +73,11 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_sms, container, false);
-        view.findViewById(R.id.btn_sms_export).setOnClickListener(this);
-        //view.findViewById(R.id.btn_sms_backup).setOnClickListener(this);
-        view.findViewById(R.id.btn_sms_chart_view).setOnClickListener(this);
-        view.findViewById(R.id.btn_sms_backup_files_view).setOnClickListener(this);
-        view.findViewById(R.id.btn_sms_delete_backup_file).setOnClickListener(this);
+        view.findViewById(R.id.btn_sms_export_btn).setOnClickListener(this);
+        view.findViewById(R.id.btn_sms_backup_info_btn).setOnClickListener(this);
+        view.findViewById(R.id.btn_sms_delete_backup_file_btn).setOnClickListener(this);
 
-        view.findViewById(R.id.btn_sms_backup).setOnClickListener(v -> {
+        view.findViewById(R.id.btn_sms_backup_btn).setOnClickListener(v -> {
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage("Start backup sms ..."); // Setting Message
             progressDialog.setTitle("SMS Backup Progress"); // Setting Title
@@ -220,7 +194,7 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
         }
     }
 
-    private void viewSmsBackupFiles() {
+    private void viewSmsBackupFileInfo() {
         try {
             File appDir = getSmsBackupDir();
             List<String> files = Arrays.asList(Objects.requireNonNull(appDir.list(getJsonFileNameFilter())));
@@ -228,17 +202,38 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
             Gson gson = new GsonBuilder().setLenient().create();
             Type smsListType = new TypeToken<SmsBackupInfo>() {
             }.getType();
+            SmsBackupInfo info;
             File f = new File(getSmsBackupFilePath("all-metadata"));
-            SmsBackupInfo info = gson.fromJson(new FileReader(f.getPath()), smsListType);
+            if (f.exists()) {
+                info = gson.fromJson(new FileReader(f.getPath()), smsListType);
+            } else {
+                info = new SmsBackupInfo();
+                info.setSmsBackupFilePath("No backup files found!");
+            }
+            // Create the AlertDialog object and return it
             AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
-            builder.setTitle("SMS Backup Files");
-            builder.setMessage(String.format("%s\n %s", files, info));
+
+            // set the custom layout
+            final View smsBackupInfoLayout = getLayoutInflater().inflate(R.layout.dlg_sms_backup_info, null);
+            builder.setView(smsBackupInfoLayout);
+            TextView filePathView = smsBackupInfoLayout.findViewById(R.id.file_path_value);
+            filePathView.setText(info.getSmsBackupFilePath());
+            TextView smsFromDateView = smsBackupInfoLayout.findViewById(R.id.sms_from_date_value);
+            smsFromDateView.setText( Utility.formatTime(info.getFromDateTime()));
+            TextView smsToDateView = smsBackupInfoLayout.findViewById(R.id.sms_to_date_value);
+            smsToDateView.setText(Utility.formatTime(info.getToDateTime()));
+            TextView smsNumberView = smsBackupInfoLayout.findViewById(R.id.number_of_sms_value);
+            smsNumberView.setText(String.format("%s", info.getNumberOfSms()));
+            TextView mobileView = smsBackupInfoLayout.findViewById(R.id.number_of_mobile_nr_value);
+            mobileView.setText(String.format("%s", info.getNumberOfMobileNumbers()));
+
+            builder.setTitle("SMS Backup Information");
             builder.setPositiveButton("Ok", (dialog, id) -> {
                 // do nothing
             });
-            // Create the AlertDialog object and return it
             builder.create().show();
         } catch (Exception e) {
+            e.printStackTrace();
             Log.e(LOG_TAG, Objects.requireNonNull(e.getMessage()));
         }
     }
@@ -274,24 +269,18 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_sms_export:
+            case R.id.btn_sms_export_btn:
                 List<Sms> inbox = getSmsInbox(ALL);
                 RxBus.getInstance().publish(inbox);
                 Snackbar.make(Objects.requireNonNull(getView()), String.format("Published sms backup history (%s)", inbox.size()), Snackbar.LENGTH_LONG).show();
                 break;
-            case R.id.btn_sms_backup:
+            case R.id.btn_sms_backup_btn:
                 backupSmsInbox(ALL);
                 break;
-            case R.id.btn_sms_chart_view:
-                List<Sms> smsList = getSmsBackup(ALL);
-                RxBus.getInstance().publish(smsList);
-                // navigate to chart tab
-                viewPager.setCurrentItem(TabsPagerAdapter.getTabNumber(R.string.tab_title_chart));
+            case R.id.btn_sms_backup_info_btn:
+                viewSmsBackupFileInfo();
                 break;
-            case R.id.btn_sms_backup_files_view:
-                viewSmsBackupFiles();
-                break;
-            case R.id.btn_sms_delete_backup_file:
+            case R.id.btn_sms_delete_backup_file_btn:
                 DialogFragment confirmDialog = ConfirmDialogFragment.newInstance("Confirm Delete SMS Backup Files", "Are You Sure?");
                 confirmDialog.show(getChildFragmentManager(), "dialog");
                 break;

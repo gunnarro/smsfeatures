@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.sms.Sms;
+import com.gunnarro.android.ughme.ui.fragment.domain.Utility;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -35,8 +36,7 @@ public class SmsAdapter extends ArrayAdapter<Sms> {
         if (sms != null) {
             TextView header = convertView.findViewById(R.id.sms_header);
             TextView body = convertView.findViewById(R.id.sms_body);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.UK);
-            header.setText(String.format("[%s] %s", dateFormat.format(new Date(sms.getTimeMs())), sms.getAddress()));
+            header.setText(String.format("[%s] %s", Utility.formatTime(sms.getTimeMs()), sms.getAddress()));
             body.setText(sms.getBody());
         }
         return convertView;

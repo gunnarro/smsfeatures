@@ -195,9 +195,8 @@ public class WordCloudView extends View {
             long startTimeMs = System.currentTimeMillis();
             WordCloudBuilder wordCloudBuilder = new WordCloudBuilder(values[0], values[1]);
             TextAnalyzer textAnalyzer = new TextAnalyzer();
-            // StringBuilder smsPlainText = new StringBuilder();
-            // smsPlainText.append("Dette, dette, dette er kun en enhets test, og dette er ingenting å tulle med, spør du meg. antall enhets tester er kun 1");
             textAnalyzer.analyzeText(getSmsBackupAsText(), null);
+            textAnalyzer.printReport(false);
             wordCloudList = wordCloudBuilder.buildWordCloud(textAnalyzer.getWordCountMap(NUMBER_OF_WORDS), textAnalyzer.getHighestWordCount());
             Log.d("BuildWordCloudTask", String.format("finished, buildTime=%s ms", (System.currentTimeMillis() - startTimeMs)));
             return Boolean.TRUE;
