@@ -1,5 +1,6 @@
 package com.gunnarro.android.ughme;
 
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
@@ -11,8 +12,10 @@ import com.gunnarro.android.ughme.ui.view.WordCloudBuilder;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
@@ -25,7 +28,6 @@ import java.util.Random;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WordCloudBuilderTest {
-
 
     String[] mobileNumbers = {"23545400", "23545411", "23545422", "23545433", "23545444", "23545455", "23545466", "23545466", "23545477", "235454588", "23545499"};
     List<String> words;
@@ -90,6 +92,32 @@ public class WordCloudBuilderTest {
             double y = 100 + (radius * Math.sin(theta));
             Log.d("", String.format("%.2f. (%.0f, %.0f)", theta, x, y));
         }
+    }
+
+    @Ignore
+    @Test
+    public void place() {
+        // 1. create mock
+        Rect rect = Mockito.mock(Rect.class);
+        Mockito.when(rect.width()).thenReturn(75);
+        Mockito.when(rect.height()).thenReturn(75);
+
+        WordCloudBuilder builder = new WordCloudBuilder(1440, 1944);
+        Word word = Word.builder()
+                .setText("test")
+                .setRect(rect)
+                .setPaint(new Paint())
+                .setCount(1)
+                .setSize(10)
+                .build();
+
+
+        Assert.assertEquals(75, word.getRect().height());
+
+      //  Assert.assertEquals(1920, word.getPosition().x);
+      //  Assert.assertEquals(1920, word.getPosition().y);
+      //  Assert.assertNotNull(builder.place(word, new Point(1920, 1920)));
+        Assert.assertNotNull(builder.place(word, new Point(1920, 1920)));
     }
 
 

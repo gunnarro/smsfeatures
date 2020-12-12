@@ -1,5 +1,7 @@
 package com.gunnarro.android.ughme;
 
+import android.util.Log;
+
 import com.gunnarro.android.ughme.analyze.TextAnalyzer;
 
 import org.junit.Assert;
@@ -17,4 +19,26 @@ public class TextAnalyzerTest {
         Assert.assertEquals(4, w.getHighestWordCount());
         Assert.assertEquals(0.48f, w.getHighestWordCountPercent(), 0);
     }
+
+    /*
+    @Test
+    public void spiral() {
+       // int n = 5; // number of spiral turns;
+        int radiusInitial = 0; // spiral initial radius
+        int radiusFinal = 100; // sprial final radius
+        double thetaStart = 0; // spiral start angle
+        double theatFinal = 2*Math.PI*n;// the final angle
+        double b = 0;// spiral growth rate
+        double xspiral;
+        double yspiral;
+        for (int n = 0; n<6; n++) {
+            b = (radiusFinal - radiusInitial)/2*Math.PI*n;
+            xspiral = (radius + b * theta) * Math.cos(theta);
+            yspiral = (radius + b * theta) * Math.sin(theta);
+            Log.d("unit-test", String.format("x=%s, y=%s", xspiral,yspiral));
+        }
+    }
+
+     */
 }
+

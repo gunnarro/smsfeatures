@@ -1,9 +1,9 @@
 package com.gunnarro.android.ughme.ui.view;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import io.reactivex.Observer;
@@ -34,13 +35,14 @@ import io.reactivex.disposables.Disposable;
 public class WordCloudView extends View {
 
     private static final String TAG = WordCloudView.class.getSimpleName();
+    private static final int NUMBER_OF_WORDS = 100;
 
     private static String buildTag(String tagName) {
         return new StringBuilder(TAG).append(".").append(tagName).toString();
     }
 
     private WordCloudEvent event = WordCloudEvent.builder().setEventType(WordCloudEvent.WordCloudEventTypeEnum.MESSAGE).smsTypeAll().setValue("(.*)").build();
-    private List<Word> wordCloudList;
+    private List<Word> wordCloudList = new ArrayList<>();
 
     public WordCloudView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,9 +55,11 @@ public class WordCloudView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        init(canvas.getWidth(), canvas.getHeight());
+        init(getWidth(), getHeight());
         for (int i = 0; i < wordCloudList.size(); i++) {
-            updateCanvas(canvas, wordCloudList.get(i));
+            updateCanvasText(canvas, wordCloudList.get(i));
+           //updateCanvasPoint(canvas, wordCloudList.get(i));
+           // updateCanvasRect(canvas, wordCloudList.get(i));
         }
 
         RxBus.getInstance().listen().subscribe(getInputObserver());
@@ -65,20 +69,17 @@ public class WordCloudView extends View {
     /**
      *
      */
-    private void updateCanvas(Canvas canvas, Word word) {
+    private void updateCanvasText(Canvas canvas, Word word) {
         // save current state of the canvas
-        int state = canvas.save();
-        if (word.getRotationDegree() > 0) {
-            canvas.rotate(word.getRotationDegree(),
+        if (word.getRotationAngle() > 0) {
+            canvas.rotate(word.getRotationAngle(),
                     word.getRect().left + word.getRect().height(),
                     word.getRect().top + word.getRect().height());
         }
         // Draw the text, with origin at (x,y), using the specified paint
         canvas.drawText(word.getText(), word.getX(), word.getY(), word.getPaint());
-        //canvas.drawRect(word.getRect(), word.getPaint());
-       // canvas.drawCircle(canvas.getWidth()/2, canvas.getHeight()/2, 25, createPaint(Color.GREEN));
         //undo the rotate, if rotated
-        if (word.getRotationDegree() > 0) {
+        if (word.getRotationAngle() > 0) {
             // Revert the Canvas's adjustments back to the last time called save() was called
             canvas.restore();
         }
@@ -86,26 +87,19 @@ public class WordCloudView extends View {
         Log.d(buildTag("updateCanvas"), String.format("canvas updated... %s", word.toString()));
     }
 
-    private Paint createPaint(int color) {
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setTypeface(Typeface.DEFAULT);
-        paint.setColor(color);
-        return paint;
-
-    }
-
     /**
      *
      */
     private void init(int width, int height) {
-        WordCloudBuilder wordCloudBuilder = new WordCloudBuilder(width, height);
-        TextAnalyzer textAnalyzer = new TextAnalyzer();
-        // StringBuilder smsPlainText = new StringBuilder();
-        // smsPlainText.append("Dette, dette, dette er kun en enhets test, og dette er ingenting å tulle med, spør du meg. antall enhets tester er kun 1");
-        textAnalyzer.analyzeText(getSmsBackupAsText(), null);
-        wordCloudList = wordCloudBuilder.buildWordCloud(textAnalyzer.getWordCountMap(100), textAnalyzer.getHighestWordCount());
-        textAnalyzer.printReport();
+        Log.d(TAG, "init view...");
+        // textAnalyzer.printReport();
+        try {
+            BuildWordCloudTask task = new BuildWordCloudTask(getContext());
+            task.execute(width, height);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+        }
     }
 
     /**
@@ -119,16 +113,10 @@ public class WordCloudView extends View {
         try {
             File f = new File(getSmsBackupFilePath());
             List<Sms> smsList = gson.fromJson(new FileReader(f.getPath()), smsListType);
-            // get distinct mobile numbers
-            List<String> mobileNumbers = smsList.stream()
-                    .map(s -> s.getAddress())
-                    .collect(Collectors.toList());
-
-            //smsList.forEach(s -> Log.d(buildTag("getSmsBackupAsText"), String.format("sms backup: %s", s.toString())));
             switch (event.getEventType()) {
                 case NUMBER:
                     String numbers = smsList.stream()
-                            .map(s -> s.getAddress())
+                            .map(Sms::getAddress)
                             .collect(Collectors.joining(" "));
                     smsPlainTxt.append(numbers);
                     break;
@@ -139,8 +127,8 @@ public class WordCloudView extends View {
                 case MESSAGE:
                 default:
                     String smsTxt = smsList.stream()
-                            .filter(s -> s.getAddress().matches(event.getValue()) && s.getType().matches(event.getSmsType()))
-                            .map(s -> s.getBody())
+                            .filter(s -> s.getAddress().matches(this.event.getValue().replace("+", "\\+")) && s.getType().matches(this.event.getSmsType()))
+                            .map(Sms::getBody)
                             .collect(Collectors.joining(" "));
                     smsPlainTxt.append(smsTxt);
             }
@@ -187,5 +175,44 @@ public class WordCloudView extends View {
                 Log.d(buildTag("getInputObserver.onComplete"), "");
             }
         };
+    }
+
+    /**
+     * run the word cloud build as a background task
+     */
+    private class BuildWordCloudTask extends AsyncTask<Integer, Void, Boolean> {
+
+        private Context context;
+        private ProgressDialog progressDialog;
+
+        public BuildWordCloudTask (Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected  Boolean doInBackground(Integer... values) {
+            Log.d("BuildWordCloudTask", "start build word cloud background task");
+            long startTimeMs = System.currentTimeMillis();
+            WordCloudBuilder wordCloudBuilder = new WordCloudBuilder(values[0], values[1]);
+            TextAnalyzer textAnalyzer = new TextAnalyzer();
+            // StringBuilder smsPlainText = new StringBuilder();
+            // smsPlainText.append("Dette, dette, dette er kun en enhets test, og dette er ingenting å tulle med, spør du meg. antall enhets tester er kun 1");
+            textAnalyzer.analyzeText(getSmsBackupAsText(), null);
+            wordCloudList = wordCloudBuilder.buildWordCloud(textAnalyzer.getWordCountMap(NUMBER_OF_WORDS), textAnalyzer.getHighestWordCount());
+            Log.d("BuildWordCloudTask", String.format("finished, buildTime=%s ms", (System.currentTimeMillis() - startTimeMs)));
+            return Boolean.TRUE;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = ProgressDialog.show(context, "Progress Dialog", "Building wordcloud...");
+        }
+
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            progressDialog.dismiss();
+        }
     }
 }

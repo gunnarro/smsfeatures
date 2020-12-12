@@ -7,24 +7,11 @@
     tools:context=".ui.fragment.SmsFragment">
 
     <LinearLayout
-        android:id="@+id/linear_layout_btn"
+        android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/inp_sms_mobile_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:text="" />
-
-        <Button
-            android:id="@+id/btn_sms_clipboard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_sms_clipboard" />
 
         <Button
             android:id="@+id/btn_sms_export"
@@ -55,19 +42,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Delete backup files" />
-
-        <Button
-            android:id="@+id/btn_sms_search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Search sms" />
-
-        <TextView
-            android:id="@+id/txt_sms_view"
-            android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:background="#C0CDBB"
-            android:text="TextView" />
 
     </LinearLayout>
 </FrameLayout>

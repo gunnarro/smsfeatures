@@ -83,7 +83,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_barchart, container, false);
         view.findViewById(R.id.day_radio_btn).setOnClickListener(this);
-        view.findViewById(R.id.week_radio_btn).setOnClickListener(this);
+        view.findViewById(R.id.month_radio_btn).setOnClickListener(this);
         view.findViewById(R.id.year_radio_btn).setOnClickListener(this);
         view.findViewById(R.id.number_radio_btn).setOnClickListener(this);
         mobileNumbers = new ArrayList<>();
@@ -206,7 +206,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
                 smsMap = smsList.stream().collect(Collectors.groupingBy(s -> formatAsDateStr(s.getTimeMs(), "dd-MM-YY"), Collectors.summingInt(Sms::getCount)));
                 break;
             case MONTH:
-                smsMap = smsList.stream().collect(Collectors.groupingBy(s -> formatAsDateStr(s.getTimeMs(), "W"), Collectors.summingInt(Sms::getCount)));
+                smsMap = smsList.stream().collect(Collectors.groupingBy(s -> formatAsDateStr(s.getTimeMs(), "MM-YY"), Collectors.summingInt(Sms::getCount)));
                 break;
             case YEAR:
                 smsMap = smsList.stream().collect(Collectors.groupingBy(s -> formatAsDateStr(s.getTimeMs(), "YYYY"), Collectors.summingInt(Sms::getCount)));
@@ -297,7 +297,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         } else if (type == StatTypeEnum.MONTH) {
             chart.getXAxis().setValueFormatter(new MonthXAxisFormatter());
         } else if (type == StatTypeEnum.YEAR) {
-            chart.getXAxis().setValueFormatter(new SimpleAxisValueFormatter(new String []{"2020", "2021", "2022"}));
+            chart.getXAxis().setValueFormatter(new SimpleAxisValueFormatter(new String []{"2016","2017","2018","2019","2020", "2021", "2022"}));
         } else if (type == StatTypeEnum.NUMBER) {
             chart.getXAxis().setValueFormatter(null);
         }
@@ -351,7 +351,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
                     updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.DAY);
                     break;
                 }
-            case R.id.week_radio_btn:
+            case R.id.month_radio_btn:
                 if (checked) {
                     updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.MONTH);
                     break;

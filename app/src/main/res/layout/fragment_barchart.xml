@@ -22,10 +22,10 @@
             android:buttonTint="@color/colorRadioBtn"/>
 
         <RadioButton
-            android:id="@+id/week_radio_btn"
+            android:id="@+id/month_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/week"
+            android:text="@string/month"
             android:textColor="@color/colorToolbarText"
             android:buttonTint="@color/colorRadioBtn"/>
 

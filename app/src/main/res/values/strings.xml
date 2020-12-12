@@ -5,6 +5,7 @@
     <string name="tab_title_chart" translatable="false">Chart</string>
     <string name="tab_title_word_cloud" translatable="false">WordCloud</string>
     <string name="tab_search_result" translatable="false">Result</string>
+    <string name="tab_title_sms_search">Search</string>
     <string name="ok" translatable="false">OK</string>
     <string name="location_permission_granted" translatable="false">location permission granted</string>
     <string name="location_permission_denied" translatable="false">location permission denied</string>
@@ -24,6 +25,7 @@
     <string name="btn_cancel">Cancel</string>
     <string name="day">Day</string>
     <string name="week">Week</string>
+    <string name="month">Month</string>
     <string name="year">Year</string>
     <string name="number">Number</string>
 </resources>

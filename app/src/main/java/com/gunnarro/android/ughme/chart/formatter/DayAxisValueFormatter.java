@@ -12,10 +12,11 @@ public class DayAxisValueFormatter extends ValueFormatter {
     public DayAxisValueFormatter() {
         // take parameters to change behavior of formatter
     }
-
+/**
     @Override
     public String getAxisLabel(float value, AxisBase axis) {
         float percent = value / axis.mAxisRange;
         return WEEK_DAYS[(int) (WEEK_DAYS.length * percent)];
     }
+    */
 }

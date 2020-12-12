@@ -35,11 +35,17 @@ public class MainActivity extends AppCompatActivity implements ListFragmentInter
         tabs.setupWithViewPager(viewPager);
 
         // check and ask user for permission if not granted
-        String[] permissions = new String[]{Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_SMS};
+        //String[] permissions = new String[]{Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_SMS};
+        String[] permissions = new String[]{Manifest.permission.READ_SMS};
         for (String permission : permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                Log.w("MainActivity", String.format("Not Granted: %s", permission));
-                requestPermissions(new String[]{permission}, PERMISSION_REQUEST);
+            if (super.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                Log.w("MainActivity.onCreate", String.format("Not Granted, send request: %s", permission));
+                super.requestPermissions(new String[]{permission}, PERMISSION_REQUEST);
+            } else {
+                // show dialog explaining why this permission is needed
+                if (super.shouldShowRequestPermissionRationale(permission)) {
+                    Log.i("MainActivity.onCreate", "explain why we need this permission! permission: " + permission);
+                }
             }
         }
     }
@@ -51,12 +57,12 @@ public class MainActivity extends AppCompatActivity implements ListFragmentInter
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d("onRequestPermission", String.format("%s, %s", requestCode, new ArrayList<>(Arrays.asList(permissions))));
+        Log.d("MainActivity.onRequestPermission", String.format("%s, %s", requestCode, new ArrayList<>(Arrays.asList(permissions))));
         if (requestCode == PERMISSION_REQUEST) {// If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i("onRequestPermissions", "permission granted for LOCATION");
+                Log.i("MainActivity.onRequestPermissions", String.format("permission granted for %s", permissions[0]));
             } else {
-                Log.i("onRequestPermissions", "permission denied for LOCATION");
+                Log.i("MainActivity.onRequestPermissions", String.format("permission denied for %s", permissions[0]));
             }
         }
     }
@@ -84,6 +90,6 @@ public class MainActivity extends AppCompatActivity implements ListFragmentInter
 
     @Override
     public void onListFragmentInteraction(ListItem item) {
-        Log.d("MainActivty", String.format("onListFragmentInteraction: %s", item));
+        Log.d("MainActivity", String.format("onListFragmentInteraction: %s", item));
     }
 }

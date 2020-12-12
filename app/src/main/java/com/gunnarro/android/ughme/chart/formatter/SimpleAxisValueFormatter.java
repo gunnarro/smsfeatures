@@ -23,10 +23,12 @@ public class SimpleAxisValueFormatter extends ValueFormatter {
         }
     }
 
+    /**
     @Override
     public String getAxisLabel(float value, AxisBase axis) {
         float percent = value / axis.mAxisRange;
         Log.d(TAG, "value: " + value + ", range: " + axis.mAxisRange);
         return X_AXIS_VALUES[(int) ((X_AXIS_VALUES.length-1) * percent)];
     }
+    */
 }

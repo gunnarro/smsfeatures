@@ -12,9 +12,11 @@ public class YearXAxisFormatter extends ValueFormatter {
         // take parameters to change behavior of formatter
     }
 
+    /**
     @Override
     public String getAxisLabel(float value, AxisBase axis) {
         float percent = value / axis.mAxisRange;
         return YEARS[(int) (YEARS.length * percent)];
     }
+    */
 }

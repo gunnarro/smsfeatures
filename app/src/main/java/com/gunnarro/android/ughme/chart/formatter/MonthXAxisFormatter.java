@@ -11,10 +11,11 @@ public class MonthXAxisFormatter extends ValueFormatter {
     public MonthXAxisFormatter() {
         // take parameters to change behavior of formatter
     }
-
+/**
     @Override
     public String getAxisLabel(float value, AxisBase axis) {
         float percent = value / axis.mAxisRange;
         return MONTHS[(int) (MONTHS.length * percent)];
     }
+    */
 }

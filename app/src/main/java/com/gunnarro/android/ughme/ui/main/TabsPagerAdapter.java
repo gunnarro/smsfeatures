@@ -13,6 +13,7 @@ import com.gunnarro.android.ughme.ui.fragment.BarChartFragment;
 import com.gunnarro.android.ughme.ui.fragment.ListItemFragment;
 import com.gunnarro.android.ughme.ui.fragment.LocationFragment;
 import com.gunnarro.android.ughme.ui.fragment.SmsFragment;
+import com.gunnarro.android.ughme.ui.fragment.SmsSearchFragment;
 import com.gunnarro.android.ughme.ui.view.WordCloudFragment;
 
 import java.util.stream.IntStream;
@@ -23,7 +24,7 @@ import java.util.stream.IntStream;
  */
 public class TabsPagerAdapter extends FragmentPagerAdapter {
     @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.tab_title_sms, R.string.tab_title_location, R.string.tab_title_chart, R.string.tab_search_result, R.string.tab_title_word_cloud};
+    private static final int[] TAB_TITLES = new int[]{R.string.tab_title_sms, R.string.tab_title_sms_search, R.string.tab_title_chart, R.string.tab_title_word_cloud};
 
     private final Context mContext;
 
@@ -44,12 +45,10 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 1:
-                return LocationFragment.newInstance(null, null);
+                return SmsSearchFragment.newInstance();
             case 2:
                 return BarChartFragment.newInstance();
-            case 3:
-                return ListItemFragment.newInstance("SMS Search Result");
-            case 4:
+            case 3  :
                 return WordCloudFragment.newInstance();
             default:
                 return SmsFragment.newInstance(null, null);

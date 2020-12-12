@@ -2,7 +2,7 @@ package com.gunnarro.android.ughme.ui.view;
 
 import android.graphics.Paint;
 import android.graphics.Rect;
-
+import android.graphics.Point;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -12,8 +12,8 @@ public class Word {
     private final Paint paint;
     private final Rect rect;
     private int count = 1;
-    private float size = 0;
-    private float rotationDegree = 0f;
+    private float size;
+    private float rotationAngle = 0f;
 
     private Word(Builder builder) {
         this.text = Objects.requireNonNull(builder.text);
@@ -47,12 +47,12 @@ public class Word {
         return size;
     }
 
-    public float getRotationDegree() {
-        return rotationDegree;
+    public float getRotationAngle() {
+        return rotationAngle;
     }
 
-    public void setRotationDegree(float rotationDegree) {
-        this.rotationDegree = rotationDegree;
+    public void setRotationAngle(float rotationAngle) {
+        this.rotationAngle = rotationAngle;
     }
 
     /**
@@ -77,6 +77,7 @@ public class Word {
         sb.append(", size=").append(size);
         sb.append(", count=").append(count);
         sb.append(", rect=").append(rect.toShortString()).append(" width=").append(rect.width()).append(" height=").append(rect.height());
+        sb.append(", textAlign=").append(getPaint().getTextAlign().name());
         sb.append('}');
         return sb.toString();
     }
