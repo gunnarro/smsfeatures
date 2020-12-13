@@ -8,15 +8,12 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.gunnarro.android.ughme.R;
+import com.gunnarro.android.ughme.Utility;
 import com.gunnarro.android.ughme.sms.Sms;
-import com.gunnarro.android.ughme.ui.fragment.domain.Utility;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 public class SmsAdapter extends ArrayAdapter<Sms> {
 

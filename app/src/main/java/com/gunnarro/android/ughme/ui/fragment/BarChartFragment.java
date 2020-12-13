@@ -33,6 +33,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.gunnarro.android.ughme.R;
+import com.gunnarro.android.ughme.Utility;
 import com.gunnarro.android.ughme.chart.CustomeMarkerView;
 import com.gunnarro.android.ughme.chart.StackedBarEntry;
 import com.gunnarro.android.ughme.chart.formatter.DayAxisValueFormatter;
@@ -120,7 +121,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         //leftAxis.setTypeface(tf);
         leftAxis.setSpaceTop(30f);
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-        leftAxis.setAxisMaximum(100f);
+        leftAxis.setAxisMaximum(1000f);
         leftAxis.setValueFormatter(new DefaultValueFormatter(0));
 
         Legend legend = chart.getLegend();
@@ -215,17 +216,27 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
                 smsMap = smsList.stream().collect(Collectors.groupingBy(Sms::getAddress, Collectors.summingInt(Sms::getCount)));
                 break;
         }
+        // sort and limit to top ten entries with highest count
+        /*
+        Map<String, Integer> sortedSmsMap = smsMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue())
+                .limit(10)
+                .collect(Collectors.toMap(e -> e.getKey(),e -> e.getValue()));
+        */
+        Map<String, Integer> sortedSmsMap = Utility.getTop10Values(smsMap);
 
-        Log.d(TAG, "mapToBarDataSets: Map: " + smsMap);
+        Log.d(TAG, "mapToBarDataSets: Map: " + sortedSmsMap);
         List<IBarDataSet> barDataSets = new ArrayList<>();
         boolean isStacked = false;
         if (isStacked) {
-            StackedBarEntry stackedBarEntry = buildStackedBarEntries(smsMap);
+            StackedBarEntry stackedBarEntry = buildStackedBarEntries(sortedSmsMap);
             barDataSets.add(buildBarDataSetStacked(null, stackedBarEntry.getLabels(), stackedBarEntry.getValues()));
         } else {
-            smsMap.entrySet().forEach(e -> barDataSets.add(buildBarDataSet(e.getKey(), e.getValue(), barDataSets.size())));
+            sortedSmsMap.entrySet().forEach(e -> barDataSets.add(buildBarDataSet(e.getKey(), e.getValue(), barDataSets.size())));
         }
-        mobileNumbers = smsMap.keySet().stream().sorted().collect(Collectors.toList());
+        //mobileNumbers = sortedSmsMap.keySet().stream().sorted().collect(Collectors.toList());
+        mobileNumbers = Utility.getTop10ValuesFromMap(sortedSmsMap);
         Log.d(TAG, "mapToBarDataSets: Set: " + barDataSets);
         return barDataSets;
     }
@@ -311,18 +322,14 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
     }
 
     private List<Sms> getSmsBackup(String filterBy) {
-        Gson gson = new GsonBuilder().setLenient().create();
-        Type smsListType = new TypeToken<ArrayList<Sms>>() {
-        }.getType();
-
         try {
-            File f = new File(getSmsBackupFilePath(SmsFragment.ALL.toLowerCase()));
-            List<Sms> list = gson.fromJson(new FileReader(f.getPath()), smsListType);
+            List<Sms> smsList = Utility.getSmsBackup(getSmsBackupFilePath(SmsFragment.ALL.toLowerCase())
+            );
             if ( filterBy != null && !filterBy.equalsIgnoreCase(SmsFragment.ALL)) {
-                return list.stream().filter(s -> s.getAddress().contains(filterBy)).collect(Collectors.toList());
+                return smsList.stream().filter(s -> s.getAddress().contains(filterBy)).collect(Collectors.toList());
             }
-            return list;
-        } catch (FileNotFoundException e) {
+            return smsList;
+        } catch (Exception e) {
             Log.d(TAG, String.format("sms backup file not found! error: %s", e.getMessage()));
             return new ArrayList<>();
         }

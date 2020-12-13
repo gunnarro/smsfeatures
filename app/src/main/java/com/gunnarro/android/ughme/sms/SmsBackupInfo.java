@@ -1,5 +1,7 @@
 package com.gunnarro.android.ughme.sms;
 
+import com.gunnarro.android.ughme.Utility;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -55,19 +57,12 @@ public class SmsBackupInfo implements Serializable {
         this.numberOfMobileNumbers = numberOfMobileNumbers;
     }
 
-    private String formatDate(long timeMs) {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return dateFormat.format(new Date(timeMs));
-
-    }
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("SmsBackupInfo{");
         sb.append("smsBackupFilePath='").append(smsBackupFilePath).append('\'');
-        sb.append(", fromDateTime=").append(formatDate(fromDateTime));
-        sb.append(", toDateTime=").append(formatDate(toDateTime));
+        sb.append(", fromDateTime=").append(Utility.formatTime(fromDateTime));
+        sb.append(", toDateTime=").append(Utility.formatTime(toDateTime));
         sb.append(", numberOfSms=").append(numberOfSms);
         sb.append(", numberOfMobileNumbers=").append(numberOfMobileNumbers);
         sb.append('}');

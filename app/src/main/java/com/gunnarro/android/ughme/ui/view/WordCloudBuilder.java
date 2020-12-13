@@ -513,8 +513,6 @@ public class WordCloudBuilder {
                 //Log.d("place-check-1", String.format("word=%s, x=%s, y=%s, check=%s", word.getText(), position.x, position.y, (position.y < this.rectangleDimension.getHeight())));
                 word.getRect().offsetTo(position.x, position.y);
                 if (position.y >= 0 && position.y < this.rectangleDimension.getHeight() && canPlace(word.getText(), word.getRect())) {
-          //          collisionRaster.mask(word.getCollisionRaster(), position);
-         //           graphics.drawImage(word.getBufferedImage(), position.x, position.y, null);
                     return true;
                 }
 
@@ -523,8 +521,6 @@ public class WordCloudBuilder {
               //  Log.d("place-check-2", String.format("word=%s, x=%s, y=%s, check=%s", word.getText(), position.x, position.y, (position.y < this.rectangleDimension.getHeight())));
                 word.getRect().offsetTo(position.x, position.y);
                 if (offset != 0 && position.y >= 0 && position.y < this.rectangleDimension.getHeight() && canPlace(word.getText(), word.getRect())) {
-            //        collisionRaster.mask(word.getCollisionRaster(), position);
-             //       graphics.drawImage(word.getBufferedImage(), position.x, position.y, null);
                     return true;
                 }
                // Log.d(buildTag("place"), String.format("try to place: %s, position: %s, r=%s", word.getText(), position, r));

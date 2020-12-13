@@ -5,20 +5,37 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.ui.fragment.ListFragmentInteractionListener;
 import com.gunnarro.android.ughme.ui.fragment.domain.ListItem;
+import com.gunnarro.android.ughme.ui.view.Settings;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements ListFragmentInteractionListener {
 
@@ -88,8 +105,103 @@ public class MainActivity extends AppCompatActivity implements ListFragmentInter
         }
     }
 
+    private File getSmsBackupDir() {
+        return Objects.requireNonNull(getApplicationContext()).getFilesDir();
+    }
+
+    private File getApplicationDir() {
+        return Objects.requireNonNull(getApplicationContext()).getFilesDir();
+    }
+
+    private File getSettingsFile() {
+        return new File(getApplicationDir().getPath().concat("/settings.json"));
+    }
+
     @Override
     public void onListFragmentInteraction(ListItem item) {
         Log.d("MainActivity", String.format("onListFragmentInteraction: %s", item));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // action with ID action_refresh was selected
+            case R.id.action_settings:
+                openSettingsDialog();
+                break;
+            // action with ID action_settings was selected
+            case R.id.action_sms_backup_info:
+                Toast.makeText(this, "backup selected", Toast.LENGTH_SHORT)
+                        .show();
+                break;
+            case R.id.action_wordcloud_info:
+                Toast.makeText(this, "wordcloud selected", Toast.LENGTH_SHORT)
+                        .show();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+    private void openSettingsDialog() {
+        try {
+            Gson gson = new GsonBuilder().setLenient().create();
+            Type settingsType = new TypeToken<Settings>() {}.getType();
+            File f = getSettingsFile();
+            if (!f.exists()) {
+                // settings do not exist, create a new setting file with default settings
+                f.createNewFile();
+                FileWriter fw = new FileWriter(f.getPath(), false);
+
+                gson.toJson(new Settings(), fw);
+                fw.flush();
+                fw.close();
+                Log.d("MainActivity", String.format("created setting file: %s", f.getPath()));
+            }
+            // read the setting file
+            Settings settings = gson.fromJson(new FileReader(f.getPath()), settingsType);
+            // Create the AlertDialog object and return it
+            AlertDialog.Builder builder = new AlertDialog.Builder(this.getApplicationContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+
+            // set the custom layout
+            final View settingsLayout = getLayoutInflater().inflate(R.layout.fragment_settings, null);
+            builder.setView(settingsLayout);
+           /*
+            Spinner sp = settingsLayout.findViewById(R.id.setting_max_chars_in_word_sp);
+            Spinner sp = settingsLayout.findViewById(R.id.setting_min_chars_in_word_sp);
+            Spinner sp = settingsLayout.findViewById(R.id.setting_number_Of_bars_in_chart_sp);
+            Spinner sp = settingsLayout.findViewById(R.id.setting_number_of_mobile_numbers_sp);
+            Spinner sp = settingsLayout.findViewById(R.id.setting_number_Of_words_sp);
+            Spinner sp = settingsLayout.findViewById(R.id.setting_max_chars_in_word_sp);
+            Spinner sp = settingsLayout.findViewById(R.id.setting_offset_step_sp);
+            Spinner sp = settingsLayout.findViewById(R.id.setting_radius_step_sp);
+*/
+            builder.setTitle("Sms Features Settings");
+            builder.setPositiveButton("Ok", (dialog, id) -> {
+                try {
+                    FileWriter fw = new FileWriter(getSettingsFile(), false);
+                    gson.toJson(settings, fw);
+                    fw.flush();
+                    fw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            builder.setNegativeButton("Cancel", (dialog, id) -> {
+                // do nothing
+            });
+            builder.create().show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
+        }
     }
 }

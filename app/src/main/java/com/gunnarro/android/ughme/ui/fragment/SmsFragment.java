@@ -21,17 +21,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.gunnarro.android.ughme.R;
+import com.gunnarro.android.ughme.Utility;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.sms.Sms;
 import com.gunnarro.android.ughme.sms.SmsBackupInfo;
 import com.gunnarro.android.ughme.sms.SmsReader;
-import com.gunnarro.android.ughme.ui.fragment.domain.Utility;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,8 +54,7 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      */
-    // TODO: Rename and change types and number of parameters
-    public static SmsFragment newInstance(String param1, String param2) {
+    public static SmsFragment newInstance() {
         SmsFragment fragment = new SmsFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -99,7 +97,6 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
     }
 
 
-
     private List<Sms> getSmsInbox(String mobileNumber) {
         SmsReader smsReader = new SmsReader(Objects.requireNonNull(getActivity()).getApplicationContext());
         List<Sms> inbox = smsReader.getSMSInbox(false, mobileNumber);
@@ -134,9 +131,9 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
             SmsBackupInfo info = new SmsBackupInfo();
             info.setSmsBackupFilePath(filePath);
             info.setFromDateTime(smsBackupList.get(0).getTimeMs());
-            info.setToDateTime(smsBackupList.get(smsBackupList.size()-1).getTimeMs());
+            info.setToDateTime(smsBackupList.get(smsBackupList.size() - 1).getTimeMs());
             info.setNumberOfSms(smsBackupList.size());
-            FileWriter fw = new FileWriter(getSmsBackupFilePath(mobileNumber+"-metadata"), false);
+            FileWriter fw = new FileWriter(getSmsBackupFilePath(mobileNumber + "-metadata"), false);
             gson.toJson(info
                     , fw);
             fw.flush();
@@ -197,7 +194,7 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
     private void viewSmsBackupFileInfo() {
         try {
             File appDir = getSmsBackupDir();
-            List<String> files = Arrays.asList(Objects.requireNonNull(appDir.list(getJsonFileNameFilter())));
+            List<String> files = Arrays.asList(Objects.requireNonNull(appDir.list(Utility.getJsonFileNameFilter())));
             Log.d(LOG_TAG, String.format("viewSmsBackupFiles: number of files: %s", files.size()));
             Gson gson = new GsonBuilder().setLenient().create();
             Type smsListType = new TypeToken<SmsBackupInfo>() {
@@ -219,7 +216,7 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
             TextView filePathView = smsBackupInfoLayout.findViewById(R.id.file_path_value);
             filePathView.setText(info.getSmsBackupFilePath());
             TextView smsFromDateView = smsBackupInfoLayout.findViewById(R.id.sms_from_date_value);
-            smsFromDateView.setText( Utility.formatTime(info.getFromDateTime()));
+            smsFromDateView.setText(Utility.formatTime(info.getFromDateTime()));
             TextView smsToDateView = smsBackupInfoLayout.findViewById(R.id.sms_to_date_value);
             smsToDateView.setText(Utility.formatTime(info.getToDateTime()));
             TextView smsNumberView = smsBackupInfoLayout.findViewById(R.id.number_of_sms_value);
@@ -242,7 +239,7 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
         try {
             File bckDir = getSmsBackupDir();
             if (bckDir.exists()) {
-                for (File f : Objects.requireNonNull(bckDir.listFiles(getJsonFileNameFilter()))) {
+                for (File f : Objects.requireNonNull(bckDir.listFiles(Utility.getJsonFileNameFilter()))) {
                     if (f.delete()) {
                         Log.d(LOG_TAG, String.format("deleteSmsBackupFiles: Deleted file: %s", f.getName()));
                     } else {
@@ -253,13 +250,6 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
         } catch (Exception e) {
             Log.e(LOG_TAG, String.format("deleteSmsBackupFiles: Error deleting backup file! %s", e.getLocalizedMessage()));
         }
-    }
-
-    private FilenameFilter getJsonFileNameFilter() {
-        return (dir, name) -> {
-            String lowercaseName = name.toLowerCase();
-            return lowercaseName.endsWith(".json");
-        };
     }
 
     private File getSmsBackupDir() {
@@ -311,7 +301,7 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
             // the user confirmed the operation
             deleteSmsBackupFiles();
             Snackbar.make(Objects.requireNonNull(getView()), "Deleted sms backup files.", Snackbar.LENGTH_LONG).show();
-        }  else {
+        } else {
             // dismiss, do nothing, the user canceled the operation
             Log.d("sms", "delete sms backup file action cancelled by user");
         }

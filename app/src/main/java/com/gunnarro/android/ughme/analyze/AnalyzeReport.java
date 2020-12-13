@@ -6,6 +6,4 @@ public class AnalyzeReport {
     int numberOfUniqueWords;
     int analyzeTimeMs;
 
-
-
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">UghMe</string>
+    <string name="app_name" translatable="false">SmS-FeatureS</string>
     <string name="tab_title_location" translatable="false">Location</string>
     <string name="tab_title_sms" translatable="false">Sms</string>
     <string name="tab_title_chart" translatable="false">Chart</string>

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Sms implements Serializable {
+public class Sms implements Serializable, Comparable<Sms> {
     @Expose(serialize = false)
     private final boolean isRead;
     @Expose(serialize = false)
@@ -30,7 +30,7 @@ public class Sms implements Serializable {
     @Expose(serialize = false)
     private int numberOfBlocked;
     @Expose
-    private int count;
+    private Integer count = 0;
 
     private Sms(Builder builder) {
         this.isRead = builder.isRead;
@@ -96,7 +96,7 @@ public class Sms implements Serializable {
         return numberOfBlocked;
     }
 
-    public int getCount() {
+    public Integer getCount() {
         return count;
     }
 
@@ -125,6 +125,11 @@ public class Sms implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(timeMs, address);
+    }
+
+    @Override
+    public int compareTo(Sms sms) {
+        return this.count.compareTo(sms.count);
     }
 
     public static class Builder {

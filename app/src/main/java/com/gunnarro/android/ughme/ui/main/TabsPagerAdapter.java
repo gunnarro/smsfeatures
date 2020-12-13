@@ -10,13 +10,9 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.ui.fragment.BarChartFragment;
-import com.gunnarro.android.ughme.ui.fragment.ListItemFragment;
-import com.gunnarro.android.ughme.ui.fragment.LocationFragment;
 import com.gunnarro.android.ughme.ui.fragment.SmsFragment;
 import com.gunnarro.android.ughme.ui.fragment.SmsSearchFragment;
 import com.gunnarro.android.ughme.ui.view.WordCloudFragment;
-
-import java.util.stream.IntStream;
 
 /**
  * FragmentPagerAdapter - Use this when navigating between a fixed, small number of sibling screens.
@@ -44,7 +40,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
             case 3  :
                 return WordCloudFragment.newInstance();
             default:
-                return SmsFragment.newInstance(null, null);
+                return SmsFragment.newInstance();
         }
     }
 

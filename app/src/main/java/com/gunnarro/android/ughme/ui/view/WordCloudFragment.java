@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.gunnarro.android.ughme.R;
+import com.gunnarro.android.ughme.Utility;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.sms.Sms;
@@ -27,7 +28,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -61,7 +65,7 @@ public class WordCloudFragment extends Fragment implements View.OnClickListener,
         mobileRadioBtn = view.findViewById(R.id.sms_datetime_radio_btn);
         mobileRadioBtn.setOnClickListener(this);
         view.findViewById(R.id.sms_in_out_box_checkbox).setOnClickListener(this);
-        List<String> mobileNumbers = getSmsBackupMobileNumbers();
+        List<String> mobileNumbers = getSmsBackupMobileNumbersTop10();
         mobileNumbers.add(0, "(.*)");
         mobileNumberSp = view.findViewById(R.id.sms_mobile_spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_spinner_item, mobileNumbers);
@@ -71,20 +75,12 @@ public class WordCloudFragment extends Fragment implements View.OnClickListener,
         return view;
     }
 
-    private List<String> getSmsBackupMobileNumbers() {
-        Gson gson = new GsonBuilder().setLenient().create();
-        Type smsListType = new TypeToken<ArrayList<Sms>>() {
-        }.getType();
+    private List<String> getSmsBackupMobileNumbersTop10() {
         try {
-            File f = new File(getSmsBackupFilePath());
-            List<Sms> smsList = gson.fromJson(new FileReader(f.getPath()), smsListType);
-            // get distinct mobile numbers
-            return smsList.stream()
-                    .map(Sms::getAddress)
-                    .distinct()
-                    .sorted()
-                    .collect(Collectors.toList());
-        } catch (FileNotFoundException e) {
+            List<Sms> smsList = Utility.getSmsBackup(getSmsBackupFilePath());
+            Map<String, Integer> smsMap = smsList.stream().collect(Collectors.groupingBy(Sms::getAddress, Collectors.summingInt(Sms::getCount)));
+            return Utility.getTop10ValuesFromMap(smsMap);
+        } catch (Exception e) {
             Log.d(TAG, String.format("sms backup file not found! error: %s", e.getMessage()));
             return new ArrayList<>();
         }
