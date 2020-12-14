@@ -130,15 +130,18 @@ public class SmsFragment extends Fragment implements View.OnClickListener, Dialo
             }
             SmsBackupInfo info = new SmsBackupInfo();
             info.setSmsBackupFilePath(filePath);
-            info.setFromDateTime(smsBackupList.get(0).getTimeMs());
-            info.setToDateTime(smsBackupList.get(smsBackupList.size() - 1).getTimeMs());
-            info.setNumberOfSms(smsBackupList.size());
+            if (!smsBackupList.isEmpty()) {
+                info.setFromDateTime(smsBackupList.get(0).getTimeMs());
+                info.setToDateTime(smsBackupList.get(smsBackupList.size() - 1).getTimeMs());
+                info.setNumberOfSms(smsBackupList.size());
+            }
             FileWriter fw = new FileWriter(getSmsBackupFilePath(mobileNumber + "-metadata"), false);
             gson.toJson(info
                     , fw);
             fw.flush();
             fw.close();
         } catch (Exception e) {
+            e.printStackTrace();
             Snackbar.make(Objects.requireNonNull(getView()), String.format("Backup sms error" +
                     ", %s", e.getMessage()), Snackbar.LENGTH_LONG).show();
         } finally {

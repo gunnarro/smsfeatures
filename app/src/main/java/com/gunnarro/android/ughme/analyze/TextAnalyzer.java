@@ -84,6 +84,7 @@ public class TextAnalyzer {
             sortedWordMap.forEach((k, v) -> Log.i(TAG, String.format("Analyze Report: word=%s, count=%s, percentage=%s", k, v, (v * 100 / numberOfWords))));
         }
     }
+
     /**
      * The word with most occurrences will get the largest font size.
      * Thereafter will occurrences of all other words be compared against this number in order to determine font size.

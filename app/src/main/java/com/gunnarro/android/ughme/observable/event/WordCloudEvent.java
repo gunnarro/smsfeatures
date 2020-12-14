@@ -1,5 +1,7 @@
 package com.gunnarro.android.ughme.observable.event;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class WordCloudEvent {
@@ -37,6 +39,7 @@ public class WordCloudEvent {
         return value;
     }
 
+    @NotNull
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("WordCloudEvent{");

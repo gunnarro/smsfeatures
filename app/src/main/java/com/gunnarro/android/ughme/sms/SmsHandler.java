@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
@@ -14,12 +15,12 @@ import com.gunnarro.android.ughme.service.UghmeIntentService;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class SmsHandler extends BroadcastReceiver {
 
     public final static String KEY_SMS_MSG = "message";
     public final static String KEY_MOBILE_NUMBER = "mobilenumber";
-    private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
     private static final String PDUS = "pdus";
 
     private static String createLogTag(Class<?> clazz) {
@@ -36,30 +37,28 @@ public class SmsHandler extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.i(createLogTag(this.getClass()), "Handle incoming sms...");
         if (intent != null && intent.getExtras() != null) {
-            if (SMS_RECEIVED.equals(intent.getAction())) {
-                handleSMS(context, intent.getExtras());
+            if (Objects.equals(intent.getAction(), Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
+                handleSMS(context, intent.getExtras(), Telephony.Sms.Intents.getMessagesFromIntent(intent));
             } else {
                 Log.i(createLogTag(this.getClass()), "This was not an sms: " + intent.getAction());
             }
         }
     }
 
-    private void handleSMS(Context context, Bundle bundle) {
+    private void handleSMS(Context context, Bundle bundle, SmsMessage[] smsMesssages) {
         if (bundle == null || bundle.get(PDUS) == null) {
             return;
         }
-        Object[] pdus = (Object[]) bundle.get(PDUS);
-        SmsMessage[] msgs = new SmsMessage[pdus != null ? pdus.length : 0];
-        for (int i = 0; i < msgs.length; i++) {
-            msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+
+        for (SmsMessage smsMsg : smsMesssages) {
             try {
-                if (isBlackListed(context, msgs[i].getOriginatingAddress())) {
-                    Log.i(createLogTag(this.getClass()), "blacklisted, rejected sms from: " + msgs[i].getOriginatingAddress());
+                if (isBlackListed(context, smsMsg.getOriginatingAddress())) {
+                    Log.i(createLogTag(this.getClass()), "blacklisted, rejected sms from: " + smsMsg.getOriginatingAddress());
                     super.abortBroadcast();
                 }
                 Intent intent = new Intent(context, UghmeIntentService.class);
-                intent.putExtra(KEY_MOBILE_NUMBER, msgs[i].getOriginatingAddress());
-                intent.putExtra(KEY_SMS_MSG, msgs[i].getMessageBody());
+                intent.putExtra(KEY_MOBILE_NUMBER, smsMsg.getOriginatingAddress());
+                intent.putExtra(KEY_SMS_MSG, smsMsg.getMessageBody());
                 context.startService(intent);
             } catch (Exception e) {
                 e.printStackTrace();

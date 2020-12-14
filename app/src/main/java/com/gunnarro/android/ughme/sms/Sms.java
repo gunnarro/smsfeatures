@@ -1,7 +1,5 @@
 package com.gunnarro.android.ughme.sms;
 
-import androidx.core.app.NotificationCompat;
-
 import com.google.gson.annotations.Expose;
 
 import org.jetbrains.annotations.NotNull;

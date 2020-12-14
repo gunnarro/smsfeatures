@@ -29,9 +29,6 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.Utility;
 import com.gunnarro.android.ughme.chart.CustomeMarkerView;
@@ -44,9 +41,6 @@ import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.sms.Sms;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,26 +83,22 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         view.findViewById(R.id.number_radio_btn).setOnClickListener(this);
         mobileNumbers = new ArrayList<>();
         mobileNumbers.add(SmsFragment.ALL);
-        mobileNumbers.add("461230");
-        mobileNumberSp = (Spinner) view.findViewById(R.id.number_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, mobileNumbers);
+        mobileNumberSp = view.findViewById(R.id.number_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_spinner_item, mobileNumbers);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mobileNumberSp.setAdapter(adapter);
         mobileNumberSp.setOnItemSelectedListener(this);
 
         // create a new chart object
         Log.d(TAG, "create chart");
-        //chart = new BarChart(getActivity());
         chart = view.findViewById(R.id.barchart);
         chart.getDescription().setEnabled(false);
         chart.setOnChartGestureListener(this);
-        //Typeface tf = Typeface.createFromAsset(getActivity().getAssets(),"OpenSans-Light.ttf");
         CustomeMarkerView mv = new CustomeMarkerView(getActivity(), R.layout.custom_marker_view);
         mv.setChartView(chart); // For bounds control
         chart.setMarker(mv);
         chart.setDrawGridBackground(false);
         chart.setDrawBarShadow(false);
-        //chart.groupBars(0f, 0f, 0f);
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -118,10 +108,9 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         chart.getAxisRight().setEnabled(false);
 
         YAxis leftAxis = chart.getAxisLeft();
-        //leftAxis.setTypeface(tf);
         leftAxis.setSpaceTop(30f);
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-        leftAxis.setAxisMaximum(1000f);
+        //leftAxis.setAxisMaximum(1000f);
         leftAxis.setValueFormatter(new DefaultValueFormatter(0));
 
         Legend legend = chart.getLegend();
@@ -130,11 +119,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         legend.setOrientation(Legend.LegendOrientation.VERTICAL);
         legend.setDrawInside(true);
 
-        // programmatically add the chart
-        // RelativeLayout parent = view.findViewById(R.id.barchart_parentLayout);
-        // parent.addView(chart);
         chart.setFitBars(true);
-        // chart.animateXY(5000, 5000);
         updateChartData(getSmsBackup(mobileNumberSp.getSelectedItem().toString().toLowerCase()), StatTypeEnum.NUMBER);
         Log.d(TAG, "onCreateView: finished");
         return view;
@@ -261,7 +246,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         // set color for a full data set
         Random random = new Random();
         int color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-       // barDataSet.setColor(color);
+        // barDataSet.setColor(color);
         // set different colors within a data set
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         // barDataSet.setBarBorderWidth(0.9f);
@@ -284,7 +269,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         // barDataSet.setBarBorderWidth(0.9f);
         barDataSet.setValueTextColor(Color.DKGRAY);
         barDataSet.setValueTextSize(12f);
-       // barDataSet.setStackLabels(null);
+        // barDataSet.setStackLabels(null);
         return barDataSet;
     }
 
@@ -308,7 +293,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         } else if (type == StatTypeEnum.MONTH) {
             chart.getXAxis().setValueFormatter(new MonthXAxisFormatter());
         } else if (type == StatTypeEnum.YEAR) {
-            chart.getXAxis().setValueFormatter(new SimpleAxisValueFormatter(new String []{"2016","2017","2018","2019","2020", "2021", "2022"}));
+            chart.getXAxis().setValueFormatter(new SimpleAxisValueFormatter(new String[]{"2016", "2017", "2018", "2019", "2020", "2021", "2022"}));
         } else if (type == StatTypeEnum.NUMBER) {
             chart.getXAxis().setValueFormatter(null);
         }
@@ -325,7 +310,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         try {
             List<Sms> smsList = Utility.getSmsBackup(getSmsBackupFilePath(SmsFragment.ALL.toLowerCase())
             );
-            if ( filterBy != null && !filterBy.equalsIgnoreCase(SmsFragment.ALL)) {
+            if (filterBy != null && !filterBy.equalsIgnoreCase(SmsFragment.ALL)) {
                 return smsList.stream().filter(s -> s.getAddress().contains(filterBy)).collect(Collectors.toList());
             }
             return smsList;

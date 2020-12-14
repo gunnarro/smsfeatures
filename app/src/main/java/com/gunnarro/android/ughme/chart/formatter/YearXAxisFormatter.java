@@ -1,6 +1,5 @@
 package com.gunnarro.android.ughme.chart.formatter;
 
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
 public class YearXAxisFormatter extends ValueFormatter {
@@ -11,12 +10,4 @@ public class YearXAxisFormatter extends ValueFormatter {
     public YearXAxisFormatter() {
         // take parameters to change behavior of formatter
     }
-
-    /**
-    @Override
-    public String getAxisLabel(float value, AxisBase axis) {
-        float percent = value / axis.mAxisRange;
-        return YEARS[(int) (YEARS.length * percent)];
-    }
-    */
 }
