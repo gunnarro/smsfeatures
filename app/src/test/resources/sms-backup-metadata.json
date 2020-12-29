@@ -1,0 +1,7 @@
+{
+  "status": "BACKED_UP",
+  "smsBackupFilePath": "src/test/resources/sms-backup.json",
+  "lastBackupTime": 1609223522735,
+  "numberOfSms": 0,
+  "numberOfMobileNumbers": 0
+}

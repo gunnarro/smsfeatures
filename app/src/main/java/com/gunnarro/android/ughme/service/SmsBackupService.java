@@ -131,7 +131,7 @@ public class SmsBackupService {
                 .collect(Collectors.joining(" "));
     }
 
-    private void saveSmsBackupMetaData(List<Sms> smsBackupList) {
+    public void saveSmsBackupMetaData(List<Sms> smsBackupList) {
         SmsBackupInfo info = new SmsBackupInfo();
         info.setSmsBackupFilePath(getFile(SMS_BACKUP_FILE_NAME).getPath());
         info.setStatus(SmsBackupInfo.BackupStatusEnum.BACKED_UP);

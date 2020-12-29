@@ -69,13 +69,18 @@ public class SmsBackupServiceTest {
 
     @Test
     public void getSmsBackupAsText() {
-        String txt = smsBackupService.getSmsBackupAsText(null, WordCloudEvent.WordCloudEventTypeEnum.MESSAGE.name());
-        Assert.assertEquals("t", txt);
+        String txt = smsBackupService.getSmsBackupAsText("", WordCloudEvent.WordCloudEventTypeEnum.MESSAGE.name());
+        Assert.assertEquals("", txt);
+    }
+
+    @Test
+    public void saveSmsBackupMetaData() {
+        smsBackupService.saveSmsBackupMetaData(new ArrayList<>());
     }
 
     @Test
     public void readSmsBackupMetaData() {
         SmsBackupInfo info = smsBackupService.readSmsBackupMetaData();
-        Assert.assertEquals("NOT_BACKED_UP", info.getStatus().name());
+        Assert.assertEquals("BACKED_UP", info.getStatus().name());
     }
 }

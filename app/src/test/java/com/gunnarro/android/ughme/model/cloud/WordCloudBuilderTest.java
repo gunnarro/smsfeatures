@@ -68,8 +68,8 @@ public class WordCloudBuilderTest {
 
         WordCloudBuilder builder = new WordCloudBuilder(1440, 1944);
         List<Word> words = builder.buildWordCloud(textAnalyzer.getWordCountMap(3), textAnalyzer.getHighestWordCount());
-        Assert.assertEquals("[Word{text=dette, count=4, rect=null}, Word{text=enhets, count=2, rect=null}, Word{text=antall, count=1, rect=null}]", words.toString());
-        Assert.assertEquals("Word{text=dette, count=4, rect=null}", words.get(0).toString());
+        Assert.assertEquals("[Word{word=dette, size=200.0, count=4, rect=null width=0 height=0}]", words.toString());
+        Assert.assertEquals("Word{word=dette, size=200.0, count=4, rect=null width=0 height=0}", words.get(0).toString());
         words.forEach(w -> Log.i("unit-test", String.format("x=%s, y=%s, size=%s, word=%s, occurrences=%s", w.getRect().left, w.getRect().top, w.getSize(), w.getText(), w.getCount())));
     }
 

@@ -77,7 +77,6 @@ public class Word {
         sb.append(", size=").append(size);
         sb.append(", count=").append(count);
         sb.append(", rect=").append(rect.toShortString()).append(" width=").append(rect.width()).append(" height=").append(rect.height());
-        sb.append(", textAlign=").append(getPaint().getTextAlign().name());
         sb.append('}');
         return sb.toString();
     }
