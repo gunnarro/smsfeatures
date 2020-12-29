@@ -7,11 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SearchView;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.sms.Sms;
-import com.gunnarro.android.ughme.sms.SmsReader;
+import com.gunnarro.android.ughme.adapter.SmsAdapter;
+import com.gunnarro.android.ughme.model.sms.Sms;
+import com.gunnarro.android.ughme.service.SmsBackupService;
+import com.gunnarro.android.ughme.utility.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +28,16 @@ import java.util.stream.Collectors;
  */
 public class SmsSearchFragment extends Fragment {
     private static final String LOG_TAG = SmsSearchFragment.class.getSimpleName();
+    private List<Sms> smsList = new ArrayList<>();
 
-    public static SmsSearchFragment newInstance() {
-        SmsSearchFragment fragment = new SmsSearchFragment();
+    private final SmsBackupService smsBackupService;
+
+    private SmsSearchFragment(@NonNull SmsBackupService smsBackupService) {
+        this.smsBackupService = smsBackupService;
+    }
+
+    public static SmsSearchFragment newInstance(SmsBackupService smsBackupService) {
+        SmsSearchFragment fragment = new SmsSearchFragment(smsBackupService);
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -40,7 +52,7 @@ public class SmsSearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_sms_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
         SearchView smsSearchView = view.findViewById(R.id.view_sms_search);
         smsSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -64,19 +76,22 @@ public class SmsSearchFragment extends Fragment {
 
     private List<Sms> searchSms(String searchAfter) {
         long startTime = System.currentTimeMillis();
-        List<Sms> smsList = getSmsInbox(null);
+        updateSmsList();
         Log.d(LOG_TAG, String.format("searchSms: number of sms: %s, search after: %s", smsList.size(), searchAfter));
         List<Sms> result = smsList.stream().filter(sms -> sms.getBody().toLowerCase().contains(searchAfter.toLowerCase())).collect(Collectors.toList());
         Snackbar.make(Objects.requireNonNull(getView()), String.format("Searched after: %s, hits: %s, time: %s ms", searchAfter, result.size(), (System.currentTimeMillis() - startTime)), Snackbar.LENGTH_LONG).show();
         return result;
     }
 
-
-    private List<Sms> getSmsInbox(String mobileNumber) {
-        SmsReader smsReader = new SmsReader(Objects.requireNonNull(getActivity()).getApplicationContext());
-        List<Sms> inbox = smsReader.getSMSInbox(false, mobileNumber);
-        Log.d(LOG_TAG, "getSmsInbox: sms for mobile number: " + mobileNumber + ", number of sms: " + inbox.size());
-        return inbox;
+    private void updateSmsList() {
+        smsList = smsBackupService.getSmsBackup();
+        Long lastBackupSmsTimeMs = !smsList.isEmpty() ? smsList.get(0).getTimeMs() : null;
+        List<Sms> inbox = smsBackupService.getSmsInbox(null, lastBackupSmsTimeMs);
+        Log.d(LOG_TAG, String.format("updateSmsList: sms inbox: %s", inbox));
+        Log.d(LOG_TAG, String.format("updateSmsList: sms backup: %s", smsList));
+        List<Sms> newSmsList = Utility.diffLists(inbox, smsList);
+        Utility.mergeList(smsList, newSmsList);
+        Log.d(LOG_TAG, String.format("updateSmsList: sms after merge: %s", smsList.size()));
     }
 
 }

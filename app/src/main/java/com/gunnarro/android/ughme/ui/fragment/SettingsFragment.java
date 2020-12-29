@@ -1,44 +1,26 @@
 package com.gunnarro.android.ughme.ui.fragment;
 
-import android.Manifest;
-import android.app.ProgressDialog;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.Utility;
-import com.gunnarro.android.ughme.observable.RxBus;
-import com.gunnarro.android.ughme.sms.Sms;
-import com.gunnarro.android.ughme.sms.SmsBackupInfo;
-import com.gunnarro.android.ughme.sms.SmsReader;
-import com.gunnarro.android.ughme.ui.view.Settings;
+import com.gunnarro.android.ughme.model.cloud.Settings;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,6 +31,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = SettingsFragment.class.getSimpleName();
 
     private Settings settings;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -67,7 +50,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         /*
@@ -81,7 +64,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     private void loadSettings() throws IOException {
         Gson gson = new GsonBuilder().setLenient().create();
-        Type settingsType = new TypeToken<Settings>() {}.getType();
+        Type settingsType = new TypeToken<Settings>() {
+        }.getType();
         File f = getSettingsFile();
         if (!f.exists()) {
             // settings do not exist, create a new setting file with default settings

@@ -5,18 +5,21 @@ import android.util.Log;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
+/**
+ * used to communicate between fragments
+ */
 public class RxBus {
-    private static RxBus mInstance;
-    private PublishSubject<Object> publisher = PublishSubject.create();
+    private static RxBus instance;
+    private final PublishSubject<Object> publisher = PublishSubject.create();
 
     private RxBus() {
     }
 
     public static RxBus getInstance() {
-        if (mInstance == null) {
-            mInstance = new RxBus();
+        if (instance == null) {
+            instance = new RxBus();
         }
-        return mInstance;
+        return instance;
     }
 
     public void publish(Object data) {

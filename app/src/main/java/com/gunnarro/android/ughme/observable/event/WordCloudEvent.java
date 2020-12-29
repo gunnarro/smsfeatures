@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class WordCloudEvent {
     public enum WordCloudEventTypeEnum {
-        MESSAGE, NUMBER, DATE
+        MESSAGE
     }
 
     private static final String MESSAGE_TYPE_ALL = "(.*)";
@@ -27,10 +27,6 @@ public class WordCloudEvent {
         return new Builder();
     }
 
-    public WordCloudEvent.WordCloudEventTypeEnum getEventType() {
-        return eventType;
-    }
-
     public String getSmsType() {
         return smsType;
     }
@@ -42,7 +38,7 @@ public class WordCloudEvent {
     @NotNull
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("WordCloudEvent{");
+        final StringBuilder sb = new StringBuilder("WordCloudEvent{");
         sb.append("eventType=").append(eventType);
         sb.append(", smsType=").append(smsType);
         sb.append(", value=").append(value);
@@ -61,7 +57,7 @@ public class WordCloudEvent {
         private Builder() {
         }
 
-        public Builder setEventType(WordCloudEventTypeEnum eventType) {
+        public Builder eventType(WordCloudEventTypeEnum eventType) {
             this.eventType = eventType;
             return this;
         }

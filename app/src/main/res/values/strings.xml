@@ -1,33 +1,23 @@
 <resources>
     <string name="app_name" translatable="false">SmS-FeatureS</string>
-    <string name="tab_title_location" translatable="false">Location</string>
-    <string name="tab_title_sms" translatable="false">Sms</string>
+    <string name="tab_title_backup" translatable="false">Backup</string>
     <string name="tab_title_chart" translatable="false">Chart</string>
-    <string name="tab_title_word_cloud" translatable="false">WordCloud</string>
-    <string name="tab_search_result" translatable="false">Result</string>
+    <string name="tab_title_word_cloud" translatable="false">Cloud</string>
     <string name="tab_title_sms_search">Search</string>
-    <string name="ok" translatable="false">OK</string>
-    <string name="location_permission_granted" translatable="false">location permission granted</string>
-    <string name="location_permission_denied" translatable="false">location permission denied</string>
-    <string name="btn_sms_backup" translatable="false">Backup sms</string>
-    <string name="btn_sms_chart_view" translatable="false">View sms chart</string>
-    <string name="btn_sms_export" translatable="false">Export sms</string>
-    <string name="btn_sms_clipboard" translatable="false">Copy to clipboard</string>
-    <string name="btn_get_location" translatable="false">Get Location</string>
-    <string name="btn_view_location_history">View Location History</string>
 
-    <string name="btn_sms_msg" translatable="false">Message</string>
-    <string name="btn_sms_number" translatable="false">Number</string>
-    <string name="btn_sms_datetime" translatable="false">Date</string>
-    <string name="btn_sms_in_out_box" translatable="false">Inbox/Outbox</string>
+    <string name="btn_sms_backup" translatable="false">Backup</string>
+    <string name="btn_sms_backup_delete" translatable="false">Delete</string>
+    <string name="btn_sms_in_out_box" translatable="false">Received/Sent</string>
 
     <string name="btn_ok">OK</string>
     <string name="btn_cancel">Cancel</string>
     <string name="day">Day</string>
-    <string name="week">Week</string>
     <string name="month">Month</string>
     <string name="year">Year</string>
     <string name="number">Number</string>
-    <string name="view_backup_info">View backup info</string>
-    <string name="delete_backup_files">Delete backup files</string>
+    <string name="wordcloud">wordcloud</string>
+    <string name="chart">chart</string>
+    <string name="search">search</string>
+    <string name="backup">backup</string>
+    <string name="settings">settings</string>
 </resources>

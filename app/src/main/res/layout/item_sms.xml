@@ -1,10 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/sms_header"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sms Header"
         android:textStyle="bold"
@@ -14,12 +14,11 @@
         android:singleLine="true"
         android:fontFamily="sans-serif-black"
         android:textSize="14sp"
-        android:textAlignment="viewStart"
-        />
+        android:textAlignment="viewStart" />
 
     <TextView
         android:id="@+id/sms_body"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sms Body"
         android:textStyle="normal"
@@ -30,7 +29,21 @@
         android:fontFamily="sans-serif-condensed"
         android:textSize="12sp"
         android:textAlignment="viewStart"
-        android:layout_below="@+id/sms_header"
-        />
+        android:layout_below="@+id/sms_header" />
+
+    <TextView
+        android:id="@+id/sms_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sms footer"
+        android:textStyle="normal"
+        android:layout_marginRight="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginBottom="2dp"
+        android:singleLine="true"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="12sp"
+        android:textAlignment="viewEnd"
+        android:layout_below="@+id/sms_body" />
 
 </RelativeLayout>

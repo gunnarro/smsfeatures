@@ -6,4 +6,9 @@
     <color name="colorToolbarBackground">#000000</color>
     <color name="colorToolbarText">#FFFFFF</color>
     <color name="colorRadioBtn">#0074d9</color>
+    <color name="colorDate">#0074d9</color>
+    <color name="colorNumbers">#0074d9</color>
+    <color name="colorSection">#FFF</color>
+    <color name="colorSmsSent">#f3fc6e</color>
+    <color name="colorSmsReceived">#dee1bb</color>
 </resources>

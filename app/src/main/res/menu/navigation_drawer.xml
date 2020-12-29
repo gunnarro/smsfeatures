@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_sms_backup"
+            android:icon="@drawable/baseline_settings_backup_restore_black_24dp"
+            android:title="@string/backup" />
+
+        <item
+            android:id="@+id/nav_sms_search"
+            android:icon="@drawable/baseline_search_black_24dp"
+            android:title="@string/search" />
+
+        <item
+            android:id="@+id/nav_sms_chart"
+            android:icon="@drawable/baseline_leaderboard_black_24dp"
+            android:title="@string/chart" />
+
+        <item
+            android:id="@+id/nav_sms_wordcloud"
+            android:icon="@drawable/baseline_settings_backup_restore_black_24dp"
+            android:title="@string/wordcloud" />
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/baseline_settings_applications_black_24dp"
+            android:title="@string/settings" />
+
+    </group>
+
+</menu>

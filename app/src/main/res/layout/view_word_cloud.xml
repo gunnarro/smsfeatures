@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bar_chart_parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.view.WordCloudFragment">
+    tools:context=".ui.fragment.WordCloudFragment">
 
     <RadioGroup
         android:id="@+id/radio_btn_grp"
@@ -20,6 +19,7 @@
             android:textColor="@color/colorToolbarText"
             android:layout_marginStart="5dp"
             android:buttonTint="@color/colorRadioBtn"
+            android:popupBackground="@color/cardview_dark_background"
             android:spinnerMode="dropdown"
             android:background="@color/colorToolbarText"
             android:backgroundTint="@color/colorToolbarText" />
@@ -31,34 +31,11 @@
             android:layout_marginStart="5dp"
             android:text="@string/btn_sms_in_out_box"
             android:textColor="@color/colorToolbarText"
-            android:buttonTint="@color/colorRadioBtn"/>
-
-        <RadioButton
-            android:id="@+id/sms_datetime_radio_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:text="@string/btn_sms_datetime"
-            android:textColor="@color/colorToolbarText"
-            android:buttonTint="@color/colorRadioBtn"/>
-
-        <RadioButton
-            android:id="@+id/sms_number_radio_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:text="@string/btn_sms_number"
-            android:textColor="@color/colorToolbarText"
-            android:buttonTint="@color/colorRadioBtn"/>
+            android:buttonTint="@color/colorRadioBtn" />
     </RadioGroup>
 
     <com.gunnarro.android.ughme.ui.view.WordCloudView
-        android:id="@+id/wordCloudView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <!--
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-    -->
+
 </RelativeLayout>

@@ -30,17 +30,19 @@ import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.Utility;
-import com.gunnarro.android.ughme.chart.CustomeMarkerView;
-import com.gunnarro.android.ughme.chart.StackedBarEntry;
-import com.gunnarro.android.ughme.chart.formatter.DayAxisValueFormatter;
-import com.gunnarro.android.ughme.chart.formatter.MonthXAxisFormatter;
-import com.gunnarro.android.ughme.chart.formatter.SimpleAxisValueFormatter;
-import com.gunnarro.android.ughme.chart.formatter.YearXAxisFormatter;
+import com.gunnarro.android.ughme.model.chart.CustomeMarkerView;
+import com.gunnarro.android.ughme.model.chart.StackedBarEntry;
+import com.gunnarro.android.ughme.model.chart.formatter.DayAxisValueFormatter;
+import com.gunnarro.android.ughme.model.chart.formatter.MonthXAxisFormatter;
+import com.gunnarro.android.ughme.model.chart.formatter.SimpleAxisValueFormatter;
+import com.gunnarro.android.ughme.model.chart.formatter.YearXAxisFormatter;
+import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.observable.RxBus;
-import com.gunnarro.android.ughme.sms.Sms;
+import com.gunnarro.android.ughme.service.SmsBackupService;
+import com.gunnarro.android.ughme.utility.Utility;
 
-import java.io.File;
+import org.jetbrains.annotations.NotNull;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,9 +61,16 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
     private Spinner mobileNumberSp;
     private List<String> mobileNumbers;
 
+    private final SmsBackupService smsBackupService;
+
+    private BarChartFragment(@NonNull SmsBackupService smsBackupService) {
+        this.smsBackupService = smsBackupService;
+    }
+
+
     @NonNull
-    public static BarChartFragment newInstance() {
-        return new BarChartFragment();
+    public static BarChartFragment newInstance(SmsBackupService smsBackupService) {
+        return new BarChartFragment(smsBackupService);
     }
 
     private enum StatTypeEnum {
@@ -70,7 +79,6 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
     }
 
@@ -82,7 +90,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         view.findViewById(R.id.year_radio_btn).setOnClickListener(this);
         view.findViewById(R.id.number_radio_btn).setOnClickListener(this);
         mobileNumbers = new ArrayList<>();
-        mobileNumbers.add(SmsFragment.ALL);
+        mobileNumbers.add(BackupFragment.ALL);
         mobileNumberSp = view.findViewById(R.id.number_spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_spinner_item, mobileNumbers);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -184,6 +192,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         return new SimpleDateFormat(format).format(timeMs);
     }
 
+    @NonNull()
     private List<IBarDataSet> mapToBarDataSets(List<Sms> smsList, StatTypeEnum type) {
         // accumulate sms per selected type
         Map<String, Integer> smsMap;
@@ -192,23 +201,16 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
                 smsMap = smsList.stream().collect(Collectors.groupingBy(s -> formatAsDateStr(s.getTimeMs(), "dd-MM-YY"), Collectors.summingInt(Sms::getCount)));
                 break;
             case MONTH:
-                smsMap = smsList.stream().collect(Collectors.groupingBy(s -> formatAsDateStr(s.getTimeMs(), "MM-YY"), Collectors.summingInt(Sms::getCount)));
+                smsMap = smsList.stream().collect(Collectors.groupingBy(s -> formatAsDateStr(s.getTimeMs(), "MM-YY"), Collectors.summingInt(Sms::getNumberOfReceived)));
                 break;
             case YEAR:
-                smsMap = smsList.stream().collect(Collectors.groupingBy(s -> formatAsDateStr(s.getTimeMs(), "YYYY"), Collectors.summingInt(Sms::getCount)));
+                smsMap = smsList.stream().collect(Collectors.groupingBy(s -> formatAsDateStr(s.getTimeMs(), "YYYY"), Collectors.summingInt(Sms::getNumberOfSent)));
                 break;
             default:
-                smsMap = smsList.stream().collect(Collectors.groupingBy(Sms::getAddress, Collectors.summingInt(Sms::getCount)));
+                smsMap = smsList.stream().collect(Collectors.groupingBy(Sms::getContactName, Collectors.summingInt(Sms::getCount)));
                 break;
         }
         // sort and limit to top ten entries with highest count
-        /*
-        Map<String, Integer> sortedSmsMap = smsMap.entrySet()
-                .stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue())
-                .limit(10)
-                .collect(Collectors.toMap(e -> e.getKey(),e -> e.getValue()));
-        */
         Map<String, Integer> sortedSmsMap = Utility.getTop10Values(smsMap);
 
         Log.d(TAG, "mapToBarDataSets: Map: " + sortedSmsMap);
@@ -220,12 +222,12 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         } else {
             sortedSmsMap.entrySet().forEach(e -> barDataSets.add(buildBarDataSet(e.getKey(), e.getValue(), barDataSets.size())));
         }
-        //mobileNumbers = sortedSmsMap.keySet().stream().sorted().collect(Collectors.toList());
         mobileNumbers = Utility.getTop10ValuesFromMap(sortedSmsMap);
         Log.d(TAG, "mapToBarDataSets: Set: " + barDataSets);
         return barDataSets;
     }
 
+    @NonNull
     private StackedBarEntry buildStackedBarEntries(Map<String, Integer> smsMap) {
         float[] values = new float[smsMap.size()];
         String[] labels = new String[smsMap.size()];
@@ -255,7 +257,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         return barDataSet;
     }
 
-
+    @NonNull
     private BarDataSet buildBarDataSet(String name, Integer value, Integer index) {
         List<BarEntry> entries = new ArrayList<>();
         entries.add(new BarEntry(index, Float.valueOf(value)));
@@ -308,24 +310,16 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
 
     private List<Sms> getSmsBackup(String filterBy) {
         try {
-            List<Sms> smsList = Utility.getSmsBackup(getSmsBackupFilePath(SmsFragment.ALL.toLowerCase())
-            );
-            if (filterBy != null && !filterBy.equalsIgnoreCase(SmsFragment.ALL)) {
-                return smsList.stream().filter(s -> s.getAddress().contains(filterBy)).collect(Collectors.toList());
+            List<Sms> smsList = smsBackupService.getSmsBackup();
+            Log.d(TAG, "getSmsBackup: " + smsList);
+            if (filterBy != null && !filterBy.equalsIgnoreCase(BackupFragment.ALL)) {
+                return smsList.stream().filter(s -> s.getContactName().contains(filterBy)).collect(Collectors.toList());
             }
             return smsList;
         } catch (Exception e) {
             Log.d(TAG, String.format("sms backup file not found! error: %s", e.getMessage()));
             return new ArrayList<>();
         }
-    }
-
-    private String getSmsBackupFilePath(String mobileNumber) {
-        File appDir = Objects.requireNonNull(getActivity()).getFilesDir();
-        if (mobileNumber == null || mobileNumber.isEmpty()) {
-            mobileNumber = "all";
-        }
-        return String.format("%s/sms-backup-%s.json", appDir.getPath(), mobileNumber);
     }
 
     /**
@@ -337,34 +331,29 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
         // Check which radio button was clicked
-        switch (view.getId()) {
-            case R.id.day_radio_btn:
-                if (checked) {
-                    updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.DAY);
-                    break;
-                }
-            case R.id.month_radio_btn:
-                if (checked) {
-                    updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.MONTH);
-                    break;
-                }
-            case R.id.year_radio_btn:
-                if (checked) {
-                    updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.YEAR);
-                    break;
-                }
-            case R.id.number_radio_btn:
-                if (checked) {
-                    updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.NUMBER);
-                    break;
-                }
-            default:
-                break;
+        int id = view.getId();
+        if (id == R.id.day_radio_btn) {
+            if (checked) {
+                updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.DAY);
+            }
+        } else if (id == R.id.month_radio_btn) {
+            if (checked) {
+                updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.MONTH);
+            }
+        } else if (id == R.id.year_radio_btn) {
+            if (checked) {
+                updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.YEAR);
+            }
+        } else if (id == R.id.number_radio_btn) {
+            if (checked) {
+                updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.NUMBER);
+            }
         }
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemSelected(AdapterView<?> parent, View view, int position,
+                               long id) {
         updateChartData(getSmsBackup(mobileNumberSp.getSelectedItem().toString().toLowerCase()), StatTypeEnum.NUMBER);
     }
 
@@ -376,12 +365,12 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
     private Observer<Object> getInputObserver() {
         return new Observer<Object>() {
             @Override
-            public void onSubscribe(Disposable d) {
+            public void onSubscribe(@NotNull Disposable d) {
                 Log.d(TAG, "getInputObserver.onSubscribe:");
             }
 
             @Override
-            public void onNext(Object obj) {
+            public void onNext(@NotNull Object obj) {
                 Log.d(TAG, String.format("getInputObserver.onNext: Received new data event of type %s", obj.getClass().getSimpleName()));
                 if (obj instanceof List<?>) {
                     Log.d(TAG, "getInputObserver.onNext: update bar chart data");
@@ -390,7 +379,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NotNull Throwable e) {
                 Log.e(TAG, String.format("getInputObserver.onError: %s", e.getMessage()));
             }
 
