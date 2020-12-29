@@ -1,3 +1,4 @@
+![Android CI](https://github.com/gunnarro/smsfeatures/workflows/Android%20CI/badge.svg)
 # smsfeatures
 
 ## CI/CD
