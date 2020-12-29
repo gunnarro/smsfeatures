@@ -114,7 +114,7 @@ public class SmsBackupService {
         }
     }
 
-    private void saveSmsBackup(@NotNull List<Sms> smsList) throws IOException {
+    public void saveSmsBackup(@NotNull List<Sms> smsList) throws IOException {
         File smsBackupFile = getFile(SMS_BACKUP_FILE_NAME);
         Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
         FileWriter fw = new FileWriter(smsBackupFile, false);
