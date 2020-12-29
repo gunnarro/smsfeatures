@@ -1,4 +1,4 @@
-package com.gunnarro.android.ughme.model.sms;
+package com.gunnarro.android.ughme.service;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,6 +7,7 @@ import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.util.Log;
 
+import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.ui.MainActivity;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class SmsReader {
+public class SmsReaderService {
 
     private static final String CONTENT_SMS_INBOX = "content://sms/inbox";
     private static final String CONTENT_SMS_OUTBOX = "content://sms/inbox";

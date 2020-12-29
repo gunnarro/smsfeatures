@@ -1,4 +1,4 @@
-package com.gunnarro.android.ughme.model.cloud;
+package com.gunnarro.android.ughme.service;
 
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -6,15 +6,20 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.Log;
 
+import com.gunnarro.android.ughme.model.cloud.AngleGenerator;
+import com.gunnarro.android.ughme.model.cloud.Dimension;
+import com.gunnarro.android.ughme.model.cloud.TreeWordPlacer;
+import com.gunnarro.android.ughme.model.cloud.Word;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class WordCloudBuilder {
+public class WordCloudService {
 
-    private final static String TAG = WordCloudBuilder.class.getSimpleName();
+    private final static String TAG = WordCloudService.class.getSimpleName();
     private final Random rnd = new Random();
     private static final int MAX_WORD_SIZE = 200;
     private static final int MIN_WORD_SIZE = 25;
@@ -29,7 +34,7 @@ public class WordCloudBuilder {
      * @param width  - length of x.axis, none negative values only
      * @param height - Length of y-axis, none negative values only
      */
-    public WordCloudBuilder(int width, int height) {
+    public WordCloudService(int width, int height) {
         if (width < 0 || height < 0) {
             throw new RuntimeException("width and height must both be greater than 0!");
         }

@@ -1,6 +1,5 @@
 package com.gunnarro.android.ughme.service;
 
-import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,7 +9,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
-import com.gunnarro.android.ughme.model.sms.SmsReader;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
@@ -34,14 +32,14 @@ public class SmsBackupService {
     public static final String SMS_BACKUP_FILE_NAME = "sms-backup.json";
     public static final String SMS_BACKUP_METADATA_FILE_NAME = "sms-backup-metadata.json";
 
-    private File appExtDir;
+    private final File appExtDir;
 
-    public SmsBackupService() {
-        appExtDir = Environment.getExternalStorageDirectory();
+    public SmsBackupService(File appDir) {
+        appExtDir = appDir;
     }
 
     public List<Sms> getSmsInbox(String filterByMobileNumber, Long filterByTimeMs) {
-        List<Sms> inbox = SmsReader.getSMSInbox(false, filterByMobileNumber, filterByTimeMs);
+        List<Sms> inbox = SmsReaderService.getSMSInbox(false, filterByMobileNumber, filterByTimeMs);
         Log.d(LOG_TAG, String.format("getSmsInbox: filterByNumber: %s, filterByTimeMs: %s, number of sms: %s", filterByMobileNumber, filterByTimeMs, inbox.size()));
         return inbox;
     }
@@ -71,7 +69,7 @@ public class SmsBackupService {
             List<Sms> smsBackupList = getSmsBackup();
             Long lastBackupSmsTimeMs = !smsBackupList.isEmpty() ? smsBackupList.get(0).getTimeMs() : null;
             // only get sms that is not already in the backup list
-            List<Sms> inbox = getSmsInbox(SmsReader.SMS_ALL, lastBackupSmsTimeMs);
+            List<Sms> inbox = getSmsInbox(SmsReaderService.SMS_ALL, lastBackupSmsTimeMs);
             List<Sms> newSmsList = Utility.diffLists(inbox, smsBackupList);
             Log.d(LOG_TAG, String.format("backupSmsInbox: diff sms inbox (%s) and sms backup (%s)", inbox.size(), smsBackupList.size()));
             if (!newSmsList.isEmpty()) {
@@ -187,14 +185,5 @@ public class SmsBackupService {
             e.printStackTrace();
             return new SmsBackupInfo();
         }
-    }
-
-    /**
-     * For unit test only
-     *
-     * @param appExtDir
-     */
-    public void setAppExtDir(File appExtDir) {
-        this.appExtDir = appExtDir;
     }
 }

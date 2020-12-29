@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -11,9 +12,9 @@ import android.view.View;
 import androidx.appcompat.app.AlertDialog;
 
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.model.analyze.TextAnalyzer;
+import com.gunnarro.android.ughme.service.TextAnalyzerService;
 import com.gunnarro.android.ughme.model.cloud.Word;
-import com.gunnarro.android.ughme.model.cloud.WordCloudBuilder;
+import com.gunnarro.android.ughme.service.WordCloudService;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.SmsBackupService;
@@ -89,7 +90,7 @@ public class WordCloudView extends View {
         try {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
             alertDialog.setView(R.layout.dlg_progress);
-            BuildWordCloudTask task = new BuildWordCloudTask(alertDialog.setTitle("Build WordCloud").setCancelable(false).create(), new SmsBackupService());
+            BuildWordCloudTask task = new BuildWordCloudTask(alertDialog.setTitle("Build WordCloud").setCancelable(false).create(), new SmsBackupService(Environment.getExternalStorageDirectory()));
             task.execute(width, height);
         } catch (Exception e) {
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
@@ -144,8 +145,8 @@ public class WordCloudView extends View {
         protected Boolean doInBackground(Integer... values) {
             Log.d("BuildWordCloudTask", "start build word cloud background task");
             long startTimeMs = System.currentTimeMillis();
-            WordCloudBuilder wordCloudBuilder = new WordCloudBuilder(values[0], values[1]);
-            TextAnalyzer textAnalyzer = new TextAnalyzer();
+            WordCloudService wordCloudBuilder = new WordCloudService(values[0], values[1]);
+            TextAnalyzerService textAnalyzer = new TextAnalyzerService();
             textAnalyzer.analyzeText(smsBackupService.getSmsBackupAsText(event.getValue(), event.getSmsType()), null);
             Log.d(TAG, textAnalyzer.getReport(true).toString());
             wordCloudList = wordCloudBuilder.buildWordCloud(textAnalyzer.getWordCountMap(NUMBER_OF_WORDS), textAnalyzer.getHighestWordCount());

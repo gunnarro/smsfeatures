@@ -1,4 +1,4 @@
-package com.gunnarro.android.ughme.adapter;
+package com.gunnarro.android.ughme.ui.adapter;
 
 import android.content.Context;
 import android.view.Gravity;

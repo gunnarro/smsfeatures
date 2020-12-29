@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("MainActivity", "onCreate, context: " + getApplicationContext());
         super.onCreate(savedInstanceState);
         context = getApplicationContext();
-        smsBackupService = new SmsBackupService();
+        smsBackupService = new SmsBackupService(Environment.getExternalStorageDirectory());
         setContentView(layout.activity_main);
         ActionBar toolbar = getSupportActionBar();
         drawer = (DrawerLayout) findViewById(id.drawer_layout);

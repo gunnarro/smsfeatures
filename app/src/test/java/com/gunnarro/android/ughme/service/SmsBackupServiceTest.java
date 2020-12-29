@@ -18,15 +18,9 @@ public class SmsBackupServiceTest {
 
     private SmsBackupService smsBackupService;
 
-    //  @Mock
-    //  private Environment environment;
-
     @Before
     public void init() {
-        //   MockitoAnnotations.initMocks(this);
-        //   Mockito.when(environment.getExternalStorageDirectory()).thenReturn(new File("src/test/resources"));
-        smsBackupService = new SmsBackupService();
-        smsBackupService.setAppExtDir(new File("src/test/resources"));
+        smsBackupService = new SmsBackupService(new File("src/test/resources"));
     }
 
     @Ignore

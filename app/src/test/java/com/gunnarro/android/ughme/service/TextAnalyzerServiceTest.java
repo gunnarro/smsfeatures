@@ -1,15 +1,15 @@
-package com.gunnarro.android.ughme.model.analyze;
+package com.gunnarro.android.ughme.service;
 
-import com.gunnarro.android.ughme.model.analyze.TextAnalyzer;
+import com.gunnarro.android.ughme.service.TextAnalyzerService;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TextAnalyzerTest {
+public class TextAnalyzerServiceTest {
 
     @Test
     public void analyzeText() {
-        TextAnalyzer w = new TextAnalyzer();
+        TextAnalyzerService w = new TextAnalyzerService();
         w.analyzeText("Dette, dette, dette er kun en enhets test, og dette er ingen ting å tule med, spør du meg. antall enhets tester er kun 1", null);
         Assert.assertEquals(16, w.getNumberOfWords().intValue());
         Assert.assertEquals("{dette=4, kun=2, enhets=2, ingen=1, antall=1, test=1, ting=1, tester=1, tule=1, med=1}", w.getWordCountMap(10).toString());

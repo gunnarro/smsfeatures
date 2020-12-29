@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.adapter.SmsAdapter;
+import com.gunnarro.android.ughme.ui.adapter.SmsAdapter;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.service.SmsBackupService;
 import com.gunnarro.android.ughme.utility.Utility;
