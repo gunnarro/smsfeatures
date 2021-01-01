@@ -1,0 +1,37 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = '0.8.5'
+    // default
+    // reportsDir = file("$buildDir/reports/jacoco/")
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+    group "Reporting"
+    description "Generate Jacoco coverage reports from unit tests."
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter =
+            ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*',
+             'android/**/*.*']
+    def javaDebugTree =
+            fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+    def kotlinDebugTree =
+            fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.from.addAll(files([mainSrc]))
+    classDirectories.from.addAll(files([javaDebugTree, kotlinDebugTree]))
+    executionData.from.addAll(fileTree(dir: "$buildDir", includes: [
+            "jacoco/testDebugUnitTest.exec",
+            "outputs/code-coverage/connected/*coverage.ec"
+    ]))
+}

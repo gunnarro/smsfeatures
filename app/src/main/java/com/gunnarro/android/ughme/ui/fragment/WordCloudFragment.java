@@ -16,26 +16,29 @@ import androidx.fragment.app.Fragment;
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
-import com.gunnarro.android.ughme.service.SmsBackupService;
+import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.mordred.wordcloud.WordCloud;
 
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class WordCloudFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private static final String TAG = WordCloud.class.getSimpleName();
     private Spinner mobileNumberSp;
 
-    private final SmsBackupService smsBackupService;
+    private final SmsBackupServiceImpl smsBackupService;
 
-    public WordCloudFragment(SmsBackupService smsBackupService) {
+    @Inject
+    public WordCloudFragment(SmsBackupServiceImpl smsBackupService) {
         this.smsBackupService = smsBackupService;
     }
 
-    public static WordCloudFragment newInstance(SmsBackupService smsBackupService) {
-        return new WordCloudFragment(smsBackupService);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,7 @@ public class WordCloudFragment extends Fragment implements View.OnClickListener,
         return view;
     }
 
+    // listen to check box selection
     @Override
     public void onClick(View view) {
         boolean checked = false;
@@ -83,6 +87,7 @@ public class WordCloudFragment extends Fragment implements View.OnClickListener,
         }
     }
 
+    // Listen to selections in the mobil number dropdown
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         RxBus.getInstance().publish(

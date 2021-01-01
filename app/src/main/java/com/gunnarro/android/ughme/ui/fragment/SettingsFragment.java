@@ -16,31 +16,32 @@ import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.model.cloud.Settings;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.Objects;
+import java.util.Properties;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SettingsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import javax.inject.Inject;
+
+
 public class SettingsFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = SettingsFragment.class.getSimpleName();
 
     private Settings settings;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     */
-    public static SettingsFragment newInstance() {
-        SettingsFragment fragment = new SettingsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+    @Inject
+    public SettingsFragment() {
+        /*
+        InputStream is = context.getAssets().open("configuration.properties");
+        Properties props = new Properties();
+        props.load(is);
+        String value = props.getProperty("key", "");
+        is.close();
+         */
     }
 
     @Override

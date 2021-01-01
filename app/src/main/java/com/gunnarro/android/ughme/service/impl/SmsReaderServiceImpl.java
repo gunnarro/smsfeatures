@@ -1,4 +1,4 @@
-package com.gunnarro.android.ughme.service;
+package com.gunnarro.android.ughme.service.impl;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,14 +8,21 @@ import android.provider.Telephony;
 import android.util.Log;
 
 import com.gunnarro.android.ughme.model.sms.Sms;
-import com.gunnarro.android.ughme.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class SmsReaderService {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
+@Singleton
+public class SmsReaderServiceImpl {
+
+    private static final String LOG_TAG = SmsReaderServiceImpl.class.getSimpleName();
 
     private static final String CONTENT_SMS_INBOX = "content://sms/inbox";
     private static final String CONTENT_SMS_OUTBOX = "content://sms/inbox";
@@ -34,14 +41,19 @@ public class SmsReaderService {
 
     public static final String SMS_ALL = "all";
 
-    private static final Context context = MainActivity.getAppContext();
+    private final Context context;
+
+    @Inject
+    public SmsReaderServiceImpl(@ApplicationContext Context context) {
+        this.context = context;
+    }
 
     /**
      * Inbox columns names: _id, thread_id address person date protocol read
      * status type subject body service_center locked error_code seen
      */
-    public static List<Sms> getSMSInbox(boolean isOnlyUnread, String filterByNumber, Long filterByTimeMs) {
-        Log.d("SmsReader", String.format("read sms inbox, filterByNumber: %s, filterByTime: %s", filterByNumber, filterByTimeMs != null ? new Date(filterByTimeMs) : null));
+    public List<Sms> getSMSInbox(boolean isOnlyUnread, String filterByNumber, Long filterByTimeMs) {
+        Log.d(LOG_TAG, String.format("read sms inbox, onlyRead: %s, filterByNumber: %s, filterByTime: %s", isOnlyUnread, filterByNumber, filterByTimeMs != null ? new Date(filterByTimeMs) : null));
         List<Sms> smsInbox = new ArrayList<>();
         String[] projection = new String[]{ID, Telephony.Sms.ADDRESS, Telephony.Sms.BODY, Telephony.Sms.DATE, Telephony.Sms.READ, Telephony.Sms.STATUS, Telephony.Sms.SEEN, Telephony.Sms.TYPE, "datetime(julianday(date)) AS group_by"};
         try (Cursor cursor = context.getContentResolver().query(Telephony.Sms.CONTENT_URI
@@ -55,7 +67,7 @@ public class SmsReaderService {
                     if (isOnlyUnread) {
                         if (read == MESSAGE_IS_READ) {
                             // Skip read sms
-                            Log.d("SmsReader", String.format("skip sms, ead: %s", read));
+                            Log.d(LOG_TAG, String.format("skip sms, ead: %s", read));
                             continue;
                         }
                     }
@@ -66,7 +78,7 @@ public class SmsReaderService {
                     if (filterByTimeMs != null) {
                         if (smsTimeMs <= filterByTimeMs) {
                             // skip this sms
-                            Log.d("SmsReader", String.format("skip sms, date: %s", new Date(smsTimeMs)));
+                            Log.d(LOG_TAG, String.format("skip sms, date: %s", new Date(smsTimeMs)));
                             continue;
                         }
                     }
@@ -76,7 +88,7 @@ public class SmsReaderService {
                     if (filterByNumber != null && !filterByNumber.isEmpty() && !filterByNumber.equalsIgnoreCase(SMS_ALL) && mobileNumber != null) {
                         if (!mobileNumber.equals(filterByNumber)) {
                             // skip this sms
-                            Log.d("SmsReader", String.format("skip sms, number: %s", mobileNumber));
+                            Log.d(LOG_TAG, String.format("skip sms, number: %s", mobileNumber));
                             continue;
                         }
                     }
@@ -96,7 +108,7 @@ public class SmsReaderService {
                             .setCount(1)
                             .build();
 
-                    Log.d("SmsReader", String.format("add sms, number: %s, date: %s", mobileNumber, new Date(smsTimeMs)));
+                    Log.d(LOG_TAG, String.format("add sms, number: %s, date: %s", mobileNumber, new Date(smsTimeMs)));
                     smsInbox.add(sms);
                 } while (cursor.moveToNext());
             }
@@ -105,7 +117,7 @@ public class SmsReaderService {
     }
 
 
-    private static String lookupContactName(String mobileNumber) {
+    private String lookupContactName(String mobileNumber) {
         String contactDisplayName = null;
         Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(mobileNumber));
         String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};
@@ -119,7 +131,7 @@ public class SmsReaderService {
                 cursor.close();
             }
         } catch (Exception e) {
-            Log.e("sms", Objects.requireNonNull(e.getMessage()));
+            Log.e(LOG_TAG, Objects.requireNonNull(e.getMessage()));
         }
         return contactDisplayName;
     }

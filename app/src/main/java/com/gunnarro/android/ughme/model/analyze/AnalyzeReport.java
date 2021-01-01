@@ -42,7 +42,7 @@ public class AnalyzeReport {
     @NotNull
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("AnalyzeReport{");
+        final StringBuilder sb = new StringBuilder("AnalyzeReport{");
         sb.append("numberOfWords=").append(numberOfWords);
         sb.append(", numberOfUniqueWords=").append(numberOfUniqueWords);
         sb.append(", analyzeTimeMs=").append(analyzeTimeMs);

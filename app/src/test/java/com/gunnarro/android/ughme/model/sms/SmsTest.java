@@ -1,6 +1,5 @@
 package com.gunnarro.android.ughme.model.sms;
 
-import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.junit.Assert;

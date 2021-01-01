@@ -79,6 +79,7 @@ public class UtilityTest {
 
     String[] mobileNumbers = {"23545400", "23545411", "23545422", "23545433", "23545444", "23545455", "23545466", "23545466", "23545477", "235454588", "23545499"};
     List<String> words;
+
     /**
      * Setningsledd
      * verbal - verb

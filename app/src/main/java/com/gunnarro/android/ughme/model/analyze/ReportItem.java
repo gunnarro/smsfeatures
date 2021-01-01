@@ -33,7 +33,7 @@ public class ReportItem {
     @NotNull
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("ReportItem{");
+        final StringBuilder sb = new StringBuilder("ReportItem{");
         sb.append("word='").append(word).append('\'');
         sb.append(", count=").append(count);
         sb.append(", percentage=").append(percentage);

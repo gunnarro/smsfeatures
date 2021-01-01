@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -18,9 +19,10 @@ import java.util.stream.Collectors;
 public class Utility {
 
     private static final String LOG_TAG = Utility.class.getSimpleName();
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    private static final SimpleDateFormat dateFormat;
 
     static {
+        dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 

@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -12,12 +11,12 @@ import android.view.View;
 import androidx.appcompat.app.AlertDialog;
 
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.service.TextAnalyzerService;
 import com.gunnarro.android.ughme.model.cloud.Word;
-import com.gunnarro.android.ughme.service.WordCloudService;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
-import com.gunnarro.android.ughme.service.SmsBackupService;
+import com.gunnarro.android.ughme.service.WordCloudService;
+import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
+import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -25,9 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
+@AndroidEntryPoint
 public class WordCloudView extends View {
 
     private static final String TAG = WordCloudView.class.getSimpleName();
@@ -39,13 +42,26 @@ public class WordCloudView extends View {
 
     private static WordCloudEvent event = WordCloudEvent.builder().eventType(WordCloudEvent.WordCloudEventTypeEnum.MESSAGE).smsTypeAll().setValue("(.*)").build();
 
-    private static List<Word> wordCloudList = new ArrayList<>();
+    @Inject
+    SmsBackupServiceImpl smsBackupService;
+    @Inject
+    TextAnalyzerServiceImpl textAnalyzerService;
+    @Inject
+    WordCloudService wordCloudService;
 
+    private List<Word> wordList = new ArrayList<>();
+
+    /**
+     *
+     */
     public WordCloudView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
 
+    /**
+     *
+     */
     public WordCloudView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -54,11 +70,11 @@ public class WordCloudView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         init(getWidth(), getHeight());
-        for (int i = 0; i < wordCloudList.size(); i++) {
-            updateCanvasText(canvas, wordCloudList.get(i));
+        for (int i = 0; i < wordList.size(); i++) {
+            updateCanvasText(canvas, wordList.get(i));
         }
         RxBus.getInstance().listen().subscribe(getInputObserver());
-        Log.d(buildTag("onDraw"), String.format("Finished! words=%s", wordCloudList.size()));
+        Log.d(buildTag("onDraw"), String.format("Finished! words=%s", wordList.size()));
     }
 
     /**
@@ -90,12 +106,21 @@ public class WordCloudView extends View {
         try {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
             alertDialog.setView(R.layout.dlg_progress);
-            BuildWordCloudTask task = new BuildWordCloudTask(alertDialog.setTitle("Build WordCloud").setCancelable(false).create(), new SmsBackupService(Environment.getExternalStorageDirectory()));
+            BuildWordCloudTask task = new BuildWordCloudTask(alertDialog.setTitle("Build WordCloud").setCancelable(false).create()
+                    , textAnalyzerService
+                    , smsBackupService
+                    , wordCloudService
+                    , event);
             task.execute(width, height);
         } catch (Exception e) {
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
         }
     }
+
+    private void updateWordCloud(List<Word> list) {
+        this.wordList = list;
+    }
+
 
     // Get RxJava input observer instance
     private Observer<Object> getInputObserver() {
@@ -131,27 +156,36 @@ public class WordCloudView extends View {
     /**
      * run the word cloud build as a background task
      */
-    private static class BuildWordCloudTask extends AsyncTask<Integer, Void, Boolean> {
+    class BuildWordCloudTask extends AsyncTask<Integer, Void, List<Word>> {
 
-        private final SmsBackupService smsBackupService;
+        private final SmsBackupServiceImpl smsBackupService;
+        private final TextAnalyzerServiceImpl textAnalyzerService;
+        private final WordCloudService wordCloudService;
+        private final WordCloudEvent event;
+
         private Dialog progressDialog;
 
-        public BuildWordCloudTask(AlertDialog alertDialog, SmsBackupService smsBackupService) {
-            this.smsBackupService = smsBackupService;
+        public BuildWordCloudTask(AlertDialog alertDialog,
+                                  TextAnalyzerServiceImpl textAnalyzerService,
+                                  SmsBackupServiceImpl smsBackupService,
+                                  WordCloudService wordCloudService,
+                                  WordCloudEvent event) {
             this.progressDialog = alertDialog;
+            this.textAnalyzerService = textAnalyzerService;
+            this.smsBackupService = smsBackupService;
+            this.wordCloudService = wordCloudService;
+            this.event = event;
         }
 
         @Override
-        protected Boolean doInBackground(Integer... values) {
+        protected List<Word> doInBackground(Integer... values) {
             Log.d("BuildWordCloudTask", "start build word cloud background task");
             long startTimeMs = System.currentTimeMillis();
-            WordCloudService wordCloudBuilder = new WordCloudService(values[0], values[1]);
-            TextAnalyzerService textAnalyzer = new TextAnalyzerService();
-            textAnalyzer.analyzeText(smsBackupService.getSmsBackupAsText(event.getValue(), event.getSmsType()), null);
-            Log.d(TAG, textAnalyzer.getReport(true).toString());
-            wordCloudList = wordCloudBuilder.buildWordCloud(textAnalyzer.getWordCountMap(NUMBER_OF_WORDS), textAnalyzer.getHighestWordCount());
+            textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(event.getValue(), event.getSmsType()), null);
+            Log.d(TAG, textAnalyzerService.getReport(true).toString());
+            List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(NUMBER_OF_WORDS), textAnalyzerService.getHighestWordCount());
             Log.d("BuildWordCloudTask", String.format("finished, buildTime=%s ms", (System.currentTimeMillis() - startTimeMs)));
-            return Boolean.TRUE;
+            return wordList;
         }
 
         @Override
@@ -160,9 +194,9 @@ public class WordCloudView extends View {
             progressDialog.show();
         }
 
-
         @Override
-        protected void onPostExecute(Boolean result) {
+        protected void onPostExecute(List<Word> wordList) {
+            updateWordCloud(wordList);
             if (progressDialog != null) {
                 progressDialog.dismiss();
                 progressDialog = null;

@@ -1,14 +1,8 @@
 package com.gunnarro.android.ughme;
 
-import android.view.View;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.MediumTest;
 
-import com.gunnarro.android.ughme.ui.MainActivity;
-
-import org.junit.Rule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @MediumTest

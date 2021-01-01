@@ -1,11 +1,12 @@
 package com.gunnarro.android.ughme.service;
 
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 
 import com.gunnarro.android.ughme.model.cloud.Word;
+import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
+import com.gunnarro.android.ughme.service.impl.WordCloudServiceImpl;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-@Ignore
 public class WordCloudServiceTest {
 
     String[] mobileNumbers = {"23545400", "23545411", "23545422", "23545433", "23545444", "23545455", "23545466", "23545466", "23545477", "235454588", "23545499"};
@@ -43,6 +43,7 @@ public class WordCloudServiceTest {
  */
     }
 
+
     @Test
     public void buildWordCloud() {
         //doNothing().when(rectMock).offsetTo(Mockito.anyInt(), Mockito.anyInt());
@@ -56,10 +57,10 @@ public class WordCloudServiceTest {
         smsPlainTxt.append("Dette, dette, dette er kun en enhets test, og dette er ingenting å tulle med, spør du meg. antall enhets tester er kun 1");
 
 
-        TextAnalyzerService textAnalyzer = new TextAnalyzerService();
+        TextAnalyzerServiceImpl textAnalyzer = new TextAnalyzerServiceImpl();
         textAnalyzer.analyzeText(smsPlainTxt.toString(), null);
 
-        WordCloudService builder = new WordCloudService(1440, 1944);
+        WordCloudService builder = new WordCloudServiceImpl(1440, 1944);
         List<Word> words = builder.buildWordCloud(textAnalyzer.getWordCountMap(3), textAnalyzer.getHighestWordCount());
         Assert.assertEquals("[Word{word=dette, size=200.0, count=4, rect=null width=0 height=0}]", words.toString());
         Assert.assertEquals("Word{word=dette, size=200.0, count=4, rect=null width=0 height=0}", words.get(0).toString());
@@ -74,7 +75,7 @@ public class WordCloudServiceTest {
         Mockito.when(rect.width()).thenReturn(75);
         Mockito.when(rect.height()).thenReturn(75);
 
-        WordCloudService builder = new WordCloudService(1440, 1944);
+        WordCloudService builder = new WordCloudServiceImpl(1440, 1944);
         Word word = Word.builder()
                 .setText("test")
                 .setRect(rect)
@@ -88,6 +89,6 @@ public class WordCloudServiceTest {
         //  Assert.assertEquals(1920, word.getPosition().x);
         //  Assert.assertEquals(1920, word.getPosition().y);
         //  Assert.assertNotNull(builder.place(word, new Point(1920, 1920)));
-        Assert.assertNotNull(builder.place(word, new Point(1920, 1920)));
+        // Assert.assertNotNull(builder.place(word, new Point(1920, 1920)));
     }
 }

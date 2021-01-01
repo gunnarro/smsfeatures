@@ -1,16 +1,12 @@
 package com.gunnarro.android.ughme.ui;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -21,7 +17,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.service.SmsBackupService;
+import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.ui.fragment.BackupFragment;
 import com.gunnarro.android.ughme.ui.fragment.BarChartFragment;
 import com.gunnarro.android.ughme.ui.fragment.SettingsFragment;
@@ -31,49 +27,53 @@ import com.gunnarro.android.ughme.ui.fragment.WordCloudFragment;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 import static com.gunnarro.android.ughme.R.id;
 import static com.gunnarro.android.ughme.R.layout;
 import static com.gunnarro.android.ughme.R.string;
 
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final int PERMISSION_REQUEST = 1;
 
     private DrawerLayout drawer;
     private FragmentManager fm;
-    private SmsBackupService smsBackupService;
-
-    private static Context context;
-
-    public static Context getAppContext() {
-        return context;
-    }
+    @Inject
+    SmsBackupServiceImpl smsBackupService;
+    @Inject
+    BackupFragment backupFragment;
+    @Inject
+    SmsSearchFragment smsSearchFragment;
+    @Inject
+    WordCloudFragment wordCloudFragment;
+    @Inject
+    BarChartFragment barChartFragment;
+    @Inject
+    SettingsFragment settingsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("MainActivity", "onCreate, context: " + getApplicationContext());
         super.onCreate(savedInstanceState);
-        context = getApplicationContext();
-        smsBackupService = new SmsBackupService(Environment.getExternalStorageDirectory());
         setContentView(layout.activity_main);
-        ActionBar toolbar = getSupportActionBar();
-        drawer = (DrawerLayout) findViewById(id.drawer_layout);
+        drawer = findViewById(id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, string.app_name, string.app_name);
         //drawer.setDrawerListener(toggle);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(id.navigationView);
+        NavigationView navigationView = findViewById(id.navigationView);
         navigationView.setNavigationItemSelectedListener(this);
-        // disply home button for actionbar
-        toolbar.setDisplayHomeAsUpEnabled(true);
+        // display home button for actionbar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // navigation view select home menu by default
         navigationView.setCheckedItem(id.nav_sms_backup);
         fm = getSupportFragmentManager();
-        if (savedInstanceState == null) {
-            viewFragment(BackupFragment.newInstance(smsBackupService));
-        }
         // Finally, check and grant or deni permissions
         checkPermissions();
     }
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (drawer.isOpen()) {
                 drawer.closeDrawers();
             } else {
-                drawer.openDrawer(Gravity.LEFT);
+                drawer.openDrawer(GravityCompat.START);
             }
         }
         return super.onOptionsItemSelected(item);
@@ -95,18 +95,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try {
             int id = menuItem.getItemId();
             if (id == R.id.nav_sms_backup) {
-                viewFragment(BackupFragment.newInstance(smsBackupService));
+                viewFragment(backupFragment);
             } else if (id == R.id.nav_sms_search) {
-                viewFragment(SmsSearchFragment.newInstance(smsBackupService));
+                viewFragment(smsSearchFragment);
             } else if (id == R.id.nav_sms_chart) {
-                viewFragment(BarChartFragment.newInstance(smsBackupService));
+                viewFragment(barChartFragment);
             } else if (id == R.id.nav_sms_wordcloud) {
-                viewFragment(WordCloudFragment.newInstance(smsBackupService));
+                viewFragment(wordCloudFragment);
             } else if (id == R.id.nav_settings) {
-                viewFragment(SettingsFragment.newInstance());
+                viewFragment(settingsFragment);
             }
             // close drawer after clicking the menu item
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
             return false;
         } catch (Exception e) {

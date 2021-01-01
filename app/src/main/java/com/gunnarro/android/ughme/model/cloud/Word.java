@@ -11,7 +11,7 @@ public class Word {
     private final String text;
     private final Paint paint;
     private final Rect rect;
-    private int count = 1;
+    private final int count;
     private final float size;
     private float rotationAngle = 0f;
 
@@ -72,7 +72,7 @@ public class Word {
     @NotNull
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Word{");
+        final StringBuilder sb = new StringBuilder("Word{");
         sb.append("word=").append(text);
         sb.append(", size=").append(size);
         sb.append(", count=").append(count);

@@ -2,6 +2,8 @@ package com.gunnarro.android.ughme.model.sms;
 
 import com.google.gson.annotations.Expose;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -24,7 +26,7 @@ public class Sms implements Serializable, Comparable<Sms> {
     private final int numberOfReceived;
     private final int numberOfSent;
     private final int numberOfBlocked;
-    private Integer count = 0;
+    private final Integer count;
 
     private Sms(Builder builder) {
         this.isRead = builder.isRead;
@@ -98,9 +100,10 @@ public class Sms implements Serializable, Comparable<Sms> {
         }
     }
 
+    @NotNull
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Sms{");
+        final StringBuilder sb = new StringBuilder("Sms{");
         sb.append("address=").append(address);
         sb.append(", contactName=").append(contactName);
         sb.append(", date=").append(new Date(timeMs));

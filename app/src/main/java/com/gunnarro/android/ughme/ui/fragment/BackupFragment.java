@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,39 +19,34 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
-import com.gunnarro.android.ughme.service.SmsBackupService;
+import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.ui.dialog.ConfirmDialogFragment;
 import com.gunnarro.android.ughme.ui.dialog.DialogActionListener;
 import com.gunnarro.android.ughme.utility.Utility;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link BackupFragment#newInstance} factory method to
- * create an instance of this fragment.
+ *
  */
+@AndroidEntryPoint
 public class BackupFragment extends Fragment implements View.OnClickListener, DialogActionListener {
 
     private static final String LOG_TAG = BackupFragment.class.getSimpleName();
     public static final String ALL = "all";
     private static final int REQUEST_PERMISSIONS_CODE_READ_SMS = 22;
 
-    private final SmsBackupService smsBackupService;
+    private final SmsBackupServiceImpl smsBackupService;
 
-    private BackupFragment(@NonNull SmsBackupService smsBackupService) {
+    @Inject
+    public BackupFragment(@NonNull SmsBackupServiceImpl smsBackupService) {
         this.smsBackupService = smsBackupService;
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     */
-    public static BackupFragment newInstance(SmsBackupService smsBackupService) {
-        BackupFragment fragment = new BackupFragment(smsBackupService);
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -76,7 +72,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
      * @param savedInstanceState
      */
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         updateSmsBackupInfo(smsBackupService.readSmsBackupMetaData());
     }
@@ -86,20 +82,34 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         if (info != null) {
             TextView statusView = view.findViewById(R.id.sms_backup_status_value);
             statusView.setText(info.getStatus() != null ? info.getStatus().name() : "");
+
             TextView backUpDateView = view.findViewById(R.id.sms_backup_date_value);
             backUpDateView.setText(Utility.formatTime(info.getLastBackupTime()));
+
             TextView filePathView = view.findViewById(R.id.file_path_value);
             filePathView.setText(info.getBackupFilePath());
+
             TextView fileNameView = view.findViewById(R.id.file_name_value);
             fileNameView.setText(info.getBackupFileName());
+
+            TextView fileSizeView = view.findViewById(R.id.file_size_value);
+            fileSizeView.setText(Formatter.formatFileSize(getActivity().getApplicationContext(), info.getSmsBackupFileSizeBytes()));
+
+            TextView storageFreeSpaceView = view.findViewById(R.id.storage_free_space_value);
+            storageFreeSpaceView.setText(Formatter.formatFileSize(getActivity().getApplicationContext(), info.getStorageFreeSpaceBytes()));
+
             TextView smsFromDateView = view.findViewById(R.id.sms_from_date_value);
             smsFromDateView.setText(Utility.formatTime(info.getFromDateTime()));
+
             TextView smsToDateView = view.findViewById(R.id.sms_to_date_value);
             smsToDateView.setText(Utility.formatTime(info.getToDateTime()));
+
             TextView smsNumberView = view.findViewById(R.id.number_of_sms_value);
             smsNumberView.setText(String.format("%s", info.getNumberOfSms()));
+
             TextView mobileView = view.findViewById(R.id.number_of_mobile_nr_value);
             mobileView.setText(String.format("%s", info.getNumberOfMobileNumbers()));
+
             Log.d(LOG_TAG, String.format("saved sms backup info. %s ", info));
         } else {
             Log.d(LOG_TAG, String.format("not saved sms backup info. %s ", info));
@@ -110,7 +120,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.btn_sms_backup_btn) {
-            Dialog d = buildProgressDialog("Backup sms");
+            Dialog d = buildProgressDialog();
             d.show();
             smsBackupService.backupSmsInbox();
             SmsBackupInfo info = smsBackupService.readSmsBackupMetaData();
@@ -122,11 +132,11 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         }
     }
 
-    private Dialog buildProgressDialog(String msg) {
+    private Dialog buildProgressDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
         builder.setView(R.layout.dlg_progress);
         Dialog progressDialog = builder.create();
-        progressDialog.setTitle(msg);
+        progressDialog.setTitle("Backup sms");
         progressDialog.setCancelable(true);
         return progressDialog;
     }
@@ -145,6 +155,8 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         if (actionCode == DialogActionListener.OK_ACTION) {
             // the user confirmed the operation
             smsBackupService.clearSmsBackupFile();
+            SmsBackupInfo info = smsBackupService.readSmsBackupMetaData();
+            updateSmsBackupInfo(info);
             Snackbar.make(Objects.requireNonNull(getView()), "Deleted sms backup files.", Snackbar.LENGTH_LONG).show();
         } else {
             // dismiss, do nothing, the user canceled the operation

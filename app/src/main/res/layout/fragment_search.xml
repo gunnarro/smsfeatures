@@ -16,15 +16,13 @@
             android:id="@+id/view_sms_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:queryHint="Search sms"
             android:iconifiedByDefault="false"
-            android:layout_alignParentTop="true" />
+            android:queryHint="Search sms" />
 
         <ListView
             android:id="@+id/view_sms_search_result"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/view_sms_search"
             android:divider="@null"
             android:dividerHeight="10dp" />
 

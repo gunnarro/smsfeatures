@@ -1,13 +1,22 @@
 package com.gunnarro.android.ughme.service;
 
+import android.os.Environment;
+
+import com.gunnarro.android.ughme.exception.ApplicationException;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
+import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
+import com.gunnarro.android.ughme.service.impl.SmsReaderServiceImpl;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,20 +25,35 @@ import java.util.List;
 
 public class SmsBackupServiceTest {
 
-    private SmsBackupService smsBackupService;
+    private SmsBackupServiceImpl smsBackupService;
+
+    @Mock
+    private SmsReaderServiceImpl smsReaderServiceMock;
+
+    MockedStatic<Environment> mockedStatic = Mockito.mockStatic(Environment.class);
 
     @Before
     public void init() {
-        smsBackupService = new SmsBackupService(new File("src/test/resources"));
+        MockitoAnnotations.openMocks(this);
+        mockedStatic
+                .when(Environment::getExternalStorageDirectory)
+                .thenReturn(new File("src/test/resources"));
+        smsBackupService = new SmsBackupServiceImpl(smsReaderServiceMock);
     }
 
-    @Ignore
+    @After
+    public void after() {
+        mockedStatic.close();
+    }
+
     @Test
     public void backupSmsInbox() {
+        List<Sms> smsInbox = new ArrayList<>();
+        Mockito.when(smsReaderServiceMock.getSMSInbox(Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyLong())).thenReturn(smsInbox);
         try {
             smsBackupService.backupSmsInbox();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ApplicationException e) {
+            Assert.fail();
         }
     }
 

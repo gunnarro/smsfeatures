@@ -1,5 +1,7 @@
 package com.gunnarro.android.ughme.model.sms;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 
 public class SmsBackupInfo implements Serializable {
@@ -10,6 +12,8 @@ public class SmsBackupInfo implements Serializable {
 
     BackupStatusEnum status = BackupStatusEnum.NOT_BACKED_UP;
     String smsBackupFilePath;
+    long smsBackupFileSizeBytes;
+    long storageFreeSpaceBytes;
     Long lastBackupTime;
     Long fromDateTime;
     Long toDateTime;
@@ -22,6 +26,22 @@ public class SmsBackupInfo implements Serializable {
 
     public void setSmsBackupFilePath(String smsBackupFilePath) {
         this.smsBackupFilePath = smsBackupFilePath;
+    }
+
+    public long getSmsBackupFileSizeBytes() {
+        return smsBackupFileSizeBytes;
+    }
+
+    public void setSmsBackupFileSizeBytes(long smsBackupFileSizeBytes) {
+        this.smsBackupFileSizeBytes = smsBackupFileSizeBytes;
+    }
+
+    public long getStorageFreeSpaceBytes() {
+        return storageFreeSpaceBytes;
+    }
+
+    public void setStorageFreeSpaceBytes(long storageFreeSpaceBytes) {
+        this.storageFreeSpaceBytes = storageFreeSpaceBytes;
     }
 
     public void setStatus(BackupStatusEnum status) {
@@ -39,7 +59,6 @@ public class SmsBackupInfo implements Serializable {
     public Long getLastBackupTime() {
         return lastBackupTime;
     }
-
 
     public Long getFromDateTime() {
         return fromDateTime;
@@ -87,9 +106,10 @@ public class SmsBackupInfo implements Serializable {
         return null;
     }
 
+    @NotNull
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("SmsBackupInfo{");
+        final StringBuilder sb = new StringBuilder("SmsBackupInfo{");
         sb.append("status=").append(status);
         sb.append(", smsBackupFilePath='").append(smsBackupFilePath).append('\'');
         sb.append(", lastBackupTime=").append(lastBackupTime);

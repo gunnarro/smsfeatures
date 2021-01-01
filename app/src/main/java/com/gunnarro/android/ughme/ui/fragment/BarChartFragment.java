@@ -38,7 +38,7 @@ import com.gunnarro.android.ughme.model.chart.formatter.SimpleAxisValueFormatter
 import com.gunnarro.android.ughme.model.chart.formatter.YearXAxisFormatter;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.observable.RxBus;
-import com.gunnarro.android.ughme.service.SmsBackupService;
+import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
@@ -47,30 +47,30 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
+@AndroidEntryPoint
 public class BarChartFragment extends Fragment implements OnChartGestureListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final String TAG = BarChartFragment.class.getName();
     private BarChart chart;
     private Spinner mobileNumberSp;
     private List<String> mobileNumbers;
 
-    private final SmsBackupService smsBackupService;
+    private final SmsBackupServiceImpl smsBackupService;
 
-    private BarChartFragment(@NonNull SmsBackupService smsBackupService) {
+    @Inject
+    public BarChartFragment(@NonNull SmsBackupServiceImpl smsBackupService) {
         this.smsBackupService = smsBackupService;
-    }
-
-
-    @NonNull
-    public static BarChartFragment newInstance(SmsBackupService smsBackupService) {
-        return new BarChartFragment(smsBackupService);
     }
 
     private enum StatTypeEnum {
@@ -189,7 +189,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
     }
 
     private String formatAsDateStr(Long timeMs, String format) {
-        return new SimpleDateFormat(format).format(timeMs);
+        return new SimpleDateFormat(format, Locale.getDefault()).format(timeMs);
     }
 
     @NonNull()
@@ -218,7 +218,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         boolean isStacked = false;
         if (isStacked) {
             StackedBarEntry stackedBarEntry = buildStackedBarEntries(sortedSmsMap);
-            barDataSets.add(buildBarDataSetStacked(null, stackedBarEntry.getLabels(), stackedBarEntry.getValues()));
+            barDataSets.add(buildBarDataSetStacked(stackedBarEntry.getLabels(), stackedBarEntry.getValues()));
         } else {
             sortedSmsMap.entrySet().forEach(e -> barDataSets.add(buildBarDataSet(e.getKey(), e.getValue(), barDataSets.size())));
         }
@@ -240,18 +240,13 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         return new StackedBarEntry(labels, values);
     }
 
-    private BarDataSet buildBarDataSetStacked(String name, String[] labels, float[] values) {
+    private BarDataSet buildBarDataSetStacked(String[] labels, float[] values) {
         List<BarEntry> entries = new ArrayList<>();
         entries.add(new BarEntry(0f, values));
-        BarDataSet barDataSet = new BarDataSet(entries, name);
+        BarDataSet barDataSet = new BarDataSet(entries, null);
         barDataSet.setStackLabels(labels);
-        // set color for a full data set
-        Random random = new Random();
-        int color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-        // barDataSet.setColor(color);
         // set different colors within a data set
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        // barDataSet.setBarBorderWidth(0.9f);
         barDataSet.setValueTextColor(Color.DKGRAY);
         barDataSet.setValueTextSize(12f);
         return barDataSet;

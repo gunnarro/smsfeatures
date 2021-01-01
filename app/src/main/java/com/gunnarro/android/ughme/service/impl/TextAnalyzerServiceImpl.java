@@ -1,4 +1,4 @@
-package com.gunnarro.android.ughme.service;
+package com.gunnarro.android.ughme.service.impl;
 
 import android.util.Log;
 
@@ -13,11 +13,15 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import static java.util.stream.Collectors.toMap;
 
-public class TextAnalyzerService {
+@Singleton
+public class TextAnalyzerServiceImpl {
 
-    private static final String TAG = TextAnalyzerService.class.getSimpleName();
+    private static final String lOG_TAG = TextAnalyzerServiceImpl.class.getSimpleName();
 
     public static final String DEFAULT_WORD_REGEXP = "\\b\\w{3,}"; // match only word with length > 3
     private Map<String, Integer> sortedWordMap = new LinkedHashMap<>();
@@ -28,7 +32,8 @@ public class TextAnalyzerService {
     /**
      * default constructor
      */
-    public TextAnalyzerService() {
+    @Inject
+    public TextAnalyzerServiceImpl() {
     }
 
     public void analyzeText(final String text, String regexp) {

@@ -13,9 +13,9 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.ui.adapter.SmsAdapter;
 import com.gunnarro.android.ughme.model.sms.Sms;
-import com.gunnarro.android.ughme.service.SmsBackupService;
+import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
+import com.gunnarro.android.ughme.ui.adapter.SmsAdapter;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import java.util.ArrayList;
@@ -23,24 +23,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * view for query search in sms inbox
  */
+@AndroidEntryPoint
 public class SmsSearchFragment extends Fragment {
     private static final String LOG_TAG = SmsSearchFragment.class.getSimpleName();
     private List<Sms> smsList = new ArrayList<>();
 
-    private final SmsBackupService smsBackupService;
+    private final SmsBackupServiceImpl smsBackupService;
 
-    private SmsSearchFragment(@NonNull SmsBackupService smsBackupService) {
+    @Inject
+    public SmsSearchFragment(@NonNull SmsBackupServiceImpl smsBackupService) {
         this.smsBackupService = smsBackupService;
-    }
-
-    public static SmsSearchFragment newInstance(SmsBackupService smsBackupService) {
-        SmsSearchFragment fragment = new SmsSearchFragment(smsBackupService);
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
