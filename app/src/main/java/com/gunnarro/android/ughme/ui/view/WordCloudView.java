@@ -9,9 +9,12 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceManager;
 
 import com.gunnarro.android.ughme.R;
+import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
+import com.gunnarro.android.ughme.model.config.Settings;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.WordCloudService;
@@ -34,7 +37,6 @@ import io.reactivex.disposables.Disposable;
 public class WordCloudView extends View {
 
     private static final String TAG = WordCloudView.class.getSimpleName();
-    private static final int NUMBER_OF_WORDS = 150;
 
     private static String buildTag(String tagName) {
         return new StringBuilder(TAG).append(".").append(tagName).toString();
@@ -51,17 +53,10 @@ public class WordCloudView extends View {
 
     private List<Word> wordList = new ArrayList<>();
 
-    /**
-     *
-     */
     public WordCloudView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-
-    /**
-     *
-     */
     public WordCloudView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -110,11 +105,26 @@ public class WordCloudView extends View {
                     , textAnalyzerService
                     , smsBackupService
                     , wordCloudService
-                    , event);
+                    , event
+                    , mapPreferences());
             task.execute(width, height);
         } catch (Exception e) {
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
         }
+    }
+
+    private Settings mapPreferences() {
+        Settings settings = new Settings();
+        int words = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(getResources().getString(R.string.pref_number_of_words), settings.numberOfWords);
+        int maxFontSize = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(getResources().getString(R.string.pref_word_max_font_size), settings.maxWordFontSize);
+        int radiusStep = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(getResources().getString(R.string.pref_radius_step), settings.radiusStep);
+        int offsetStep = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(getResources().getString(R.string.pref_offset_step), settings.offsetStep);
+
+        settings.numberOfWords = words;
+        settings.maxWordFontSize = maxFontSize;
+        settings.radiusStep = radiusStep;
+        settings.offsetStep = offsetStep;
+        return settings;
     }
 
     private void updateWordCloud(List<Word> list) {
@@ -132,10 +142,10 @@ public class WordCloudView extends View {
 
             @Override
             public void onNext(@NotNull Object obj) {
-                Log.d(buildTag("getInputObserver.onNext"), String.format("Received new data event of type %s", obj.getClass().getSimpleName()));
+                //Log.d(buildTag("getInputObserver.onNext"), String.format("Received new data event of type %s", obj.getClass().getSimpleName()));
                 if (obj instanceof WordCloudEvent) {
                     event = (WordCloudEvent) obj;
-                    Log.d(buildTag("getInputObserver.onNext"), String.format("handle event: %s", event.toString()));
+                   // Log.d(buildTag("getInputObserver.onNext"), String.format("handle event: %s", event.toString()));
                     // refresh view
                     invalidate();
                 }
@@ -162,6 +172,7 @@ public class WordCloudView extends View {
         private final TextAnalyzerServiceImpl textAnalyzerService;
         private final WordCloudService wordCloudService;
         private final WordCloudEvent event;
+        private final Settings settings;
 
         private Dialog progressDialog;
 
@@ -169,21 +180,26 @@ public class WordCloudView extends View {
                                   TextAnalyzerServiceImpl textAnalyzerService,
                                   SmsBackupServiceImpl smsBackupService,
                                   WordCloudService wordCloudService,
-                                  WordCloudEvent event) {
+                                  WordCloudEvent event,
+                                  Settings settings) {
             this.progressDialog = alertDialog;
             this.textAnalyzerService = textAnalyzerService;
             this.smsBackupService = smsBackupService;
             this.wordCloudService = wordCloudService;
             this.event = event;
+            this.settings = settings;
         }
 
         @Override
         protected List<Word> doInBackground(Integer... values) {
             Log.d("BuildWordCloudTask", "start build word cloud background task");
             long startTimeMs = System.currentTimeMillis();
-            textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(event.getValue(), event.getSmsType()), null);
+            textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(event.getValue(), event.getSmsType()), settings.wordMatchRegex);
             Log.d(TAG, textAnalyzerService.getReport(true).toString());
-            List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(NUMBER_OF_WORDS), textAnalyzerService.getHighestWordCount());
+            List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(settings.numberOfWords)
+                    , textAnalyzerService.getHighestWordCount()
+                    , new Dimension(values[0], values[1])
+                    , settings);
             Log.d("BuildWordCloudTask", String.format("finished, buildTime=%s ms", (System.currentTimeMillis() - startTimeMs)));
             return wordList;
         }

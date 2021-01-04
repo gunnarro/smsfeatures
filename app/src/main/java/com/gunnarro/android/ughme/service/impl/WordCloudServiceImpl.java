@@ -6,11 +6,12 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.Log;
 
+import com.gunnarro.android.ughme.exception.ApplicationException;
 import com.gunnarro.android.ughme.model.cloud.AngleGenerator;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.TreeWordPlacer;
 import com.gunnarro.android.ughme.model.cloud.Word;
-import com.gunnarro.android.ughme.model.config.WordCloudSettings;
+import com.gunnarro.android.ughme.model.config.Settings;
 import com.gunnarro.android.ughme.service.WordCloudService;
 
 import java.util.ArrayList;
@@ -27,12 +28,9 @@ public class WordCloudServiceImpl implements WordCloudService {
 
     private final static String TAG = WordCloudServiceImpl.class.getSimpleName();
     private final Random rnd = new Random();
-    public static final int NUMBER_OF_WORDS = 150;
-    private static final int MAX_WORD_SIZE = 200;
-    private static final int MIN_WORD_SIZE = 25;
-    private final Dimension rectangleDimension;
+    private Dimension rectangleDimension;
 
-    private WordCloudSettings wordCloudSettings;
+    private Settings settings;
     protected TreeWordPlacer wordPlacer;
 
     private static String buildTag(String tagName) {
@@ -41,46 +39,40 @@ public class WordCloudServiceImpl implements WordCloudService {
 
     @Inject
     public WordCloudServiceImpl() {
-        this(1024, 1024);
-    }
-
-    /**
-     * @param width  - length of x.axis, none negative values only
-     * @param height - Length of y-axis, none negative values only
-     */
-    public WordCloudServiceImpl(int width, int height) {
-        if (width < 0 || height < 0) {
-            throw new RuntimeException("width and height must both be greater than 0!");
-        }
-        rectangleDimension = new Dimension(width, height);
         wordPlacer = new TreeWordPlacer();
-        wordPlacer.reset();
-        Log.i(buildTag("WordCloudBuilder"), String.format("init, width=%s, height=%s", width, height));
     }
 
+    public List<Word> buildWordCloud(Map<String, Integer> wordMap, Integer mostFrequentWordCount, Dimension rectangleDimension, Settings settings) {
+        Log.i(buildTag("buildWordCloud"), String.format("number of words size=%s, rectangle: %s", wordMap.size(), rectangleDimension));
+        Log.i(buildTag("buildWordCloud"), String.format("%s", settings));
 
-    public List<Word> buildWordCloud(Map<String, Integer> wordMap, Integer mostFrequentWordCount) {
-        Log.d(buildTag("buildWordCloud"), String.format("word map size=%s", wordMap.size()));
-        Log.d(buildTag("buildWordCloud"), String.format("word map: %s", wordMap));
+        //Log.d(buildTag("buildWordCloud"), String.format("word map: %s", wordMap));
+
+        if (rectangleDimension.getWidth() < 0 || rectangleDimension.getHeight() < 0) {
+            throw new ApplicationException(String.format("width and height must both be greater than 0! rectangle: %s", rectangleDimension), null);
+        }
+        // reset previous build
+        wordPlacer.reset();
+        this.rectangleDimension = rectangleDimension;
         AngleGenerator angleGenerator = new AngleGenerator();
         int numberOfCollisions = 0;
         int numberOfdWords = 1;
         List<Word> wordList = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : wordMap.entrySet()) {
-            int wordSize = determineWordSize(entry.getValue(), mostFrequentWordCount);
-            Paint wordPaint = createPaint(wordSize, Paint.Align.CENTER);
+            int wordFontSize = determineWordFontSize(entry.getValue(), mostFrequentWordCount, settings.minWordFontSize, settings.maxWordFontSize);
+            Paint wordPaint = createPaint(wordFontSize, Paint.Align.CENTER);
             Rect wordRect = new Rect();
             wordPaint.getTextBounds(entry.getKey(), 0, entry.getKey().length(), wordRect);
             Word newWord = Word.builder()
                     .setText(entry.getKey())
-                    .setSize(wordSize)
+                    .setSize(wordFontSize)
                     .setCount(entry.getValue())
                     .setPaint(wordPaint)
                     .setRect(wordRect)
                     .build();
 
             final Point startPoint = getStartingPoint(newWord);
-            boolean placed = place(newWord, startPoint);
+            boolean placed = place(newWord, startPoint, settings.radiusStep, settings.offsetStep);
 
             if (placed) {
                 wordList.add(newWord);
@@ -106,33 +98,41 @@ public class WordCloudServiceImpl implements WordCloudService {
     /**
      * Determine the font size.
      */
-    private int determineWordSize(int wordCount, int highestWordCount) {
-        float wordSize = ((float) wordCount / (float) highestWordCount) * MAX_WORD_SIZE;
-        Log.d(buildTag("determineWordSize"), String.format("wordSize=%s", wordSize));
-        if (wordSize < MIN_WORD_SIZE) {
-            wordSize = MIN_WORD_SIZE;
-        } else if (wordSize > MAX_WORD_SIZE) {
-            wordSize = MAX_WORD_SIZE;
+    private int determineWordFontSize(int wordCount, int highestWordCount, int minFontSize, int maxFontSize) {
+        float wordFontSize = ((float) wordCount / (float) highestWordCount) * maxFontSize;
+        Log.d(buildTag("determineWordSize"), String.format("wordSize=%s", wordFontSize));
+        if (wordFontSize < minFontSize) {
+            wordFontSize = minFontSize;
+        } else if (wordFontSize > maxFontSize) {
+            wordFontSize = maxFontSize;
         }
-        Log.d(buildTag("determineWordSize"), String.format("wordCount=%s, highestWordCount=%s, wordSize=%s", wordCount, highestWordCount, wordSize));
-        return (int) wordSize;
+        Log.d(buildTag("determineWordSize"), String.format("wordCount=%s, highestWordCount=%s, wordSize=%s", wordCount, highestWordCount, wordFontSize));
+        return (int) wordFontSize;
+    }
+
+    private int percent(int part, int total) {
+        return (part/total)*100;
+    }
+
+    private int percentageOf(int total, int percent) {
+        return (total*percent)/100;
     }
 
     /**
      * Create paint object
      */
-    private Paint createPaint(int wordSize, Paint.Align align) {
+    private Paint createPaint(int wordTextSize, Paint.Align align) {
         Paint wordPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         wordPaint.setStyle(Paint.Style.FILL);
         wordPaint.setTypeface(Typeface.DEFAULT);
         wordPaint.setARGB(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-        wordPaint.setTextSize(wordSize);
+        wordPaint.setTextSize(wordTextSize);
         if (align != null) {
             wordPaint.setTextAlign(align);
         } else {
             wordPaint.setTextAlign(Paint.Align.LEFT);
         }
-        Log.d(buildTag("createPaint"), String.format("wordSize=%s", wordSize));
+        Log.d(buildTag("createPaint"), String.format("wordTextSize=%s", wordTextSize));
         return wordPaint;
     }
 
@@ -143,15 +143,15 @@ public class WordCloudServiceImpl implements WordCloudService {
      * @param word       the word being placed
      * @param startPoint the place to start trying to place the word
      */
-    public boolean place(Word word, final Point startPoint) {
+    public boolean place(Word word, final Point startPoint, int radiusStep, int offsetStep) {
         final int maxRadius = computeRadius(this.rectangleDimension, startPoint);
         final Point position = new Point((int) word.getX(), (int) word.getY());
         // reset position
         position.x = 0;
         position.y = 0;
         Log.d("place-start", String.format("word=%s, position=%s, max-radius: %s, rect=%s,%s", word.getText(), position, maxRadius, rectangleDimension.getWidth(), rectangleDimension.getHeight()));
-        for (int r = 0; r < maxRadius; r += 30) {
-            for (int x = Math.max(-startPoint.x, -r); x <= Math.min(r, this.rectangleDimension.getWidth() - startPoint.x - 1); x += 25) {
+        for (int r = 0; r < maxRadius; r += radiusStep) {
+            for (int x = Math.max(-startPoint.x, -r); x <= Math.min(r, this.rectangleDimension.getWidth() - startPoint.x - 1); x += offsetStep) {
                 position.x = startPoint.x + x;
                 final int offset = (int) Math.sqrt(r * r - x * x);
                 // try positive root

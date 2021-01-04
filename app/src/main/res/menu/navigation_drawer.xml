@@ -6,27 +6,27 @@
         <item
             android:id="@+id/nav_sms_backup"
             android:icon="@drawable/baseline_settings_backup_restore_black_24dp"
-            android:title="@string/backup" />
+            android:title="@string/title_backup" />
 
         <item
             android:id="@+id/nav_sms_search"
             android:icon="@drawable/baseline_search_black_24dp"
-            android:title="@string/search" />
+            android:title="@string/title_search" />
 
         <item
             android:id="@+id/nav_sms_chart"
             android:icon="@drawable/baseline_leaderboard_black_24dp"
-            android:title="@string/chart" />
+            android:title="@string/title_chart" />
 
         <item
             android:id="@+id/nav_sms_wordcloud"
             android:icon="@drawable/baseline_settings_backup_restore_black_24dp"
-            android:title="@string/wordcloud" />
+            android:title="@string/title_wordcloud" />
 
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/baseline_settings_applications_black_24dp"
-            android:title="@string/settings" />
+            android:title="@string/title_settings" />
 
     </group>
 

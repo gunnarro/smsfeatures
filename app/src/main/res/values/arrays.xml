@@ -52,7 +52,7 @@
         <item>100</item>
     </integer-array>
 
-    <integer-array name="number_Of_words">
+    <integer-array name="number_of_words">
         <item>5</item>
         <item>10</item>
         <item>25</item>

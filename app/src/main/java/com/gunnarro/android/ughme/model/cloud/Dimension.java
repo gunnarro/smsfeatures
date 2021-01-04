@@ -16,4 +16,13 @@ public class Dimension {
     public int getHeight() {
         return height;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Dimension{");
+        sb.append("width=").append(width);
+        sb.append(", height=").append(height);
+        sb.append('}');
+        return sb.toString();
+    }
 }

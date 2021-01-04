@@ -61,7 +61,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         View view = inflater.inflate(R.layout.fragment_backup, container, false);
         view.findViewById(R.id.btn_sms_backup_btn).setOnClickListener(this);
         view.findViewById(R.id.btn_sms_delete_backup_btn).setOnClickListener(this);
-        Log.d("SmsFragment", "onCreateView");
+        Log.d(LOG_TAG, "onCreateView");
         return view;
     }
 
@@ -110,9 +110,9 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             TextView mobileView = view.findViewById(R.id.number_of_mobile_nr_value);
             mobileView.setText(String.format("%s", info.getNumberOfMobileNumbers()));
 
-            Log.d(LOG_TAG, String.format("saved sms backup info. %s ", info));
+            Log.d(LOG_TAG, String.format("updated view with sms backup metadata. %s ", info));
         } else {
-            Log.d(LOG_TAG, String.format("not saved sms backup info. %s ", info));
+            Log.e(LOG_TAG, String.format("something failed updating sms backup metadata view,  %s ", info));
         }
     }
 
@@ -145,7 +145,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_CODE_READ_SMS) {
             if (permissions[0].equals(Manifest.permission.READ_SMS) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("sms", "sms permission granted");
+                Log.d(LOG_TAG, "sms permission granted");
             }
         }
     }
@@ -160,7 +160,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             Snackbar.make(Objects.requireNonNull(getView()), "Deleted sms backup files.", Snackbar.LENGTH_LONG).show();
         } else {
             // dismiss, do nothing, the user canceled the operation
-            Log.d("sms", "delete sms backup file action cancelled by user");
+            Log.d(LOG_TAG, "delete sms backup file action cancelled by user");
         }
     }
 }

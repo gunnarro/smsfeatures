@@ -1,9 +1,6 @@
 <resources>
-    <string name="app_name" translatable="false">SmS-FeatureS</string>
-    <string name="tab_title_backup" translatable="false">Backup</string>
-    <string name="tab_title_chart" translatable="false">Chart</string>
-    <string name="tab_title_word_cloud" translatable="false">Cloud</string>
-    <string name="tab_title_sms_search">Search</string>
+    <string name="app_name" translatable="false">backup</string>
+    <string name="search_hint">Search sms</string>
 
     <string name="btn_sms_backup" translatable="false">Backup</string>
     <string name="btn_sms_backup_delete" translatable="false">Delete</string>
@@ -15,9 +12,16 @@
     <string name="month">Month</string>
     <string name="year">Year</string>
     <string name="number">Number</string>
-    <string name="wordcloud">wordcloud</string>
-    <string name="chart">chart</string>
-    <string name="search">search</string>
-    <string name="backup">backup</string>
-    <string name="settings">settings</string>
+    <string name="title_wordcloud">wordcloud</string>
+    <string name="title_chart">chart</string>
+    <string name="title_search">search</string>
+    <string name="title_backup">backup</string>
+    <string name="title_settings">settings</string>
+
+    <string name="pref_number_of_words">pref_number_of_words</string>
+    <string name="pref_word_max_font_size">pref_word_max_font_size</string>
+
+    <string name="pref_radius_step">pref_radius_step</string>
+    <string name="pref_offset_step">pref_offset_step</string>
+
 </resources>

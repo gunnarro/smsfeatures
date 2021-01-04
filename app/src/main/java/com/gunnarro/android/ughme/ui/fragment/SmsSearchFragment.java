@@ -1,5 +1,6 @@
 package com.gunnarro.android.ughme.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +53,7 @@ public class SmsSearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+       /**
         SearchView smsSearchView = view.findViewById(R.id.view_sms_search);
         smsSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -68,7 +70,7 @@ public class SmsSearchFragment extends Fragment {
                 return false;
             }
         });
-
+**/
         Log.d("smsSearchFragment", "onCreateView");
         return view;
     }

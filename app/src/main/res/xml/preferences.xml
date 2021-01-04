@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:summary="Settings for word cloud"
+        app:title="Word Cloud Settings">
+
+        <EditTextPreference
+            app:defaultValue="\b\w{3,}"
+            app:enabled="false"
+            app:icon="@drawable/baseline_search_black_24dp"
+            app:key="pref_word_selection_regex"
+            app:singleLineTitle="true"
+            app:summary="Regex used to filter word in sms message"
+            app:title="Regexp" />
+
+        <SeekBarPreference
+            android:max="250"
+            app:defaultValue="100"
+            app:key="pref_number_of_words"
+            app:min="25"
+            app:showSeekBarValue="true"
+            app:singleLineTitle="true"
+            app:summary="Number of words to display"
+            app:title="Number of words" />
+
+        <SeekBarPreference
+            android:max="250"
+            app:defaultValue="25"
+            app:key="pref_word_max_font_size"
+            app:min="50"
+            app:showSeekBarValue="true"
+            app:singleLineTitle="true"
+            app:summary="Word max font size"
+            app:title="Word max font size, where min font size is 20% of max" />
+
+        <SeekBarPreference
+            android:max="100"
+            app:defaultValue="25"
+            app:key="pref_radius_step"
+            app:min="25"
+            app:seekBarIncrement="5"
+            app:showSeekBarValue="true"
+            app:singleLineTitle="true"
+            app:summary="Word cloud radius step"
+            app:title="Radius step" />
+
+        <SeekBarPreference
+            android:max="100"
+            app:defaultValue="25"
+            app:key="pref_offset_step"
+            app:min="25"
+            app:seekBarIncrement="5"
+            app:showSeekBarValue="true"
+            app:singleLineTitle="true"
+            app:summary="Word cloud offset step"
+            app:title="Offset step" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

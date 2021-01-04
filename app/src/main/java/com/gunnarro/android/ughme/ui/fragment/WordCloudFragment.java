@@ -20,7 +20,6 @@ import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.mordred.wordcloud.WordCloud;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -52,7 +51,7 @@ public class WordCloudFragment extends Fragment implements View.OnClickListener,
         List<String> mobileNumbers = smsBackupService.getSmsBackupMobileNumbersTop10();
         mobileNumbers.add(0, "(.*)");
         mobileNumberSp = view.findViewById(R.id.sms_mobile_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_spinner_item, mobileNumbers);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, mobileNumbers);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mobileNumberSp.setAdapter(adapter);
         mobileNumberSp.setOnItemSelectedListener(this);
