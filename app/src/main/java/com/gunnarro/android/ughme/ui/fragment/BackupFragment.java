@@ -133,7 +133,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     }
 
     private Dialog buildProgressDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setView(R.layout.dlg_progress);
         Dialog progressDialog = builder.create();
         progressDialog.setTitle("Backup sms");
@@ -157,7 +157,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             smsBackupService.clearSmsBackupFile();
             SmsBackupInfo info = smsBackupService.readSmsBackupMetaData();
             updateSmsBackupInfo(info);
-            Snackbar.make(Objects.requireNonNull(getView()), "Deleted sms backup files.", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(requireView(), "Deleted sms backup files.", Snackbar.LENGTH_LONG).show();
         } else {
             // dismiss, do nothing, the user canceled the operation
             Log.d(LOG_TAG, "delete sms backup file action cancelled by user");

@@ -80,7 +80,7 @@ public class SmsSearchFragment extends Fragment {
         updateSmsList();
         Log.d(LOG_TAG, String.format("searchSms: number of sms: %s, search after: %s", smsList.size(), searchAfter));
         List<Sms> result = smsList.stream().filter(sms -> sms.getBody().toLowerCase().contains(searchAfter.toLowerCase())).collect(Collectors.toList());
-        Snackbar.make(Objects.requireNonNull(getView()), String.format("Searched after: %s, hits: %s, time: %s ms", searchAfter, result.size(), (System.currentTimeMillis() - startTime)), Snackbar.LENGTH_LONG).show();
+        Snackbar.make(requireView(), String.format("Searched after: %s, hits: %s, time: %s ms", searchAfter, result.size(), (System.currentTimeMillis() - startTime)), Snackbar.LENGTH_LONG).show();
         return result;
     }
 

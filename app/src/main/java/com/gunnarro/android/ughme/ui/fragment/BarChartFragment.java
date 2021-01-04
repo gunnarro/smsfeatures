@@ -92,7 +92,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         mobileNumbers = new ArrayList<>();
         mobileNumbers.add(BackupFragment.ALL);
         mobileNumberSp = view.findViewById(R.id.number_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_spinner_item, mobileNumbers);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, mobileNumbers);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mobileNumberSp.setAdapter(adapter);
         mobileNumberSp.setOnItemSelectedListener(this);
