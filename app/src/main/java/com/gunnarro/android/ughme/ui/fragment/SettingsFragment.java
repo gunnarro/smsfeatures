@@ -14,6 +14,8 @@ import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.model.config.Settings;
 import com.gunnarro.android.ughme.repository.SettingsRepository;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -44,7 +46,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getSettingsTask();
     }

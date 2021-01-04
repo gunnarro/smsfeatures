@@ -1,5 +1,7 @@
 package com.gunnarro.android.ughme.model.cloud;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Dimension {
     private final int width;
     private final int height;
@@ -17,9 +19,10 @@ public class Dimension {
         return height;
     }
 
+    @NotNull
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Dimension{");
+        final StringBuilder sb = new StringBuilder("Dimension{");
         sb.append("width=").append(width);
         sb.append(", height=").append(height);
         sb.append('}');

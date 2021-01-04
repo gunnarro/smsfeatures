@@ -1,13 +1,10 @@
 package com.gunnarro.android.ughme.ui.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,12 +13,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
-import com.gunnarro.android.ughme.ui.adapter.SmsAdapter;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -53,24 +48,22 @@ public class SmsSearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-       /**
-        SearchView smsSearchView = view.findViewById(R.id.view_sms_search);
-        smsSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                List<Sms> smsList = searchSms(query);
-                ListView listView = view.findViewById(R.id.view_sms_search_result);
-                SmsAdapter adapter = new SmsAdapter(view.getContext(), new ArrayList<>(smsList));
-                listView.setAdapter(adapter);
-                return false;
-            }
+        /**
+         SearchView smsSearchView = view.findViewById(R.id.view_sms_search);
+         smsSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        @Override public boolean onQueryTextSubmit(String query) {
+        List<Sms> smsList = searchSms(query);
+        ListView listView = view.findViewById(R.id.view_sms_search_result);
+        SmsAdapter adapter = new SmsAdapter(view.getContext(), new ArrayList<>(smsList));
+        listView.setAdapter(adapter);
+        return false;
+        }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
+        @Override public boolean onQueryTextChange(String newText) {
+        return false;
+        }
         });
-**/
+         **/
         Log.d("smsSearchFragment", "onCreateView");
         return view;
     }

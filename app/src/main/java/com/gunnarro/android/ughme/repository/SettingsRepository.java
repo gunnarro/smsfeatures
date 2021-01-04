@@ -5,8 +5,6 @@ import android.util.Log;
 
 import com.gunnarro.android.ughme.model.config.Settings;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -31,7 +29,7 @@ public class SettingsRepository {
     // Room executes all queries on a separate thread.
     // Observed LiveData will notify the observer when the data has changed.
     public Settings getSettings() {
-         return settingsDao.getAll().get(0);
+        return settingsDao.getAll().get(0);
     }
 
     // You must call this on a non-UI thread or your app will throw an exception. Room ensures

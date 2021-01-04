@@ -1,6 +1,5 @@
 package com.gunnarro.android.ughme.service.impl;
 
-import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -30,8 +29,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import dagger.hilt.android.qualifiers.ApplicationContext;
 
 @Singleton
 public class SmsBackupServiceImpl {

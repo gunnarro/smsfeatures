@@ -26,8 +26,6 @@ import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;

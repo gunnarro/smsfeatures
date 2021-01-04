@@ -1,13 +1,10 @@
 package com.gunnarro.android.ughme.ui.fragment;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.gunnarro.android.ughme.R;
 

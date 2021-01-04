@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import org.jetbrains.annotations.NotNull;
+
 @Entity(tableName = "settings_table")
 public class Settings {
 
@@ -60,9 +62,10 @@ public class Settings {
     public Integer numberOfBarsInChart = 12;
 
 
+    @NotNull
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Settings{");
+        final StringBuilder sb = new StringBuilder("Settings{");
         sb.append("id=").append(id);
         sb.append(", wordMatchRegex='").append(wordMatchRegex).append('\'');
         sb.append(", numberOfWords=").append(numberOfWords);

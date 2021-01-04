@@ -7,7 +7,6 @@ import android.graphics.Typeface;
 import android.util.Log;
 
 import com.gunnarro.android.ughme.exception.ApplicationException;
-import com.gunnarro.android.ughme.model.cloud.AngleGenerator;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.TreeWordPlacer;
 import com.gunnarro.android.ughme.model.cloud.Word;
@@ -29,9 +28,7 @@ public class WordCloudServiceImpl implements WordCloudService {
     private final static String TAG = WordCloudServiceImpl.class.getSimpleName();
     private final Random rnd = new Random();
     private Dimension rectangleDimension;
-
-    private Settings settings;
-    protected TreeWordPlacer wordPlacer;
+    protected final TreeWordPlacer wordPlacer;
 
     private static String buildTag(String tagName) {
         return new StringBuilder(TAG).append(".").append(tagName).toString();
@@ -54,7 +51,6 @@ public class WordCloudServiceImpl implements WordCloudService {
         // reset previous build
         wordPlacer.reset();
         this.rectangleDimension = rectangleDimension;
-        AngleGenerator angleGenerator = new AngleGenerator();
         int numberOfCollisions = 0;
         int numberOfdWords = 1;
         List<Word> wordList = new ArrayList<>();
@@ -111,11 +107,11 @@ public class WordCloudServiceImpl implements WordCloudService {
     }
 
     private int percent(int part, int total) {
-        return (part/total)*100;
+        return (part / total) * 100;
     }
 
     private int percentageOf(int total, int percent) {
-        return (total*percent)/100;
+        return (total * percent) / 100;
     }
 
     /**

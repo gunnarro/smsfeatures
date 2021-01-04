@@ -145,7 +145,7 @@ public class WordCloudView extends View {
                 //Log.d(buildTag("getInputObserver.onNext"), String.format("Received new data event of type %s", obj.getClass().getSimpleName()));
                 if (obj instanceof WordCloudEvent) {
                     event = (WordCloudEvent) obj;
-                   // Log.d(buildTag("getInputObserver.onNext"), String.format("handle event: %s", event.toString()));
+                    // Log.d(buildTag("getInputObserver.onNext"), String.format("handle event: %s", event.toString()));
                     // refresh view
                     invalidate();
                 }
