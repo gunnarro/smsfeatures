@@ -19,21 +19,34 @@
             android:max="250"
             app:defaultValue="100"
             app:key="pref_number_of_words"
-            app:min="25"
+            app:min="10"
+            app:seekBarIncrement="10"
             app:showSeekBarValue="true"
             app:singleLineTitle="true"
             app:summary="Number of words to display"
             app:title="Number of words" />
 
         <SeekBarPreference
-            android:max="250"
-            app:defaultValue="25"
+            android:max="400"
+            app:defaultValue="250"
             app:key="pref_word_max_font_size"
-            app:min="50"
+            app:min="100"
+            app:seekBarIncrement="10"
             app:showSeekBarValue="true"
             app:singleLineTitle="true"
             app:summary="Word max font size"
-            app:title="Word max font size, where min font size is 20% of max" />
+            app:title="Word max font size" />
+
+        <SeekBarPreference
+            android:max="100"
+            app:defaultValue="50"
+            app:key="pref_word_min_font_size"
+            app:min="30"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true"
+            app:singleLineTitle="true"
+            app:summary="Word min font size"
+            app:title="Word min font size" />
 
         <SeekBarPreference
             android:max="100"

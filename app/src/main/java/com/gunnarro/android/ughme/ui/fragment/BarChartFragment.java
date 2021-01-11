@@ -65,11 +65,11 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
     private Spinner mobileNumberSp;
     private List<String> mobileNumbers;
 
-    private final SmsBackupServiceImpl smsBackupService;
+    @Inject
+    SmsBackupServiceImpl smsBackupService;
 
     @Inject
-    public BarChartFragment(@NonNull SmsBackupServiceImpl smsBackupService) {
-        this.smsBackupService = smsBackupService;
+    public BarChartFragment() {
     }
 
     private enum StatTypeEnum {

@@ -1,65 +1,78 @@
 package com.gunnarro.android.ughme.service;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
-import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
-import com.gunnarro.android.ughme.ui.dialog.ProgressInfoDialog;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.inject.Inject;
 
 /**
  * Run the word cloud build as a background task
  */
-
-public class BuildWordCloudTask extends AsyncTask<Integer, Void, List<Word>> {
+public class BuildWordCloudTask {
 
     private static final String TAG = BuildWordCloudTask.class.getSimpleName();
 
-
-    SmsBackupServiceImpl smsBackupService;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     WordCloudService wordCloudService;
-
+    SmsBackupServiceImpl smsBackupService;
     TextAnalyzerServiceImpl textAnalyzerService;
 
-    ProgressInfoDialog progressDialog;
-
-    public BuildWordCloudTask() {
+    @Inject
+    public BuildWordCloudTask(WordCloudService wordCloudService, SmsBackupServiceImpl smsBackupService, TextAnalyzerServiceImpl textAnalyzerService) {
+        this.wordCloudService = wordCloudService;
+        this.smsBackupService = smsBackupService;
+        this.textAnalyzerService = textAnalyzerService;
     }
 
-    @Override
-    protected List<Word> doInBackground(Integer... values) {
-        Log.d("BuildWordCloudTask", "start build word cloud background task");
-        long startTimeMs = System.currentTimeMillis();
-        WordCloudEvent event = WordCloudEvent.builder().eventType(WordCloudEvent.WordCloudEventTypeEnum.MESSAGE).smsTypeAll().build();
-        textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(event.getValue(), event.getSmsType()), null);
-        Log.d(TAG, textAnalyzerService.getReport(true).toString());
-        List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(200),
-                textAnalyzerService.getHighestWordCount(),
-                new Dimension(values[0], values[1]), new Settings());
-        Log.d("BuildWordCloudTask", String.format("finished, buildTime=%s ms", (System.currentTimeMillis() - startTimeMs)));
-        return wordList;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        progressDialog.show();
+    public Future<List<Word>> buildWordCloud(final Settings settings, final Dimension cloudDimension, final String contactName, final String smsType) {
+        Callable<List<Word>> buildWordListCallable = () -> {
+            long startTimeMs = System.currentTimeMillis();
+            textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex);
+            Log.i(TAG, textAnalyzerService.getReport(true).toString());
+            List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(settings.numberOfWords)
+                    , textAnalyzerService.getHighestWordCount()
+                    , cloudDimension
+                    , settings);
+            Log.i(TAG, String.format("buildWordCloud finished, dimension=%s ,buildTime=%s ms, tread: %s", cloudDimension, (System.currentTimeMillis() - startTimeMs), Thread.currentThread().getName()));
+            return wordList;
+        };
+        return executor.submit(buildWordListCallable);
     }
 
 
-    @Override
-    protected void onPostExecute(List<Word> result) {
-        if (progressDialog != null) {
-            progressDialog.dismiss();
-            progressDialog = null;
-        }
+
+    public void buildWordCloudEventBus(final Settings settings, final Dimension cloudDimension, final String contactName, final String smsType) {
+        Runnable buildWordCloudRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    long startTimeMs = System.currentTimeMillis();
+                    textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex);
+                    Log.i(TAG, textAnalyzerService.getReport(true).toString());
+                    List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(settings.numberOfWords)
+                            , textAnalyzerService.getHighestWordCount()
+                            , cloudDimension
+                            , settings);
+                    Log.i(TAG, String.format("buildWordCloud finished, buildTime=%s ms, tread: %s", (System.currentTimeMillis() - startTimeMs), Thread.currentThread().getName()));
+                } catch (Exception e) {
+
+                }
+            }
+        };
+        executor.execute(buildWordCloudRunnable);
     }
 }
+
 

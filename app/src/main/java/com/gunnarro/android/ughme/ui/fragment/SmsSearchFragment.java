@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -31,11 +30,11 @@ public class SmsSearchFragment extends Fragment {
     private static final String LOG_TAG = SmsSearchFragment.class.getSimpleName();
     private List<Sms> smsList = new ArrayList<>();
 
-    private final SmsBackupServiceImpl smsBackupService;
+    @Inject
+    SmsBackupServiceImpl smsBackupService;
 
     @Inject
-    public SmsSearchFragment(@NonNull SmsBackupServiceImpl smsBackupService) {
-        this.smsBackupService = smsBackupService;
+    public SmsSearchFragment() {
     }
 
     @Override
@@ -48,22 +47,6 @@ public class SmsSearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        /**
-         SearchView smsSearchView = view.findViewById(R.id.view_sms_search);
-         smsSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-        @Override public boolean onQueryTextSubmit(String query) {
-        List<Sms> smsList = searchSms(query);
-        ListView listView = view.findViewById(R.id.view_sms_search_result);
-        SmsAdapter adapter = new SmsAdapter(view.getContext(), new ArrayList<>(smsList));
-        listView.setAdapter(adapter);
-        return false;
-        }
-
-        @Override public boolean onQueryTextChange(String newText) {
-        return false;
-        }
-        });
-         **/
         Log.d("smsSearchFragment", "onCreateView");
         return view;
     }

@@ -16,26 +16,28 @@
             android:id="@+id/sms_mobile_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorToolbarText"
             android:layout_marginStart="5dp"
-            android:buttonTint="@color/colorRadioBtn"
-            android:popupBackground="@color/cardview_dark_background"
-            android:spinnerMode="dropdown"
             android:background="@color/colorToolbarText"
-            android:backgroundTint="@color/colorToolbarText" />
+            android:backgroundTint="@color/colorToolbarText"
+            android:buttonTint="@color/colorRadioBtn"
+            android:popupBackground="#fff"
+            android:spinnerMode="dropdown"
+            android:textColor="@color/colorToolbarText" />
 
         <CheckBox
             android:id="@+id/sms_in_out_box_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
+            android:buttonTint="@color/colorRadioBtn"
             android:text="@string/btn_sms_in_out_box"
-            android:textColor="@color/colorToolbarText"
-            android:buttonTint="@color/colorRadioBtn" />
+            android:textColor="@color/colorToolbarText" />
     </RadioGroup>
 
     <com.gunnarro.android.ughme.ui.view.WordCloudView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:id="@+id/word_cloud_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </com.gunnarro.android.ughme.ui.view.WordCloudView>
 
 </RelativeLayout>

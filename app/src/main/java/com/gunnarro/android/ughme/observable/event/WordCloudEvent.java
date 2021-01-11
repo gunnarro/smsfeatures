@@ -1,38 +1,47 @@
 package com.gunnarro.android.ughme.observable.event;
 
+import com.gunnarro.android.ughme.model.cloud.Word;
+
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Objects;
 
 public class WordCloudEvent {
     public enum WordCloudEventTypeEnum {
-        MESSAGE
+        MESSAGE, UPDATE_MESSAGE
     }
 
-    private static final String MESSAGE_TYPE_ALL = "(.*)";
-    private static final String MESSAGE_TYPE_INBOX = "1";
-    private static final String MESSAGE_TYPE_OUTBOX = "2";
+    public static final String MESSAGE_TYPE_ALL = "(.*)";
+    public static final String MESSAGE_TYPE_INBOX = "1";
+    public static final String MESSAGE_TYPE_OUTBOX = "2";
 
     private final WordCloudEventTypeEnum eventType;
     private final String smsType;
     private final String value;
+    private final List<Word> wordList;
 
     private WordCloudEvent(Builder builder) {
         this.eventType = Objects.requireNonNull(builder.eventType, "eventType");
         this.smsType = Objects.requireNonNull(builder.smsType, "smsType");
         this.value = builder.value;
+        this.wordList = Objects.requireNonNull(builder.wordList, "wordList");
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public String getSmsType() {
-        return smsType;
+    public boolean isUpdateEvent() {
+        return eventType.equals(WordCloudEventTypeEnum.UPDATE_MESSAGE);
     }
 
     public String getValue() {
         return value;
+    }
+
+    public List<Word> getWordList() {
+        return wordList;
     }
 
     @NotNull
@@ -42,6 +51,7 @@ public class WordCloudEvent {
         sb.append("eventType=").append(eventType);
         sb.append(", smsType=").append(smsType);
         sb.append(", value=").append(value);
+        sb.append(", wordListSize=").append(wordList.size());
         sb.append('}');
         return sb.toString();
     }
@@ -53,6 +63,7 @@ public class WordCloudEvent {
         private WordCloudEventTypeEnum eventType;
         private String smsType;
         private String value;
+        private List<Word> wordList;
 
         private Builder() {
         }
@@ -67,18 +78,13 @@ public class WordCloudEvent {
             return this;
         }
 
-        public Builder smsTypeInbox() {
-            this.smsType = MESSAGE_TYPE_INBOX;
-            return this;
-        }
-
-        public Builder smsTypeOutbox() {
-            this.smsType = MESSAGE_TYPE_OUTBOX;
-            return this;
-        }
-
-        public Builder setValue(String value) {
+        public Builder value(String value) {
             this.value = value;
+            return this;
+        }
+
+        public Builder wordList(List<Word> wordList) {
+            this.wordList = wordList;
             return this;
         }
 
@@ -86,6 +92,7 @@ public class WordCloudEvent {
             this.eventType = wordCloudEvent.eventType;
             this.smsType = wordCloudEvent.smsType;
             this.value = wordCloudEvent.value;
+            this.wordList = wordCloudEvent.wordList;
             return this;
         }
 

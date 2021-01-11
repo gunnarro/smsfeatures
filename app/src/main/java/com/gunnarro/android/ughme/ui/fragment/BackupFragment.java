@@ -30,9 +30,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/**
- *
- */
+
 @AndroidEntryPoint
 public class BackupFragment extends Fragment implements View.OnClickListener, DialogActionListener {
 
@@ -40,11 +38,11 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     public static final String ALL = "all";
     private static final int REQUEST_PERMISSIONS_CODE_READ_SMS = 22;
 
-    private final SmsBackupServiceImpl smsBackupService;
+    @Inject
+    SmsBackupServiceImpl smsBackupService;
 
     @Inject
-    public BackupFragment(@NonNull SmsBackupServiceImpl smsBackupService) {
-        this.smsBackupService = smsBackupService;
+    public BackupFragment() {
     }
 
     @Override
@@ -64,10 +62,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     }
 
     /**
-     * Update backup info after view is successfully created
-     *
-     * @param view
-     * @param savedInstanceState
+     * Update backup info after view is successfully create
      */
     @Override
     public void onViewCreated(@NotNull View view, Bundle savedInstanceState) {
@@ -78,6 +73,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     private void updateSmsBackupInfo(SmsBackupInfo info) {
         View view = getView();
         if (info != null) {
+            assert view != null;
             TextView statusView = view.findViewById(R.id.sms_backup_status_value);
             statusView.setText(info.getStatus() != null ? info.getStatus().name() : "");
 
@@ -91,7 +87,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             fileNameView.setText(info.getBackupFileName());
 
             TextView fileSizeView = view.findViewById(R.id.file_size_value);
-            fileSizeView.setText(Formatter.formatFileSize(getActivity().getApplicationContext(), info.getSmsBackupFileSizeBytes()));
+            fileSizeView.setText(Formatter.formatFileSize(requireActivity().getApplicationContext(), info.getSmsBackupFileSizeBytes()));
 
             TextView storageFreeSpaceView = view.findViewById(R.id.storage_free_space_value);
             storageFreeSpaceView.setText(Formatter.formatFileSize(getActivity().getApplicationContext(), info.getStorageFreeSpaceBytes()));
@@ -109,8 +105,6 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             mobileView.setText(String.format("%s", info.getNumberOfMobileNumbers()));
 
             Log.d(LOG_TAG, String.format("updated view with sms backup metadata. %s ", info));
-        } else {
-            Log.e(LOG_TAG, String.format("something failed updating sms backup metadata view,  %s ", info));
         }
     }
 
