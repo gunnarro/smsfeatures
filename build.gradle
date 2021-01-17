@@ -18,7 +18,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradl' +
+                'e:4.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'org.jacoco:org.jacoco.core:0.8.5'
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'

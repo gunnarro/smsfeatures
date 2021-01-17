@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class WordCloudEvent {
     public enum WordCloudEventTypeEnum {
         MESSAGE, UPDATE_MESSAGE

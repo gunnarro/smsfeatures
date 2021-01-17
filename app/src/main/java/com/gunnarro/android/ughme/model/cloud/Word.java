@@ -10,10 +10,10 @@ import java.util.Objects;
 public class Word {
     private final String text;
     private final Paint paint;
-    private final Rect rect;
+    private Rect rect;
     private final int count;
     private final float size;
-    private float rotationAngle = 0f;
+    private final float rotationAngle;
 
     private Word(Builder builder) {
         this.text = Objects.requireNonNull(builder.text);
@@ -21,6 +21,7 @@ public class Word {
         this.rect = Objects.requireNonNull(builder.rect);
         this.count = Objects.requireNonNull(builder.count, "count");
         this.size = Objects.requireNonNull(builder.size, "size");
+        this.rotationAngle = builder.rotationAngle;
     }
 
     public static Builder builder() {
@@ -49,10 +50,6 @@ public class Word {
 
     public float getRotationAngle() {
         return rotationAngle;
-    }
-
-    public void setRotationAngle(float rotationAngle) {
-        this.rotationAngle = rotationAngle;
     }
 
     /**
@@ -87,6 +84,7 @@ public class Word {
         private Rect rect;
         private Integer count;
         private Float size;
+        private Float rotationAngle;
 
         private Builder() {
         }
@@ -116,12 +114,18 @@ public class Word {
             return this;
         }
 
+        public Builder setRotationAngle(float rotationAngle) {
+            this.rotationAngle = rotationAngle;
+            return this;
+        }
+
         public Builder of(Word word) {
             this.text = word.text;
             this.paint = word.paint;
             this.rect = word.rect;
             this.count = word.count;
             this.size = word.size;
+            this.rotationAngle = word.rotationAngle;
             return this;
         }
 

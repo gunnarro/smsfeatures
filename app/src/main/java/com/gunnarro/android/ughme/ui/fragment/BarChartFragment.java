@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,6 +146,14 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         //  listen RxJava event here
         RxBus.getInstance().listen().subscribe(getInputObserver());
         Log.d(TAG, "onAttach: : Registerer RxBus listener");
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        // don not show options menu
+        menu.setGroupVisible(0, false);
+        menu.clear();
+        menu.close();
     }
 
     @Override

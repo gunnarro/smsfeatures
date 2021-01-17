@@ -8,6 +8,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class Sms implements Serializable, Comparable<Sms> {
     @Expose(serialize = false, deserialize = false)
     private final boolean isRead;

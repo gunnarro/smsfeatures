@@ -2,6 +2,9 @@ package com.gunnarro.android.ughme.model.analyze;
 
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class ReportItem {
 
     private final String word;

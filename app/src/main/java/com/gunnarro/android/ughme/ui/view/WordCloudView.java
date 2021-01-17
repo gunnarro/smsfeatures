@@ -3,6 +3,9 @@ package com.gunnarro.android.ughme.ui.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 
@@ -58,13 +61,13 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
 
     private void initCanvas(int width, int height) {
         Log.d(TAG, String.format("initialize word cloud bitmap, width=%s, height=%s", width, height));
-        if (canvas == null) {
+        if (this.canvas == null) {
             Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             // Associate the bitmap to the ImageView.
             setImageBitmap(bitmap);
             // Create a Canvas with the bitmap.
-            canvas = new Canvas(bitmap);
-            canvas.drawColor(getDrawingCacheBackgroundColor());
+            this.canvas = new Canvas(bitmap);
+            this.canvas.drawColor(getDrawingCacheBackgroundColor());
             Log.d(TAG, String.format("initialized word cloud bitmap, width=%s, height=%s", width, height));
         }
     }
@@ -81,18 +84,38 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         // save current state of the canvas
         if (word.getRotationAngle() > 0) {
             canvas.rotate(word.getRotationAngle(),
-                    word.getRect().left + word.getRect().height(),
-                    word.getRect().top + word.getRect().height());
+                    word.getRect().left,
+                    word.getRect().top);
         }
+        int textWidth = (int) word.getPaint().measureText(word.getText());
+        int textHeight = word.getRect().bottom - word.getRect().top;
+
+        StaticLayout sLayout = StaticLayout.Builder.obtain(word.getText(), 0, word.getText().length(), new TextPaint(word.getPaint()), textWidth)
+                .setAlignment(Layout.Alignment.ALIGN_CENTER)
+                .setIncludePad(false)
+                .setLineSpacing(0, 1)
+                .setIndents(new int[]{0}, new int[]{0})
+                .setMaxLines(1)
+                .build();
+
+        Log.d(TAG, String.format("padding=%s, baseline=%s, ascent=%s", sLayout.getBottomPadding(), sLayout.getLineBaseline(0), word.getPaint().getFontMetrics().descent));
+        canvas.save();
+        canvas.translate(word.getX() + textWidth / 2, word.getY() - word.getPaint().getFontMetrics().descent);
+        sLayout.draw(canvas);
+        canvas.restore();
+
         // Draw the text, with origin at (x,y), using the specified paint
-        this.canvas.drawText(word.getText(), word.getX(), word.getY(), word.getPaint());
+        //this.canvas.drawText(word.getText(), word.getX(), word.getY(), word.getPaint());
+       // this.canvas.drawRect(word.getRect(), word.getPaint());
+
+        Log.d(TAG, String.format("text= %s, %s, rect= %s, %s", word.getX(), word.getY(), word.getRect().left, word.getRect().top));
         //undo the rotate, if rotated
         if (word.getRotationAngle() > 0) {
             // Revert the Canvas's adjustments back to the last time called save() was called
             canvas.restore();
         }
         canvas.save();
-        //Log.d(buildTag("updateCanvas"), String.format("canvas updated... %s", word.toString()));
+        Log.d(buildTag("updateCanvas"), String.format("canvas updated...thread=%s, %s", Thread.currentThread().getName(), word.toString()));
     }
 
     public Runnable updateViewTask(final List<Word> wordList) {

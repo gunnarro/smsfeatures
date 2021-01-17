@@ -12,16 +12,16 @@
         android:orientation="vertical"
         tools:ignore="UselessParent">
 
-        <!--
+
         <SearchView
-            android:id="@+id/view_sms_search"
+            android:id="@+id/sms_search_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:iconifiedByDefault="false"
             android:queryHint="Search sms" />
--->
+
         <ListView
-            android:id="@+id/view_sms_search_result"
+            android:id="@+id/sms_search_result"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@null"

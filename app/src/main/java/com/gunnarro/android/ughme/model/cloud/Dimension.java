@@ -2,6 +2,9 @@ package com.gunnarro.android.ughme.model.cloud;
 
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class Dimension {
     private final int width;
     private final int height;

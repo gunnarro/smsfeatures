@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class AnalyzeReport {
 
     private final int numberOfWords;

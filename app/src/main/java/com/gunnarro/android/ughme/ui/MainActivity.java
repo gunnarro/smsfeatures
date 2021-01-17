@@ -2,7 +2,6 @@ package com.gunnarro.android.ughme.ui;
 
 import android.Manifest;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -24,7 +23,6 @@ import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.ui.fragment.BackupFragment;
 import com.gunnarro.android.ughme.ui.fragment.BarChartFragment;
 import com.gunnarro.android.ughme.ui.fragment.PreferencesFragment;
-import com.gunnarro.android.ughme.ui.fragment.SettingsFragment;
 import com.gunnarro.android.ughme.ui.fragment.SmsSearchFragment;
 import com.gunnarro.android.ughme.ui.fragment.WordCloudFragment;
 
@@ -43,6 +41,8 @@ import static com.gunnarro.android.ughme.R.string;
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     public static final int PERMISSION_REQUEST = 1;
 
     private DrawerLayout drawer;
@@ -56,13 +56,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Inject
     BarChartFragment barChartFragment;
     @Inject
-    SettingsFragment settingsFragment;
-    @Inject
     PreferencesFragment preferencesFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("MainActivity", "onCreate, context: " + getApplicationContext());
+        Log.d(TAG, "onCreate, context: " + getApplicationContext());
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_main);
@@ -93,11 +91,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
         // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setOnClickListener(v -> viewFragment(smsSearchFragment));
-        return true;
+        // SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search_sms).getActionView();
+        Log.d(TAG, "onCreateOptionsMenu: " + searchView.toString());
+        // searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        //searchView.setOnClickListener(v -> Log.d(TAG, "search clicked 1"));
+        searchView.setOnSearchClickListener(v -> viewFragment(smsSearchFragment));
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawer.closeDrawer(GravityCompat.START);
             return false;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
             return false;
         }
     }
@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void viewFragment(@NonNull Fragment fragment) {
+        Log.d(TAG, "viewFragment: " + fragment.getTag());
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(id.content_frame, fragment)
@@ -164,12 +165,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // FIXME can only ask for one permission at time error: Can reqeust only one set of permissions at a time
         for (String permission : permissions) {
             if (super.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                Log.i("MainActivity.checkPermissions", String.format("Not Granted, send request: %s", permission));
+                Log.i(TAG + ".checkPermissions", String.format("Not Granted, send request: %s", permission));
                 super.requestPermissions(new String[]{permission}, PERMISSION_REQUEST);
             } else {
                 // show dialog explaining why this permission is needed
                 if (super.shouldShowRequestPermissionRationale(permission)) {
-                    Log.i("MainActivity.checkPermissions", "explain why we need this permission! permission: " + permission);
+                    Log.i(TAG + ".checkPermissions", "explain why we need this permission! permission: " + permission);
                 }
             }
         }
@@ -186,9 +187,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // If request is cancelled, the result arrays are empty.
         if (requestCode == PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i("MainActivity.onRequestPermissions", String.format("permission granted for permission: %s", Arrays.asList(permissions)));
+                Log.i(TAG + ".onRequestPermissions", String.format("permission granted for permission: %s", Arrays.asList(permissions)));
             } else {
-                Log.i("MainActivity.onRequestPermissions", String.format("permission denied for permission: %s", Arrays.asList(permissions)));
+                Log.i(TAG + ".onRequestPermissions", String.format("permission denied for permission: %s", Arrays.asList(permissions)));
             }
         }
     }
