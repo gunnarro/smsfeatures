@@ -18,7 +18,6 @@ import androidx.preference.PreferenceManager;
 
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
-import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
@@ -29,15 +28,12 @@ import com.gunnarro.android.ughme.ui.view.WordCloudView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 @AndroidEntryPoint
 public class WordCloudFragment extends Fragment implements PopupMenu.OnMenuItemClickListener {
@@ -58,6 +54,8 @@ public class WordCloudFragment extends Fragment implements PopupMenu.OnMenuItemC
     private List<String> mobileNumbers;
     private String selectedMobileNumber = ALL_SEARCH;
 
+    private Dialog progressDialog;
+
     /**
      * default constructor, needed when screen is rotated
      */
@@ -76,13 +74,7 @@ public class WordCloudFragment extends Fragment implements PopupMenu.OnMenuItemC
         setHasOptionsMenu(true);
         wordCloudView = view.findViewById(R.id.word_cloud_view);
         mobileNumbers = smsBackupService.getSmsBackupMobileNumbersTop10();
-
-        RxBus.getInstance()
-                .listen()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
-
+        RxBus.getInstance().listen().subscribe(getInputObserver());
         return view;
     }
 
@@ -138,7 +130,7 @@ public class WordCloudFragment extends Fragment implements PopupMenu.OnMenuItemC
         return new Observer<Object>() {
             @Override
             public void onSubscribe(@NotNull Disposable d) {
-                Log.d("getInputObserver.onSubscribe", "getInputObserver.onSubscribe");
+                Log.d(TAG + ".getInputObserver.onSubscribe", "getInputObserver.onSubscribe");
             }
 
             @Override
@@ -146,52 +138,32 @@ public class WordCloudFragment extends Fragment implements PopupMenu.OnMenuItemC
                 //Log.d(buildTag("getInputObserver.onNext"), String.format("Received new data event of type %s", obj.getClass().getSimpleName()));
                 if (obj instanceof WordCloudEvent) {
                     WordCloudEvent event = (WordCloudEvent) obj;
-                    Log.d("getInputObserver.onNext", String.format("handle event: %s", event.toString()));
-                    // rebuild word cloud based on selected sms type and mobile number
-                    //buildWordCloud(getWidth(), getHeight(), event.getValue(), event.getSmsType());
+                    Log.d(TAG + ".getInputObserver.onNext", String.format("handle event: %s", event.toString()));
+                    if (event.isUpdateEvent()) {
+                        // hide progress dialog
+                        progressDialog.dismiss();
+                    }
                 }
             }
 
             @Override
             public void onError(@NotNull Throwable e) {
-                Log.e("getInputObserver.onError", String.format("%s", e.getMessage()));
+                Log.e(TAG + ".getInputObserver.onError", String.format("%s", e.getMessage()));
             }
 
             @Override
             public void onComplete() {
-                Log.d("getInputObserver.onComplete"
+                Log.d(TAG + ".getInputObserver.onComplete"
                         , "");
             }
         };
     }
 
     private void updateWordCloudView(String contactName, String smsType) {
-        long startTime = System.currentTimeMillis();
-        Dialog dlg = buildProgressDialog();
-        dlg.show();
-
-        Future<List<Word>> future = buildWordCloudTask.buildWordCloud(mapPreferences(), new Dimension(wordCloudView.getWidth(), wordCloudView.getHeight()), contactName, smsType);
-
-        try {
-            // will block main (also known as UI) thread here until task has finished
-            // wordCloudView.updateWordList(future.get());
-            List<Word> wordList = future.get();
-            RxBus.getInstance().publish(
-                    WordCloudEvent.builder()
-                            .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
-                            .smsTypeAll()
-                            .wordList(wordList)
-                            .build());
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        } finally {
-            // refresh view in order to show the new list of words, calls onCreate
-            // wordCloudView.invalidate();
-            // wordCloudView.requestLayout();
-            // finally hide progress dialog
-            dlg.dismiss();
-        }
-        Log.i(TAG, String.format("updateWordCloudView: Finished! time=%s ms, thread: %s", (System.currentTimeMillis() - startTime), Thread.currentThread().getName()));
+        progressDialog = buildProgressDialog();
+        progressDialog.show();
+        // start background task for building word cloud, which may take som time, based on number of sms
+        buildWordCloudTask.buildWordCloudEventBus(mapPreferences(), new Dimension(wordCloudView.getWidth(), wordCloudView.getHeight()), contactName, smsType);
     }
 
     private Settings mapPreferences() {

@@ -88,8 +88,6 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                     word.getRect().top);
         }
         int textWidth = (int) word.getPaint().measureText(word.getText());
-        int textHeight = word.getRect().bottom - word.getRect().top;
-
         StaticLayout sLayout = StaticLayout.Builder.obtain(word.getText(), 0, word.getText().length(), new TextPaint(word.getPaint()), textWidth)
                 .setAlignment(Layout.Alignment.ALIGN_CENTER)
                 .setIncludePad(false)
@@ -103,10 +101,6 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         canvas.translate(word.getX() + textWidth / 2, word.getY() - word.getPaint().getFontMetrics().descent);
         sLayout.draw(canvas);
         canvas.restore();
-
-        // Draw the text, with origin at (x,y), using the specified paint
-        //this.canvas.drawText(word.getText(), word.getX(), word.getY(), word.getPaint());
-       // this.canvas.drawRect(word.getRect(), word.getPaint());
 
         Log.d(TAG, String.format("text= %s, %s, rect= %s, %s", word.getX(), word.getY(), word.getRect().left, word.getRect().top));
         //undo the rotate, if rotated
@@ -130,7 +124,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         };
     }
 
-    // Get RxJava input observer instance
+    // Listen to RxJava publish event
     private Observer<Object> getInputObserver() {
         return new Observer<Object>() {
             @Override
@@ -144,7 +138,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 if (obj instanceof WordCloudEvent) {
                     WordCloudEvent event = (WordCloudEvent) obj;
                     if (event.isUpdateEvent()) {
-                        Log.d(buildTag("getInputObserver.onNext"), String.format("handle event: %s", event.toString()));
+                        Log.d(buildTag(TAG + ".getInputObserver.onNext"), String.format("handle event: %s", event.toString()));
                         Executors.newSingleThreadExecutor().execute(updateViewTask(event.getWordList()));
                     }
                 }
@@ -152,7 +146,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
 
             @Override
             public void onError(@NotNull Throwable e) {
-                Log.e(buildTag("getInputObserver.onError"), String.format("%s", e.getMessage()));
+                Log.e(buildTag(TAG + ".getInputObserver.onError"), String.format("%s", e.getMessage()));
             }
 
             @Override

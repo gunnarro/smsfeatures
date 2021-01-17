@@ -5,6 +5,8 @@ import android.util.Log;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
+import com.gunnarro.android.ughme.observable.RxBus;
+import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
 
@@ -36,6 +38,7 @@ public class BuildWordCloudTask {
         this.textAnalyzerService = textAnalyzerService;
     }
 
+    @Deprecated
     public Future<List<Word>> buildWordCloud(final Settings settings, final Dimension cloudDimension, final String contactName, final String smsType) {
         Callable<List<Word>> buildWordListCallable = () -> {
             long startTimeMs = System.currentTimeMillis();
@@ -52,7 +55,6 @@ public class BuildWordCloudTask {
     }
 
 
-
     public void buildWordCloudEventBus(final Settings settings, final Dimension cloudDimension, final String contactName, final String smsType) {
         Runnable buildWordCloudRunnable = new Runnable() {
             @Override
@@ -65,6 +67,13 @@ public class BuildWordCloudTask {
                             , textAnalyzerService.getHighestWordCount()
                             , cloudDimension
                             , settings);
+                    // when finished publish result so fragment can pick up the word list
+                    RxBus.getInstance().publish(
+                            WordCloudEvent.builder()
+                                    .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
+                                    .smsTypeAll()
+                                    .wordList(wordList)
+                                    .build());
                     Log.i(TAG, String.format("buildWordCloud finished, buildTime=%s ms, tread: %s", (System.currentTimeMillis() - startTimeMs), Thread.currentThread().getName()));
                 } catch (Exception e) {
 
