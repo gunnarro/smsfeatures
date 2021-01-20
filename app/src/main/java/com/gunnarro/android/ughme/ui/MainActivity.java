@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 setTitle(string.title_chart);
                 viewFragment(barChartFragment);
             } else if (id == R.id.nav_sms_wordcloud) {
-                setTitle(string.title_wordcloud);
+                setTitle(string.title_word_cloud);
                 viewFragment(wordCloudFragment);
             } else if (id == R.id.nav_settings) {
                 setTitle(string.title_settings);
