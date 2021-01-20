@@ -12,7 +12,7 @@
     <string name="month">Month</string>
     <string name="year">Year</string>
     <string name="number">Number</string>
-    <string name="title_wordcloud">wordcloud</string>
+    <string name="title_word_cloud">word cloud</string>
     <string name="title_chart">chart</string>
     <string name="title_search">search</string>
     <string name="title_backup">backup</string>

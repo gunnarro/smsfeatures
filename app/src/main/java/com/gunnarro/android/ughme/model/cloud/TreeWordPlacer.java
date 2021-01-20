@@ -1,7 +1,6 @@
 package com.gunnarro.android.ughme.model.cloud;
 
 import android.graphics.Rect;
-import android.util.Log;
 
 import com.github.davidmoten.rtree.Entry;
 import com.github.davidmoten.rtree.RTree;

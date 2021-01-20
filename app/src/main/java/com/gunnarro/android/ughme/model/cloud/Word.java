@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Word {
     private final String text;
     private final Paint paint;
-    private Rect rect;
+    private final Rect rect;
     private final int count;
     private final float size;
     private final float rotationAngle;

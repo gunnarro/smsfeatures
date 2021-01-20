@@ -93,7 +93,7 @@ public class WordCloudServiceTest {
         //  Assert.assertNotNull(builder.place(word, new Point(1920, 1920)));
         // Assert.assertNotNull(builder.place(word, new Point(1920, 1920)));
 
-      //  canvas updated... Word{word=sveen, size=200.0, count=5, rect=[430,789][929,899] width=499 height=110}
-      //  canvas updated... Word{word=det, size=400.0, count=10, rect=[448,903][993,1210] width=545 height=307}
+        //  canvas updated... Word{word=sveen, size=200.0, count=5, rect=[430,789][929,899] width=499 height=110}
+        //  canvas updated... Word{word=det, size=400.0, count=10, rect=[448,903][993,1210] width=545 height=307}
     }
 }

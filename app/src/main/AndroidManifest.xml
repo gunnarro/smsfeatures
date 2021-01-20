@@ -17,6 +17,7 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/sms_features"
         android:supportsRtl="true"
+        android:allowBackup="true"
         android:theme="@style/AppTheme">
 
         <meta-data

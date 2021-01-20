@@ -27,9 +27,9 @@ public class BuildWordCloudTask {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    WordCloudService wordCloudService;
-    SmsBackupServiceImpl smsBackupService;
-    TextAnalyzerServiceImpl textAnalyzerService;
+    final WordCloudService wordCloudService;
+    final SmsBackupServiceImpl smsBackupService;
+    final TextAnalyzerServiceImpl textAnalyzerService;
 
     @Inject
     public BuildWordCloudTask(WordCloudService wordCloudService, SmsBackupServiceImpl smsBackupService, TextAnalyzerServiceImpl textAnalyzerService) {
@@ -56,28 +56,25 @@ public class BuildWordCloudTask {
 
 
     public void buildWordCloudEventBus(final Settings settings, final Dimension cloudDimension, final String contactName, final String smsType) {
-        Runnable buildWordCloudRunnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    long startTimeMs = System.currentTimeMillis();
-                    textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex);
-                    Log.i(TAG, textAnalyzerService.getReport(true).toString());
-                    List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(settings.numberOfWords)
-                            , textAnalyzerService.getHighestWordCount()
-                            , cloudDimension
-                            , settings);
-                    // when finished publish result so fragment can pick up the word list
-                    RxBus.getInstance().publish(
-                            WordCloudEvent.builder()
-                                    .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
-                                    .smsTypeAll()
-                                    .wordList(wordList)
-                                    .build());
-                    Log.i(TAG, String.format("buildWordCloud finished, buildTime=%s ms, tread: %s", (System.currentTimeMillis() - startTimeMs), Thread.currentThread().getName()));
-                } catch (Exception e) {
-
-                }
+        Runnable buildWordCloudRunnable = () -> {
+            try {
+                long startTimeMs = System.currentTimeMillis();
+                textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex);
+                Log.i(TAG, textAnalyzerService.getReport(true).toString());
+                List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(settings.numberOfWords)
+                        , textAnalyzerService.getHighestWordCount()
+                        , cloudDimension
+                        , settings);
+                // when finished publish result so fragment can pick up the word list
+                RxBus.getInstance().publish(
+                        WordCloudEvent.builder()
+                                .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
+                                .smsTypeAll()
+                                .wordList(wordList)
+                                .build());
+                Log.i(TAG, String.format("buildWordCloud finished, buildTime=%s ms, tread: %s", (System.currentTimeMillis() - startTimeMs), Thread.currentThread().getName()));
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
             }
         };
         executor.execute(buildWordCloudRunnable);

@@ -8,7 +8,6 @@
     <com.gunnarro.android.ughme.ui.view.WordCloudView
         android:id="@+id/word_cloud_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </com.gunnarro.android.ughme.ui.view.WordCloudView>
+        android:layout_height="match_parent"></com.gunnarro.android.ughme.ui.view.WordCloudView>
 
 </RelativeLayout>
