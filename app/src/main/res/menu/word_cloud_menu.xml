@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/mobile_numbers_menu_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/all_mobile_numbers"
+            android:checkable="true"
+            android:title="All"
+            app:showAsAction="never" />
+    </group>
+    <group
+        android:id="@+id/sms_type_menu_group"
+        android:checkableBehavior="all">
+        <item
+            android:id="@+id/sms_sent"
+            android:checkable="true"
+            android:title="inbox"
+            app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/sms_received"
+            android:checkable="true"
+            android:title="outbox"
+            app:showAsAction="ifRoom" />
+    </group>
+</menu>
