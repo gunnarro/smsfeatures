@@ -21,6 +21,9 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
+import com.gunnarro.android.ughme.observable.RxBus;
+import com.gunnarro.android.ughme.observable.event.BackupEvent;
+import com.gunnarro.android.ughme.service.SmsBackupTask;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.ui.dialog.ConfirmDialogFragment;
 import com.gunnarro.android.ughme.ui.dialog.DialogActionListener;
@@ -31,6 +34,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 
 @AndroidEntryPoint
@@ -41,7 +47,12 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     private static final int REQUEST_PERMISSIONS_CODE_READ_SMS = 22;
 
     @Inject
+    SmsBackupTask backupTask;
+
+    @Inject
     SmsBackupServiceImpl smsBackupService;
+
+    private Dialog progressDialog;
 
     @Inject
     public BackupFragment() {
@@ -60,6 +71,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         View view = inflater.inflate(R.layout.fragment_backup, container, false);
         view.findViewById(R.id.btn_sms_backup_btn).setOnClickListener(this);
         view.findViewById(R.id.btn_sms_delete_backup_btn).setOnClickListener(this);
+        RxBus.getInstance().listen().observeOn(AndroidSchedulers.mainThread()).subscribe(getInputObserver());
         Log.d(LOG_TAG, "onCreateView");
         return view;
     }
@@ -70,7 +82,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     @Override
     public void onViewCreated(@NotNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        updateSmsBackupInfo(smsBackupService.readSmsBackupMetaData());
+        updateSmsBackupInfo(getView(), smsBackupService.readSmsBackupMetaData());
     }
 
     @Override
@@ -78,10 +90,8 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void updateSmsBackupInfo(SmsBackupInfo info) {
-        View view = getView();
-        if (info != null) {
-            assert view != null;
+    private void updateSmsBackupInfo(View view, SmsBackupInfo info) {
+        if (view != null && info != null) {
             TextView statusView = view.findViewById(R.id.sms_backup_status_value);
             statusView.setText(info.getStatus() != null ? info.getStatus().name() : "");
 
@@ -112,7 +122,9 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             TextView mobileView = view.findViewById(R.id.number_of_mobile_nr_value);
             mobileView.setText(String.format("%s", info.getNumberOfMobileNumbers()));
 
-            Log.d(LOG_TAG, String.format("updated view with sms backup metadata. %s ", info));
+            Log.d(LOG_TAG, String.format(".updateSmsBackupInfo: updated view with sms backup metadata. %s ", info));
+        } else {
+            Log.e(LOG_TAG, ".updateSmsBackupInfo: ERROR: view or info is null!");
         }
     }
 
@@ -120,16 +132,18 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.btn_sms_backup_btn) {
-            Dialog d = buildProgressDialog();
-            d.show();
-            smsBackupService.backupSmsInbox();
-            SmsBackupInfo info = smsBackupService.readSmsBackupMetaData();
-            updateSmsBackupInfo(info);
-            d.dismiss();
+            startBackupSms();
         } else if (id == R.id.btn_sms_delete_backup_btn) {
             DialogFragment confirmDialog = ConfirmDialogFragment.newInstance("Confirm Delete SMS Backup Files", "Are You Sure?");
             confirmDialog.show(getChildFragmentManager(), "dialog");
         }
+    }
+
+    private void startBackupSms() {
+        progressDialog = buildProgressDialog();
+        progressDialog.show();
+        // start background task for building word cloud, which may take som time, based on number of sms
+        backupTask.backupSms();
     }
 
     private Dialog buildProgressDialog() {
@@ -137,7 +151,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         builder.setView(R.layout.dlg_progress);
         Dialog progressDialog = builder.create();
         progressDialog.setTitle("Backup sms");
-        progressDialog.setCancelable(true);
+        progressDialog.setCancelable(false);
         return progressDialog;
     }
 
@@ -155,12 +169,44 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         if (actionCode == DialogActionListener.OK_ACTION) {
             // the user confirmed the operation
             smsBackupService.clearSmsBackupFile();
-            SmsBackupInfo info = smsBackupService.readSmsBackupMetaData();
-            updateSmsBackupInfo(info);
+            updateSmsBackupInfo(getView(), smsBackupService.readSmsBackupMetaData());
             Snackbar.make(requireView(), "Deleted sms backup files.", Snackbar.LENGTH_LONG).show();
         } else {
             // dismiss, do nothing, the user canceled the operation
             Log.d(LOG_TAG, "delete sms backup file action cancelled by user");
         }
+    }
+
+    // Get RxJava input observer instance
+    private Observer<Object> getInputObserver() {
+        return new Observer<Object>() {
+            @Override
+            public void onSubscribe(@NotNull Disposable d) {
+                Log.d(".getInputObserver.onSubscribe", "getInputObserver.onSubscribe");
+            }
+
+            @Override
+            public void onNext(@NotNull Object obj) {
+                //Log.d(buildTag("getInputObserver.onNext"), String.format("Received new data event of type %s", obj.getClass().getSimpleName()));
+                if (obj instanceof BackupEvent) {
+                    BackupEvent event = (BackupEvent) obj;
+                    Log.d(LOG_TAG, String.format(".getInputObserver.onNext: thread=%s event= %s", Thread.currentThread().getName(), event.toString()));
+                    if (event.isBackupFinished()) {
+                        updateSmsBackupInfo(getView(), smsBackupService.readSmsBackupMetaData());
+                        progressDialog.dismiss();
+                    }
+                }
+            }
+
+            @Override
+            public void onError(@NotNull Throwable e) {
+                Log.e(LOG_TAG, String.format("%s: %s", LOG_TAG, e.getMessage()));
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(LOG_TAG, ".getInputObserver.onComplete");
+            }
+        };
     }
 }

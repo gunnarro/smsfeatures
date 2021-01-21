@@ -72,7 +72,7 @@ public class BuildWordCloudTask {
                                 .smsTypeAll()
                                 .wordList(wordList)
                                 .build());
-                Log.i(TAG, String.format("buildWordCloud finished, buildTime=%s ms, tread: %s", (System.currentTimeMillis() - startTimeMs), Thread.currentThread().getName()));
+                Log.i(TAG, String.format("buildWordCloud finished, execution time=%s ms, tread: %s", (System.currentTimeMillis() - startTimeMs), Thread.currentThread().getName()));
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }

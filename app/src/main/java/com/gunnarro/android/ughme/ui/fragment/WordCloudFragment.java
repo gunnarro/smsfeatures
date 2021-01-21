@@ -93,24 +93,18 @@ public class WordCloudFragment extends Fragment implements PopupMenu.OnMenuItemC
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            /*
-            case R.id.sms_select_mobile_number: {
-                showPopupMenu();
-                return true;
-            }*/
-            case R.id.sms_sent: {
-                item.setChecked(!item.isChecked());
-                updateWordCloudView(selectedMobileNumber, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
-                return true;
-            }
-            case R.id.sms_received: {
-                item.setChecked(!item.isChecked());
-                updateWordCloudView(selectedMobileNumber, WordCloudEvent.MESSAGE_TYPE_INBOX);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.mobile_numbers_menu_group) {
+            return true;
+        } else if (item.getItemId() == R.id.sms_sent) {
+            item.setChecked(!item.isChecked());
+            updateWordCloudView(selectedMobileNumber, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
+            return true;
+        } else if (item.getItemId() == R.id.sms_received) {
+            item.setChecked(!item.isChecked());
+            updateWordCloudView(selectedMobileNumber, WordCloudEvent.MESSAGE_TYPE_INBOX);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 

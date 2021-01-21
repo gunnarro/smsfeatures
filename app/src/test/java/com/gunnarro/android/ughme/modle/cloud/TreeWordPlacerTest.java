@@ -1,7 +1,10 @@
 package com.gunnarro.android.ughme.modle.cloud;
 
+import android.graphics.Rect;
+
 import com.gunnarro.android.ughme.model.cloud.TreeWordPlacer;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class TreeWordPlacerTest {
@@ -11,7 +14,7 @@ public class TreeWordPlacerTest {
     @Test
     public void checkRectangle() {
         TreeWordPlacer treeWordPlacer = new TreeWordPlacer();
-        treeWordPlacer.place("det", null);
-        treeWordPlacer.place("det", null);
+        treeWordPlacer.reset();
+        Assert.assertTrue(treeWordPlacer.place("det", new Rect(1, 1, 20, 20)));
     }
 }

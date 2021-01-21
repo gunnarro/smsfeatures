@@ -29,6 +29,7 @@ public class TreeWordPlacerTest {
                 .setPaint(new Paint())
                 .setCount(1)
                 .setSize(10)
+                .setRotationAngle(0)
                 .build();
 
         Assert.assertTrue(treeWordPlacer.place(word.getText(), word.getRect()));
