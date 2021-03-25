@@ -6,13 +6,16 @@
         app:summary="Settings for word cloud"
         app:title="Word Cloud Settings">
 
-        <EditTextPreference
-            app:defaultValue="\b\w{3,}"
-            app:enabled="false"
-            app:key="pref_word_regex"
+        <SeekBarPreference
+            android:max="10"
+            app:defaultValue="3"
+            app:key="pref_word_min_chars"
+            app:min="2"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true"
             app:singleLineTitle="true"
-            app:summary="Regex used to filter word in sms message"
-            app:title="Regexp" />
+            app:summary="Minimum number of chars in a word"
+            app:title="Min chars in word" />
 
         <SeekBarPreference
             android:max="250"

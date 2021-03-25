@@ -19,6 +19,14 @@ public class Settings {
     @ColumnInfo(name = "id")
     public Integer id;
 
+    /**
+     * select word regex format
+     */
+    @ColumnInfo(name = "word_match_regex_format")
+    public String wordMatchRegexFormat = "\\b\\w{%s,}";
+    /**
+     * regex for select word
+     */
     @ColumnInfo(name = "word_match_regex")
     public String wordMatchRegex = "\\b\\w{3,}";
     /**

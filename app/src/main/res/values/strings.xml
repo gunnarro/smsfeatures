@@ -17,6 +17,7 @@
     <string name="title_settings">settings</string>
 
     <string name="pref_number_of_words">pref_number_of_words</string>
+    <string name="pref_word_min_chars">pref_word_min_chars</string>
     <string name="pref_word_max_font_size">pref_word_max_font_size</string>
     <string name="pref_word_min_font_size">pref_word_min_font_size</string>
     <string name="pref_radius_step">pref_radius_step</string>

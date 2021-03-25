@@ -197,12 +197,15 @@ public class WordCloudFragment extends Fragment {
     private Settings mapPreferences() {
         Settings settings = new Settings();
         int words = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_number_of_words), settings.numberOfWords);
+        int minCharsInWord = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_chars), settings.minCharsInWord);
         int maxFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_max_font_size), settings.maxWordFontSize);
         int minFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_font_size), settings.minWordFontSize);
         int radiusStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_radius_step), settings.radiusStep);
         int offsetStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_offset_step), settings.offsetStep);
 
+        settings.wordMatchRegex = String.format(settings.wordMatchRegexFormat, minCharsInWord);
         settings.numberOfWords = words;
+        settings.minCharsInWord = minCharsInWord;
         settings.maxWordFontSize = maxFontSize;
         settings.minWordFontSize = minFontSize;
         settings.radiusStep = radiusStep;
