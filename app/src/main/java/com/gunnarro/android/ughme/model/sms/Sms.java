@@ -5,133 +5,45 @@ import com.google.gson.annotations.Expose;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
 
-import javax.annotation.concurrent.Immutable;
-
-@Immutable
 public class Sms implements Serializable, Comparable<Sms> {
     @Expose(serialize = false, deserialize = false)
-    private final boolean isRead;
+    private boolean isRead;
     @Expose(serialize = false, deserialize = false)
-    private final String status;
+    private String status;
     @Expose(serialize = false, deserialize = false)
-    private final String seen;
-    private final Long timeMs;
-    private final String address;
-    private final String body;
-    private final String contactName;
+    private String seen;
+    private Long timeMs;
+    private String address;
+    private String body;
+    private String contactName;
     @Expose(serialize = false, deserialize = false)
-    private final String type;
+    private String type;
     @Expose(serialize = false, deserialize = false)
-    private final String period;
-    private final int numberOfReceived;
-    private final int numberOfSent;
-    private final int numberOfBlocked;
-    private final Integer count;
+    private String period;
+    private int numberOfReceived;
+    private int numberOfSent;
+    private int numberOfBlocked;
+    private Integer count;
 
-    private Sms(Builder builder) {
-        this.isRead = builder.isRead;
-        this.status = builder.status;
-        this.seen = builder.seen;
-        this.timeMs = builder.timeMs;
-        this.address = builder.address;
-        this.body = builder.body;
-        this.type = builder.type;
-        this.period = builder.period;
-        this.numberOfReceived = builder.numberOfReceived;
-        this.numberOfSent = builder.numberOfSent;
-        this.numberOfBlocked = builder.numberOfBlocked;
-        this.count = builder.count;
-        this.contactName = builder.contactName;
+    Sms(boolean isRead, String status, String seen, Long timeMs, String address, String body, String contactName, String type, String period, int numberOfReceived, int numberOfSent, int numberOfBlocked, Integer count) {
+        this.isRead = isRead;
+        this.status = status;
+        this.seen = seen;
+        this.timeMs = timeMs;
+        this.address = address;
+        this.body = body;
+        this.contactName = contactName;
+        this.type = type;
+        this.period = period;
+        this.numberOfReceived = numberOfReceived;
+        this.numberOfSent = numberOfSent;
+        this.numberOfBlocked = numberOfBlocked;
+        this.count = count;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public boolean getIsRead() {
-        return isRead;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getSeen() {
-        return seen;
-    }
-
-    public Long getTimeMs() {
-        return timeMs;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getPeriod() {
-        return period;
-    }
-
-    public int getNumberOfReceived() {
-        return numberOfReceived;
-    }
-
-    public int getNumberOfSent() {
-        return numberOfSent;
-    }
-
-    public int getNumberOfBlocked() {
-        return numberOfBlocked;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public String getContactName() {
-        if (contactName != null && !contactName.isEmpty()) {
-            return contactName;
-        } else {
-            return address;
-        }
-    }
-
-    @NotNull
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Sms{");
-        sb.append("address=").append(address);
-        sb.append(", contactName=").append(contactName);
-        sb.append(", date=").append(new Date(timeMs));
-        sb.append(", count=").append(count);
-        sb.append(", numberOfReceived=").append(numberOfReceived);
-        sb.append(", numberOfSent=").append(numberOfSent);
-        sb.append(", numberOfBlocked=").append(numberOfBlocked);
-        sb.append(", type=").append(type);
-        sb.append(", period=").append(period);
-        sb.append('}');
-        return sb.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Sms sms = (Sms) o;
-        return Objects.equals(timeMs, sms.timeMs) &&
-                Objects.equals(address, sms.address);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(timeMs, address);
+    public static SmsBuilder builder() {
+        return new SmsBuilder();
     }
 
     @Override
@@ -139,121 +51,201 @@ public class Sms implements Serializable, Comparable<Sms> {
         return this.count.compareTo(sms.count);
     }
 
-    public static class Builder {
-        @Expose(serialize = false, deserialize = false)
-        private boolean isRead;
-        @Expose(serialize = false, deserialize = false)
-        private String status;
-        @Expose(serialize = false, deserialize = false)
-        private String seen;
-        @Expose(serialize = false, deserialize = false)
-        private Long timeMs;
-        @Expose(serialize = false, deserialize = false)
-        private String address;
-        @Expose(serialize = false, deserialize = false)
-        private String body;
-        @Expose(serialize = false, deserialize = false)
-        private String type;
-        @Expose(serialize = false, deserialize = false)
-        private String period;
-        @Expose(serialize = false, deserialize = false)
-        private Integer numberOfReceived = 0;
-        @Expose(serialize = false, deserialize = false)
-        private Integer numberOfSent = 0;
-        @Expose(serialize = false, deserialize = false)
-        private Integer numberOfBlocked = 0;
-        @Expose(serialize = false, deserialize = false)
-        private Integer count = 0;
-        @Expose(serialize = false, deserialize = false)
-        private String contactName;
+    public boolean isRead() {
+        return this.isRead;
+    }
 
-        private Builder() {
+    public void setRead(boolean isRead) {
+        this.isRead = isRead;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getSeen() {
+        return this.seen;
+    }
+
+    public void setSeen(String seen) {
+        this.seen = seen;
+    }
+
+    public Long getTimeMs() {
+        return this.timeMs;
+    }
+
+    public void setTimeMs(Long timeMs) {
+        this.timeMs = timeMs;
+    }
+
+    public String getAddress() {
+        return this.address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getBody() {
+        return this.body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getContactName() {
+        return this.contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getPeriod() {
+        return this.period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
+    }
+
+    public int getNumberOfReceived() {
+        return this.numberOfReceived;
+    }
+
+    public void setNumberOfReceived(int numberOfReceived) {
+        this.numberOfReceived = numberOfReceived;
+    }
+
+    public int getNumberOfSent() {
+        return this.numberOfSent;
+    }
+
+    public void setNumberOfSent(int numberOfSent) {
+        this.numberOfSent = numberOfSent;
+    }
+
+    public int getNumberOfBlocked() {
+        return this.numberOfBlocked;
+    }
+
+    public void setNumberOfBlocked(int numberOfBlocked) {
+        this.numberOfBlocked = numberOfBlocked;
+    }
+
+    public Integer getCount() {
+        return this.count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    @NotNull
+    public String toString() {
+        return "Sms(isRead=" + this.isRead() + ", status=" + this.getStatus() + ", seen=" + this.getSeen() + ", timeMs=" + this.getTimeMs() + ", address=" + this.getAddress() + ", body=" + this.getBody() + ", contactName=" + this.getContactName() + ", type=" + this.getType() + ", period=" + this.getPeriod() + ", numberOfReceived=" + this.getNumberOfReceived() + ", numberOfSent=" + this.getNumberOfSent() + ", numberOfBlocked=" + this.getNumberOfBlocked() + ", count=" + this.getCount() + ")";
+    }
+
+    public static class SmsBuilder {
+        private boolean isRead;
+        private String status;
+        private String seen;
+        private Long timeMs;
+        private String address;
+        private String body;
+        private String contactName;
+        private String type;
+        private String period;
+        private int numberOfReceived;
+        private int numberOfSent;
+        private int numberOfBlocked;
+        private Integer count;
+
+        SmsBuilder() {
         }
 
-        public Builder setIsRead(boolean isRead) {
+        public SmsBuilder isRead(boolean isRead) {
             this.isRead = isRead;
             return this;
         }
 
-        public Builder setStatus(String status) {
+        public SmsBuilder status(String status) {
             this.status = status;
             return this;
         }
 
-        public Builder setSeen(String seen) {
+        public SmsBuilder seen(String seen) {
             this.seen = seen;
             return this;
         }
 
-        public Builder setDate(Long timeMs) {
+        public SmsBuilder timeMs(Long timeMs) {
             this.timeMs = timeMs;
             return this;
         }
 
-        public Builder setAddress(String address) {
+        public SmsBuilder address(String address) {
             this.address = address;
             return this;
         }
 
-        public Builder setBody(String body) {
+        public SmsBuilder body(String body) {
             this.body = body;
             return this;
         }
 
-        public Builder setType(String type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder setPeriod(String period) {
-            this.period = period;
-            return this;
-        }
-
-        public Builder setNumberOfReceived(int numberOfReceived) {
-            this.numberOfReceived = numberOfReceived;
-            return this;
-        }
-
-        public Builder setNumberOfSent(int numberOfSent) {
-            this.numberOfSent = numberOfSent;
-            return this;
-        }
-
-        public Builder setNumberOfBlocked(int numberOfBlocked) {
-            this.numberOfBlocked = numberOfBlocked;
-            return this;
-        }
-
-        public Builder setCount(int count) {
-            this.count = count;
-            return this;
-        }
-
-        public Builder setContactName(String contactName) {
+        public SmsBuilder contactName(String contactName) {
             this.contactName = contactName;
             return this;
         }
 
-        public Builder of(Sms sms) {
-            this.isRead = sms.isRead;
-            this.status = sms.status;
-            this.seen = sms.seen;
-            this.timeMs = sms.timeMs;
-            this.address = sms.address;
-            this.body = sms.body;
-            this.type = sms.type;
-            this.period = sms.period;
-            this.numberOfReceived = sms.numberOfReceived;
-            this.numberOfSent = sms.numberOfSent;
-            this.numberOfBlocked = sms.numberOfBlocked;
-            this.count = sms.count;
-            this.contactName = sms.contactName;
+        public SmsBuilder type(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public SmsBuilder period(String period) {
+            this.period = period;
+            return this;
+        }
+
+        public SmsBuilder numberOfReceived(int numberOfReceived) {
+            this.numberOfReceived = numberOfReceived;
+            return this;
+        }
+
+        public SmsBuilder numberOfSent(int numberOfSent) {
+            this.numberOfSent = numberOfSent;
+            return this;
+        }
+
+        public SmsBuilder numberOfBlocked(int numberOfBlocked) {
+            this.numberOfBlocked = numberOfBlocked;
+            return this;
+        }
+
+        public SmsBuilder count(Integer count) {
+            this.count = count;
             return this;
         }
 
         public Sms build() {
-            return new Sms(this);
+            return new Sms(isRead, status, seen, timeMs, address, body, contactName, type, period, numberOfReceived, numberOfSent, numberOfBlocked, count);
         }
+
     }
 }

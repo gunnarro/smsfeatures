@@ -1,4 +1,4 @@
-package com.gunnarro.android.ughme.model.cloud;
+package com.gunnarro.android.ughme.service.impl;
 
 import android.graphics.Rect;
 

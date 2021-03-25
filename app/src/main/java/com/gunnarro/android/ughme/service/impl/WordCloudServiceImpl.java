@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.gunnarro.android.ughme.exception.ApplicationException;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
-import com.gunnarro.android.ughme.model.cloud.TreeWordPlacer;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
 import com.gunnarro.android.ughme.service.WordCloudService;
@@ -25,19 +24,33 @@ import javax.inject.Singleton;
 @Singleton
 public class WordCloudServiceImpl implements WordCloudService {
 
+    public static final int CLOUD_MARGIN = 20;
     private final static String TAG = WordCloudServiceImpl.class.getSimpleName();
+    protected final TreeWordPlacer wordPlacer;
     private final Random rnd = new Random();
     private Dimension rectangleDimension;
-    protected final TreeWordPlacer wordPlacer;
-    public static final int CLOUD_MARGIN = 20;
+
+    @Inject
+    public WordCloudServiceImpl() {
+        wordPlacer = new TreeWordPlacer();
+    }
 
     private static String buildTag(String tagName) {
         return new StringBuilder(TAG).append(".").append(tagName).toString();
     }
 
-    @Inject
-    public WordCloudServiceImpl() {
-        wordPlacer = new TreeWordPlacer();
+    /**
+     * compute the maximum radius for the placing spiral
+     *
+     * @param rectangle the size of the background
+     * @param start     the center of the spiral
+     * @return the maximum useful radius
+     */
+    static int computeRadius(final Dimension rectangle, final Point start) {
+        final int maxDistanceX = Math.max(start.x, rectangle.getWidth() - start.x) + 1;
+        final int maxDistanceY = Math.max(start.y, rectangle.getHeight() - start.y) + 1;
+        // we use the pythagorean theorem to determinate the maximum radius
+        return (int) Math.ceil(Math.sqrt(maxDistanceX * maxDistanceX + maxDistanceY * maxDistanceY));
     }
 
     public List<Word> buildWordCloud(Map<String, Integer> wordMap, Integer mostFrequentWordCount, Dimension rectangleDimension, Settings settings) {
@@ -74,12 +87,12 @@ public class WordCloudServiceImpl implements WordCloudService {
             }
 
             Word newWord = Word.builder()
-                    .setText(entry.getKey())
-                    .setSize(wordFontSize)
-                    .setRotationAngle(rotationAngles[rand.nextInt(1)])
-                    .setCount(entry.getValue())
-                    .setPaint(wordPaint)
-                    .setRect(wordRect)
+                    .text(entry.getKey())
+                    .size(wordFontSize)
+                    .rotationAngle(rotationAngles[rand.nextInt(1)])
+                    .count(entry.getValue())
+                    .paint(wordPaint)
+                    .rect(wordRect)
                     .build();
 
             final Point startPoint = getStartingPoint(newWord);
@@ -147,7 +160,6 @@ public class WordCloudServiceImpl implements WordCloudService {
         return wordPaint;
     }
 
-
     /**
      * word=sveen, x=430, y=789, check=true
      * word=det, x=448, y=903, check=true
@@ -159,7 +171,7 @@ public class WordCloudServiceImpl implements WordCloudService {
      */
     public boolean place(Word word, final Point startPoint, int radiusStep, int offsetStep) {
         final int maxRadius = computeRadius(this.rectangleDimension, startPoint);
-        final Point position = new Point((int) word.getX(), (int) word.getY());
+        final Point position = new Point(word.getRect().left, word.getRect().top);
         // reset position
         position.x = 0;
         position.y = 0;
@@ -182,7 +194,7 @@ public class WordCloudServiceImpl implements WordCloudService {
                 if (offset != 0 && position.y >= 0 && position.y < this.rectangleDimension.getHeight() && canPlace(word.getText(), word.getRect())) {
                     return true;
                 }
-                Log.d(buildTag(TAG + ".place"), String.format(" not placed, keep looping: %s, position: %s, r=%s", word.getText(), position, r));
+                Log.d(buildTag("place"), String.format(" not placed, keep looping: %s, position: %s, r=%s", word.getText(), position, r));
             }
         }
         return false;
@@ -202,20 +214,6 @@ public class WordCloudServiceImpl implements WordCloudService {
             return false;
         }
         return wordPlacer.place(word, wordRect); // is there a collision with the existing words?
-    }
-
-    /**
-     * compute the maximum radius for the placing spiral
-     *
-     * @param rectangle the size of the background
-     * @param start     the center of the spiral
-     * @return the maximum useful radius
-     */
-    static int computeRadius(final Dimension rectangle, final Point start) {
-        final int maxDistanceX = Math.max(start.x, rectangle.getWidth() - start.x) + 1;
-        final int maxDistanceY = Math.max(start.y, rectangle.getHeight() - start.y) + 1;
-        // we use the pythagorean theorem to determinate the maximum radius
-        return (int) Math.ceil(Math.sqrt(maxDistanceX * maxDistanceX + maxDistanceY * maxDistanceY));
     }
 
     public Point getStartingPoint(final Word word) {

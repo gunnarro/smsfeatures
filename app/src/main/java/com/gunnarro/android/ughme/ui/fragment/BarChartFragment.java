@@ -7,16 +7,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -61,7 +61,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 @AndroidEntryPoint
-public class BarChartFragment extends Fragment implements OnChartGestureListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class BarChartFragment extends Fragment implements OnChartGestureListener, AdapterView.OnItemSelectedListener, PopupMenu.OnMenuItemClickListener {
     private static final String TAG = BarChartFragment.class.getName();
     private BarChart chart;
     private Spinner mobileNumberSp;
@@ -72,6 +72,11 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
 
     @Inject
     public BarChartFragment() {
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return false;
     }
 
     private enum StatTypeEnum {
@@ -86,6 +91,8 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_barchart, container, false);
+        setHasOptionsMenu(true);
+        /*
         view.findViewById(R.id.day_radio_btn).setOnClickListener(this);
         view.findViewById(R.id.month_radio_btn).setOnClickListener(this);
         view.findViewById(R.id.year_radio_btn).setOnClickListener(this);
@@ -97,7 +104,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mobileNumberSp.setAdapter(adapter);
         mobileNumberSp.setOnItemSelectedListener(this);
-
+        */
         // create a new chart object
         Log.d(TAG, "create chart");
         chart = view.findViewById(R.id.barchart);
@@ -129,7 +136,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         legend.setDrawInside(true);
 
         chart.setFitBars(true);
-        updateChartData(getSmsBackup(mobileNumberSp.getSelectedItem().toString().toLowerCase()), StatTypeEnum.NUMBER);
+//        updateChartData(getSmsBackup(mobileNumberSp.getSelectedItem().toString().toLowerCase()), StatTypeEnum.NUMBER);
         Log.d(TAG, "onCreateView: finished");
         return view;
     }
@@ -150,10 +157,38 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        // don not show options menu
-        menu.setGroupVisible(0, false);
         menu.clear();
-        menu.close();
+        inflater.inflate(R.menu.chart_menu, menu);
+        Log.d(TAG, "onCreateOptionsMenu.menu: " + menu.getItem(0).getSubMenu());
+        // mobileNumbers.forEach(s -> menu.findItem(menu.getItem(0).getGroupId()).getSubMenu().add(s));
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        Log.d(TAG, "onPrepareOptionsMenu.menu: " + menu.getItem(0).getTitle());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        String selectedMobileNumber = "All";//mobileNumberSp.getSelectedItem().toString();
+
+        if (item.getItemId() == R.id.mobile_numbers_group) {
+            return true;
+        } else if (item.getItemId() == R.id.chart_day) {
+            item.setChecked(!item.isChecked());
+            updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.DAY);
+            return true;
+        } else if (item.getItemId() == R.id.chart_month) {
+            item.setChecked(!item.isChecked());
+            updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.MONTH);
+            return true;
+        } else if (item.getItemId() == R.id.chart_year) {
+            updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.YEAR);
+            item.setChecked(!item.isChecked());
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -327,34 +362,31 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
     }
 
     /**
-     *
+     * @Override public void onClick(View view) {
+     * String selectedMobileNumber = mobileNumberSp.getSelectedItem().toString();
+     * // Is the button now checked?
+     * boolean checked = ((RadioButton) view).isChecked();
+     * // Check which radio button was clicked
+     * int id = view.getId();
+     * if (id == R.id.day_radio_btn) {
+     * if (checked) {
+     * updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.DAY);
+     * }
+     * } else if (id == R.id.month_radio_btn) {
+     * if (checked) {
+     * updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.MONTH);
+     * }
+     * } else if (id == R.id.year_radio_btn) {
+     * if (checked) {
+     * updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.YEAR);
+     * }
+     * } else if (id == R.id.number_radio_btn) {
+     * if (checked) {
+     * updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.NUMBER);
+     * }
+     * }
+     * }
      */
-    @Override
-    public void onClick(View view) {
-        String selectedMobileNumber = mobileNumberSp.getSelectedItem().toString();
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
-        // Check which radio button was clicked
-        int id = view.getId();
-        if (id == R.id.day_radio_btn) {
-            if (checked) {
-                updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.DAY);
-            }
-        } else if (id == R.id.month_radio_btn) {
-            if (checked) {
-                updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.MONTH);
-            }
-        } else if (id == R.id.year_radio_btn) {
-            if (checked) {
-                updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.YEAR);
-            }
-        } else if (id == R.id.number_radio_btn) {
-            if (checked) {
-                updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.NUMBER);
-            }
-        }
-    }
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position,
                                long id) {

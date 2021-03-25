@@ -4,14 +4,12 @@
 
     <string name="btn_sms_backup" translatable="false">Backup</string>
     <string name="btn_sms_backup_delete" translatable="false">Delete</string>
-    <string name="btn_sms_in_out_box" translatable="false">Received/Sent</string>
+
+    <string name="lbl_sms_inbox" translatable="false">Inbox</string>
+    <string name="lbl_sms_outbox" translatable="false">Outbox</string>
 
     <string name="btn_ok">OK</string>
     <string name="btn_cancel">Cancel</string>
-    <string name="day">Day</string>
-    <string name="month">Month</string>
-    <string name="year">Year</string>
-    <string name="number">Number</string>
     <string name="title_word_cloud">word cloud</string>
     <string name="title_chart">chart</string>
     <string name="title_search">search</string>
@@ -23,5 +21,17 @@
     <string name="pref_word_min_font_size">pref_word_min_font_size</string>
     <string name="pref_radius_step">pref_radius_step</string>
     <string name="pref_offset_step">pref_offset_step</string>
+    <string name="lbl_filepath">Filepath</string>
+    <string name="lbl_filename">Filename</string>
+    <string name="lbl_file_size">File size</string>
+    <string name="lbl_storage_free_space">Storage free space</string>
+    <string name="lbl_status">Status</string>
+    <string name="lbl_backup_date">Backup date</string>
+    <string name="lbl_sms_from_date">Sms from date</string>
+    <string name="lbl_sms_to_date">Sms to date</string>
+    <string name="lbl_running">running...</string>
+
+    <string name="msg_delete_sms_backup">Delete SMS backup</string>
+    <string name="msg_confirm_delete">Are You Sure?</string>
 
 </resources>

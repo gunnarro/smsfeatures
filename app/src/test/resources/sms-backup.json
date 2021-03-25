@@ -1,9 +1,9 @@
 [
   {
     "isRead": false,
-    "timeMs": 1611261119837,
+    "timeMs": 1616445627674,
     "address": "23545454",
-    "body": "message1",
+    "body": "inbox-message1",
     "contactName": "gunnar",
     "type": "1",
     "numberOfReceived": 1,
@@ -13,9 +13,9 @@
   },
   {
     "isRead": false,
-    "timeMs": 1611261120837,
+    "timeMs": 1616445628674,
     "address": "92019486",
-    "body": "message2",
+    "body": "inbox-message2",
     "contactName": "per",
     "type": "1",
     "numberOfReceived": 1,
@@ -25,11 +25,11 @@
   },
   {
     "isRead": false,
-    "timeMs": 1611261121837,
+    "timeMs": 1616445629674,
     "address": "461230",
-    "body": "message3",
+    "body": "outbox-message3",
     "contactName": "mom",
-    "type": "1",
+    "type": "2",
     "numberOfReceived": 1,
     "numberOfSent": 0,
     "numberOfBlocked": 0,

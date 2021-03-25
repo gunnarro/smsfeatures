@@ -3,6 +3,8 @@ package com.gunnarro.android.ughme.model.cloud;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import com.gunnarro.android.ughme.service.impl.TreeWordPlacer;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,12 +26,12 @@ public class TreeWordPlacerTest {
         treeWordPlacer.reset();
         wordRect.offsetTo(775, 775);
         Word word = Word.builder()
-                .setText("test")
-                .setRect(wordRect)
-                .setPaint(new Paint())
-                .setCount(1)
-                .setSize(10)
-                .setRotationAngle(0)
+                .text("test")
+                .rect(wordRect)
+                .paint(new Paint())
+                .count(1)
+                .size(10)
+                .rotationAngle(0)
                 .build();
 
         Assert.assertTrue(treeWordPlacer.place(word.getText(), word.getRect()));

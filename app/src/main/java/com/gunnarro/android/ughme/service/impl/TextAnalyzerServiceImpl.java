@@ -21,9 +21,8 @@ import static java.util.stream.Collectors.toMap;
 @Singleton
 public class TextAnalyzerServiceImpl {
 
-    private static final String lOG_TAG = TextAnalyzerServiceImpl.class.getSimpleName();
-
     public static final String DEFAULT_WORD_REGEXP = "\\b\\w{3,}"; // match only word with length > 3
+    private static final String lOG_TAG = TextAnalyzerServiceImpl.class.getSimpleName();
     private Map<String, Integer> sortedWordMap = new LinkedHashMap<>();
     private Integer numberOfWords = 0;
     private int highestWordCount = 0;
@@ -37,6 +36,9 @@ public class TextAnalyzerServiceImpl {
     }
 
     public void analyzeText(final String text, String regexp) {
+        // always clear previous analyse result
+        sortedWordMap.clear();
+        Log.d("analyzeText", String.format("start, text.length=%s, regexp=%s", text.length(), regexp));
         long startTimeMs = System.currentTimeMillis();
         Map<String, Integer> tmpWordMap = new HashMap<>();
         if (text == null || text.isEmpty()) {

@@ -47,5 +47,12 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Pre
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         menu.clear();
+        Log.d("PreferencesFragment", "onCreateOptionsMenu. hasVisible=" + menu.hasVisibleItems());
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        // hide current options menu
+        menu.getItem(0).setVisible(false);
     }
 }

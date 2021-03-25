@@ -2,85 +2,72 @@ package com.gunnarro.android.ughme.model.analyze;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.concurrent.Immutable;
-
-@Immutable
+/**
+ * Delombok follwoing annotations
+ * <p>
+ * ToString
+ * Getter
+ * Builder
+ */
 public class ReportItem {
 
     private final String word;
     private final Integer count;
     private final Integer percentage;
 
-    public ReportItem(Builder builder) {
-        this.word = builder.word;
-        this.count = builder.count;
-        this.percentage = builder.percentage;
+    ReportItem(String word, Integer count, Integer percentage) {
+        this.word = word;
+        this.count = count;
+        this.percentage = percentage;
     }
 
-    public static ReportItem.Builder builder() {
-        return new ReportItem.Builder();
+    public static ReportItemBuilder builder() {
+        return new ReportItemBuilder();
     }
 
     public String getWord() {
-        return word;
+        return this.word;
     }
 
     public Integer getCount() {
-        return count;
+        return this.count;
     }
 
     public Integer getPercentage() {
-        return percentage;
+        return this.percentage;
     }
 
     @NotNull
-    @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("ReportItem{");
-        sb.append("word='").append(word).append('\'');
-        sb.append(", count=").append(count);
-        sb.append(", percentage=").append(percentage);
-        sb.append('}');
-        return sb.toString();
+        return "ReportItem(word=" + this.getWord() + ", count=" + this.getCount() + ", percentage=" + this.getPercentage() + ")";
     }
 
-    /**
-     * Builder class
-     */
-    public static class Builder {
+    public static class ReportItemBuilder {
         private String word;
         private Integer count;
         private Integer percentage;
 
-        private Builder() {
+        ReportItemBuilder() {
         }
 
-        public ReportItem.Builder word(String word) {
+        public ReportItemBuilder word(String word) {
             this.word = word;
             return this;
         }
 
-
-        public ReportItem.Builder count(Integer count) {
+        public ReportItemBuilder count(Integer count) {
             this.count = count;
             return this;
         }
 
-
-        public ReportItem.Builder percentage(Integer percentage) {
+        public ReportItemBuilder percentage(Integer percentage) {
             this.percentage = percentage;
             return this;
         }
 
-        public ReportItem.Builder of(ReportItem reportItem) {
-            this.word = reportItem.word;
-            this.count = reportItem.count;
-            this.percentage = reportItem.percentage;
-            return this;
+        public ReportItem build() {
+            return new ReportItem(word, count, percentage);
         }
 
-        public ReportItem build() {
-            return new ReportItem(this);
-        }
     }
 }

@@ -3,9 +3,6 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
-    <color name="colorToolbarBackground">#000000</color>
-    <color name="colorToolbarText">#FFFFFF</color>
-    <color name="colorRadioBtn">#0074d9</color>
     <color name="colorDate">#0074d9</color>
     <color name="colorNumbers">#0074d9</color>
     <color name="colorSection">#FFF</color>

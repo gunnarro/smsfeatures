@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <group
-        android:id="@+id/mobile_numbers_menu_group"
-        android:checkableBehavior="single">
+    <group android:id="@+id/mobile_numbers_group">
         <item
-            android:id="@+id/all_mobile_numbers"
+            android:id="@+id/mobile_dropdown_menu"
             android:checkable="true"
-            android:title="All"
-            app:showAsAction="never" />
+            android:title="Mobile"
+            app:actionViewClass="android.widget.Spinner"
+            app:showAsAction="always" />
     </group>
     <group
         android:id="@+id/sms_type_menu_group"
         android:checkableBehavior="all">
         <item
-            android:id="@+id/sms_sent"
+            android:id="@+id/sms_inbox_menu"
             android:checkable="true"
-            android:title="inbox"
-            app:showAsAction="ifRoom" />
+            android:title="@string/lbl_sms_inbox"
+            app:showAsAction="never" />
         <item
-            android:id="@+id/sms_received"
+            android:id="@+id/sms_outbox_menu"
             android:checkable="true"
-            android:title="outbox"
-            app:showAsAction="ifRoom" />
+            android:title="@string/lbl_sms_outbox"
+            app:showAsAction="never" />
     </group>
 </menu>

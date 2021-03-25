@@ -63,9 +63,9 @@ public class WordCloudServiceTest {
         textAnalyzer.analyzeText(smsPlainTxt.toString(), null);
 
         WordCloudService builder = new WordCloudServiceImpl();
-        List<Word> words = builder.buildWordCloud(textAnalyzer.getWordCountMap(3), textAnalyzer.getHighestWordCount(), new Dimension(1440, 1944), new Settings());
-        Assert.assertEquals("[Word{word=dette, size=200.0, count=4, rect=null width=0 height=0}]", words.toString());
-        Assert.assertEquals("Word{word=dette, size=200.0, count=4, rect=null width=0 height=0}", words.get(0).toString());
+        List<Word> words = builder.buildWordCloud(textAnalyzer.getWordCountMap(3), textAnalyzer.getHighestWordCount(), Dimension.builder().width(1440).height(1944).build(), new Settings());
+        Assert.assertEquals("[Word(text=dette, rect=null, count=4, size=200.0, rotationAngle=0.0)]", words.toString());
+        Assert.assertEquals("Word(text=dette, rect=null, count=4, size=200.0, rotationAngle=0.0)", words.get(0).toString());
         words.forEach(w -> Log.i("unit-test", String.format("x=%s, y=%s, size=%s, word=%s, occurrences=%s", w.getRect().left, w.getRect().top, w.getSize(), w.getText(), w.getCount())));
     }
 
@@ -79,11 +79,11 @@ public class WordCloudServiceTest {
 
         WordCloudService builder = new WordCloudServiceImpl();
         Word word = Word.builder()
-                .setText("test")
-                .setRect(rect)
-                .setPaint(new Paint())
-                .setCount(1)
-                .setSize(10)
+                .text("test")
+                .rect(rect)
+                .paint(new Paint())
+                .count(1)
+                .size(10)
                 .build();
 
         Assert.assertEquals(75, word.getRect().height());

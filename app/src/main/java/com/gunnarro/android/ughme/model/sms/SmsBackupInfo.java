@@ -4,11 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
+/**
+ * Delombok follwoing annotations:
+ * Builder
+ */
 public class SmsBackupInfo implements Serializable {
-
-    public enum BackupStatusEnum {
-        BACKED_UP, NOT_BACKED_UP
-    }
 
     BackupStatusEnum status = BackupStatusEnum.NOT_BACKED_UP;
     String smsBackupFilePath;
@@ -19,6 +19,22 @@ public class SmsBackupInfo implements Serializable {
     Long toDateTime;
     int numberOfSms;
     int numberOfMobileNumbers;
+
+    SmsBackupInfo(BackupStatusEnum status, String smsBackupFilePath, long smsBackupFileSizeBytes, long storageFreeSpaceBytes, Long lastBackupTime, Long fromDateTime, Long toDateTime, int numberOfSms, int numberOfMobileNumbers) {
+        this.status = status;
+        this.smsBackupFilePath = smsBackupFilePath;
+        this.smsBackupFileSizeBytes = smsBackupFileSizeBytes;
+        this.storageFreeSpaceBytes = storageFreeSpaceBytes;
+        this.lastBackupTime = lastBackupTime;
+        this.fromDateTime = fromDateTime;
+        this.toDateTime = toDateTime;
+        this.numberOfSms = numberOfSms;
+        this.numberOfMobileNumbers = numberOfMobileNumbers;
+    }
+
+    public static SmsBackupInfoBuilder builder() {
+        return new SmsBackupInfoBuilder();
+    }
 
     public String getSmsBackupFilePath() {
         return smsBackupFilePath;
@@ -44,20 +60,20 @@ public class SmsBackupInfo implements Serializable {
         this.storageFreeSpaceBytes = storageFreeSpaceBytes;
     }
 
-    public void setStatus(BackupStatusEnum status) {
-        this.status = status;
-    }
-
     public BackupStatusEnum getStatus() {
         return status;
     }
 
-    public void setLastBackupTime(Long lastBackupTime) {
-        this.lastBackupTime = lastBackupTime;
+    public void setStatus(BackupStatusEnum status) {
+        this.status = status;
     }
 
     public Long getLastBackupTime() {
         return lastBackupTime;
+    }
+
+    public void setLastBackupTime(Long lastBackupTime) {
+        this.lastBackupTime = lastBackupTime;
     }
 
     public Long getFromDateTime() {
@@ -119,5 +135,73 @@ public class SmsBackupInfo implements Serializable {
         sb.append(", numberOfMobileNumbers=").append(numberOfMobileNumbers);
         sb.append('}');
         return sb.toString();
+    }
+
+    public enum BackupStatusEnum {
+        BACKED_UP, NOT_BACKED_UP
+    }
+
+    public static class SmsBackupInfoBuilder {
+        private BackupStatusEnum status;
+        private String smsBackupFilePath;
+        private long smsBackupFileSizeBytes;
+        private long storageFreeSpaceBytes;
+        private Long lastBackupTime;
+        private Long fromDateTime;
+        private Long toDateTime;
+        private int numberOfSms;
+        private int numberOfMobileNumbers;
+
+        SmsBackupInfoBuilder() {
+        }
+
+        public SmsBackupInfoBuilder status(BackupStatusEnum status) {
+            this.status = status;
+            return this;
+        }
+
+        public SmsBackupInfoBuilder smsBackupFilePath(String smsBackupFilePath) {
+            this.smsBackupFilePath = smsBackupFilePath;
+            return this;
+        }
+
+        public SmsBackupInfoBuilder smsBackupFileSizeBytes(long smsBackupFileSizeBytes) {
+            this.smsBackupFileSizeBytes = smsBackupFileSizeBytes;
+            return this;
+        }
+
+        public SmsBackupInfoBuilder storageFreeSpaceBytes(long storageFreeSpaceBytes) {
+            this.storageFreeSpaceBytes = storageFreeSpaceBytes;
+            return this;
+        }
+
+        public SmsBackupInfoBuilder lastBackupTime(Long lastBackupTime) {
+            this.lastBackupTime = lastBackupTime;
+            return this;
+        }
+
+        public SmsBackupInfoBuilder fromDateTime(Long fromDateTime) {
+            this.fromDateTime = fromDateTime;
+            return this;
+        }
+
+        public SmsBackupInfoBuilder toDateTime(Long toDateTime) {
+            this.toDateTime = toDateTime;
+            return this;
+        }
+
+        public SmsBackupInfoBuilder numberOfSms(int numberOfSms) {
+            this.numberOfSms = numberOfSms;
+            return this;
+        }
+
+        public SmsBackupInfoBuilder numberOfMobileNumbers(int numberOfMobileNumbers) {
+            this.numberOfMobileNumbers = numberOfMobileNumbers;
+            return this;
+        }
+
+        public SmsBackupInfo build() {
+            return new SmsBackupInfo(status, smsBackupFilePath, smsBackupFileSizeBytes, storageFreeSpaceBytes, lastBackupTime, fromDateTime, toDateTime, numberOfSms, numberOfMobileNumbers);
+        }
     }
 }

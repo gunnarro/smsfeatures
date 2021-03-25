@@ -28,17 +28,7 @@ public class SmsReaderServiceImpl {
     private static final String CONTENT_SMS_OUTBOX = "content://sms/inbox";
     private static final String ID = "_id";
     private static final String SORT_ORDER = Telephony.Sms.DATE + " DESC";
-
-    private static final int MESSAGE_TYPE_ALL = 0;
-    private static final int MESSAGE_TYPE_INBOX = 1;
-    private static final int MESSAGE_TYPE_SENT = 2;
-
-    private static final int MESSAGE_IS_NOT_READ = 0;
     private static final int MESSAGE_IS_READ = 1;
-
-    private static final int MESSAGE_IS_NOT_SEEN = 0;
-    private static final int MESSAGE_IS_SEEN = 1;
-
     public static final String SMS_ALL = "all";
 
     private final Context context;
@@ -95,17 +85,17 @@ public class SmsReaderServiceImpl {
 
                     // passed al filters crate and add sms to list
                     Sms sms = Sms.builder()
-                            .setIsRead(read == MESSAGE_IS_READ)
-                            .setAddress(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS)))
-                            .setContactName(lookupContactName(mobileNumber))
-                            .setStatus(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.STATUS)))
-                            .setSeen(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.SEEN)))
-                            .setType(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.TYPE)))
-                            .setBody(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY)))
-                            .setDate(smsTimeMs)
-                            .setNumberOfReceived(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.TYPE)).equals("1") ? 1 : 0)
-                            .setNumberOfSent(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.TYPE)).equals("2") ? 1 : 0)
-                            .setCount(1)
+                            .isRead(read == MESSAGE_IS_READ)
+                            .address(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS)))
+                            .contactName(lookupContactName(mobileNumber))
+                            .status(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.STATUS)))
+                            .seen(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.SEEN)))
+                            .type(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.TYPE)))
+                            .body(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY)))
+                            .timeMs(smsTimeMs)
+                            .numberOfReceived(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.TYPE)).equals("1") ? 1 : 0)
+                            .numberOfSent(cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.TYPE)).equals("2") ? 1 : 0)
+                            .count(1)
                             .build();
 
                     Log.d(LOG_TAG, String.format("add sms, number: %s, date: %s", mobileNumber, new Date(smsTimeMs)));

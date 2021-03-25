@@ -11,14 +11,9 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class WordCloudEvent {
-    public enum WordCloudEventTypeEnum {
-        MESSAGE, UPDATE_MESSAGE
-    }
-
     public static final String MESSAGE_TYPE_ALL = "(.*)";
     public static final String MESSAGE_TYPE_INBOX = "1";
     public static final String MESSAGE_TYPE_OUTBOX = "2";
-
     private final WordCloudEventTypeEnum eventType;
     private final String smsType;
     private final String value;
@@ -57,6 +52,10 @@ public class WordCloudEvent {
         sb.append(", wordListSize=").append(wordList.size());
         sb.append('}');
         return sb.toString();
+    }
+
+    public enum WordCloudEventTypeEnum {
+        MESSAGE, UPDATE_MESSAGE
     }
 
     /**

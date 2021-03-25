@@ -2,33 +2,57 @@ package com.gunnarro.android.ughme.model.cloud;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.concurrent.Immutable;
-
-@Immutable
+/**
+ * Delombok follwoing annotations:
+ * ToString
+ * Getter
+ * Builder
+ */
 public class Dimension {
     private final int width;
     private final int height;
 
-    public Dimension(int width, int height) {
+    Dimension(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
+    public static DimensionBuilder builder() {
+        return new DimensionBuilder();
+    }
+
     public int getWidth() {
-        return width;
+        return this.width;
     }
 
     public int getHeight() {
-        return height;
+        return this.height;
     }
 
     @NotNull
-    @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Dimension{");
-        sb.append("width=").append(width);
-        sb.append(", height=").append(height);
-        sb.append('}');
-        return sb.toString();
+        return "Dimension(width=" + this.getWidth() + ", height=" + this.getHeight() + ")";
+    }
+
+    public static class DimensionBuilder {
+        private int width;
+        private int height;
+
+        DimensionBuilder() {
+        }
+
+        public DimensionBuilder width(int width) {
+            this.width = width;
+            return this;
+        }
+
+        public DimensionBuilder height(int height) {
+            this.height = height;
+            return this;
+        }
+
+        public Dimension build() {
+            return new Dimension(width, height);
+        }
     }
 }

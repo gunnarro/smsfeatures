@@ -33,11 +33,9 @@ import javax.inject.Singleton;
 @Singleton
 public class SmsBackupServiceImpl {
 
-    private static final String LOG_TAG = SmsBackupServiceImpl.class.getSimpleName();
-
     public static final String SMS_BACKUP_FILE_NAME = "sms-backup.json";
     public static final String SMS_BACKUP_METADATA_FILE_NAME = "sms-backup-metadata.json";
-
+    private static final String LOG_TAG = SmsBackupServiceImpl.class.getSimpleName();
     private final File appExtDir;
     private final SmsReaderServiceImpl smsReaderService;
 
@@ -53,14 +51,15 @@ public class SmsBackupServiceImpl {
         return inbox;
     }
 
+    @NotNull
     public List<Sms> getSmsBackup() {
         List<Sms> smsBakupList = new ArrayList<>();
         Gson gson = new GsonBuilder().setLenient().create();
         Type smsListType = new TypeToken<ArrayList<Sms>>() {
         }.getType();
         try {
-            File f = getFile(SmsBackupServiceImpl.SMS_BACKUP_FILE_NAME);
-            smsBakupList = gson.fromJson(new FileReader(f.getPath()), smsListType);
+            File smsBackupFile = getFile(SmsBackupServiceImpl.SMS_BACKUP_FILE_NAME);
+            smsBakupList = gson.fromJson(new FileReader(smsBackupFile.getPath()), smsListType);
             if (smsBakupList == null) {
                 smsBakupList = new ArrayList<>();
             }
@@ -121,22 +120,32 @@ public class SmsBackupServiceImpl {
         }
     }
 
+    /**
+     *
+     * @param contactName
+     * @param smsType can be 1 = INBOX, 2 = OUTBOX or (.*) = All
+     * @return
+     */
     public String getSmsBackupAsText(@NotNull String contactName, @NonNull String smsType) {
         List<Sms> smsList = getSmsBackup();
+        Log.d("getSmsBackupAsText", String.format("contactName=%s, smsType=%s, numberOfSms=%s", contactName, smsType, smsList.size()));
+        smsList.forEach(s -> Log.d("getSmsBackupAsText", s.getType()));
         return smsList.stream()
-                .filter(s -> s.getContactName().matches(contactName.replace("+", "\\+")) && s.getType().matches(smsType))
+                .filter(s -> s.getType().matches(smsType))
                 .map(Sms::getBody)
                 .collect(Collectors.joining(" "));
     }
 
     public void saveSmsBackupMetaData(List<Sms> smsBackupList) {
-        SmsBackupInfo info = new SmsBackupInfo();
         File smsBackupFile = getFile(SMS_BACKUP_FILE_NAME);
-        info.setSmsBackupFileSizeBytes(smsBackupFile.length());
-        info.setStorageFreeSpaceBytes(smsBackupFile.getFreeSpace());
-        info.setLastBackupTime(smsBackupFile.lastModified());
-        info.setSmsBackupFilePath(smsBackupFile.getPath());
-        info.setStatus(SmsBackupInfo.BackupStatusEnum.BACKED_UP);
+        SmsBackupInfo info = SmsBackupInfo.builder()
+                .smsBackupFileSizeBytes(smsBackupFile.length())
+                .storageFreeSpaceBytes(smsBackupFile.getFreeSpace())
+                .lastBackupTime(smsBackupFile.lastModified())
+                .smsBackupFilePath(smsBackupFile.getPath())
+                .status(SmsBackupInfo.BackupStatusEnum.BACKED_UP)
+                .build();
+
         if (!smsBackupList.isEmpty()) {
             info.setFromDateTime(smsBackupList.get(0).getTimeMs());
             info.setToDateTime(smsBackupList.get(smsBackupList.size() - 1).getTimeMs());
@@ -166,17 +175,18 @@ public class SmsBackupServiceImpl {
             if (backUpMetaFile.exists()) {
                 info = gson.fromJson(new FileReader(backUpMetaFile), smsListType);
             } else {
-                info = new SmsBackupInfo();
-                info.setStatus(SmsBackupInfo.BackupStatusEnum.NOT_BACKED_UP);
-                info.setLastBackupTime(null);
-                info.setFromDateTime(null);
-                info.setToDateTime(null);
+                info = SmsBackupInfo.builder()
+                        .status(SmsBackupInfo.BackupStatusEnum.NOT_BACKED_UP)
+                        .lastBackupTime(null)
+                        .fromDateTime(null)
+                        .toDateTime(null)
+                        .build();
             }
             Log.d(LOG_TAG, String.format("readSmsBackupInfo: %s", info));
             return info;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return new SmsBackupInfo();
+            return SmsBackupInfo.builder().build();
         }
     }
 

@@ -134,7 +134,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         if (id == R.id.btn_sms_backup_btn) {
             startBackupSms();
         } else if (id == R.id.btn_sms_delete_backup_btn) {
-            DialogFragment confirmDialog = ConfirmDialogFragment.newInstance("Confirm Delete SMS Backup Files", "Are You Sure?");
+            DialogFragment confirmDialog = ConfirmDialogFragment.newInstance(getString(R.string.msg_delete_sms_backup), getString(R.string.msg_confirm_delete));
             confirmDialog.show(getChildFragmentManager(), "dialog");
         }
     }

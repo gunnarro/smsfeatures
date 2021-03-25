@@ -6,6 +6,9 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 @Entity(tableName = "settings_table")
 public class Settings {
 
@@ -60,7 +63,6 @@ public class Settings {
      */
     @ColumnInfo(name = "chart_max_bars")
     public Integer numberOfBarsInChart = 12;
-
 
     @NotNull
     @Override

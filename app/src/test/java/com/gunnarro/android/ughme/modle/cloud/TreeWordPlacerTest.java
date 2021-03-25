@@ -2,7 +2,7 @@ package com.gunnarro.android.ughme.modle.cloud;
 
 import android.graphics.Rect;
 
-import com.gunnarro.android.ughme.model.cloud.TreeWordPlacer;
+import com.gunnarro.android.ughme.service.impl.TreeWordPlacer;
 
 import org.junit.Assert;
 import org.junit.Test;

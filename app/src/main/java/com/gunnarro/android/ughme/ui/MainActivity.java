@@ -86,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         handleIntent(getIntent());
     }
 
+    /**
+     * It's where you should place actions that have a global impact on the app.
+     * Only create the initial menu state and not make changes during the activity lifecycle.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -102,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Log.d(TAG + ".onOptionsItemSelected", "selected: " + item.getTitle());
         if (item.getItemId() == android.R.id.home) {// Open Close Drawer Layout
             if (drawer.isOpen()) {
                 drawer.closeDrawers();

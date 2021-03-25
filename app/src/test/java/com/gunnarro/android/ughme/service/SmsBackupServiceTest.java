@@ -60,9 +60,9 @@ public class SmsBackupServiceTest {
     @Test
     public void saveSmsBackup() throws IOException {
         List<Sms> smsList = new ArrayList<>();
-        Sms sms1 = Sms.builder().setDate(System.currentTimeMillis()).setAddress("23545454").setContactName("gunnar").setType("1").setBody("message1").setCount(1).setNumberOfBlocked(0).setNumberOfSent(0).setNumberOfReceived(1).build();
-        Sms sms2 = Sms.builder().setDate(System.currentTimeMillis() + 1000).setAddress("92019486").setContactName("per").setType("1").setBody("message2").setCount(1).setNumberOfBlocked(0).setNumberOfSent(0).setNumberOfReceived(1).build();
-        Sms sms3 = Sms.builder().setDate(System.currentTimeMillis() + 2000).setAddress("461230").setContactName("mom").setType("1").setBody("message3").setCount(1).setNumberOfBlocked(0).setNumberOfSent(0).setNumberOfReceived(1).build();
+        Sms sms1 = Sms.builder().timeMs(System.currentTimeMillis()).address("23545454").contactName("gunnar").type("1").body("inbox-message1").count(1).numberOfBlocked(0).numberOfSent(0).numberOfReceived(1).build();
+        Sms sms2 = Sms.builder().timeMs(System.currentTimeMillis() + 1000).address("92019486").contactName("per").type("1").body("inbox-message2").count(1).numberOfBlocked(0).numberOfSent(0).numberOfReceived(1).build();
+        Sms sms3 = Sms.builder().timeMs(System.currentTimeMillis() + 2000).address("461230").contactName("mom").type("2").body("outbox-message3").count(1).numberOfBlocked(0).numberOfSent(0).numberOfReceived(1).build();
         smsList.add(sms1);
         smsList.add(sms2);
         smsList.add(sms3);
@@ -77,6 +77,7 @@ public class SmsBackupServiceTest {
         Assert.assertEquals("mom", list.get(0).getContactName());
         Assert.assertEquals("per", list.get(1).getContactName());
         Assert.assertEquals("gunnar", list.get(2).getContactName());
+        Assert.assertEquals("1", list.get(2).getType());
     }
 
     @Test
@@ -87,8 +88,14 @@ public class SmsBackupServiceTest {
 
     @Test
     public void getSmsBackupAsText() {
-        String txt = smsBackupService.getSmsBackupAsText("", WordCloudEvent.WordCloudEventTypeEnum.MESSAGE.name());
-        Assert.assertEquals("", txt);
+        String txt = smsBackupService.getSmsBackupAsText("", WordCloudEvent.MESSAGE_TYPE_INBOX);
+        Assert.assertEquals("inbox-message2 inbox-message1", txt);
+
+        txt = smsBackupService.getSmsBackupAsText("", WordCloudEvent.MESSAGE_TYPE_OUTBOX);
+        Assert.assertEquals("outbox-message3", txt);
+
+        txt = smsBackupService.getSmsBackupAsText("", WordCloudEvent.MESSAGE_TYPE_ALL);
+        Assert.assertEquals("outbox-message3 inbox-message2 inbox-message1", txt);
     }
 
     @Test

@@ -10,9 +10,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
@@ -36,24 +38,20 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 @AndroidEntryPoint
-public class WordCloudFragment extends Fragment implements PopupMenu.OnMenuItemClickListener {
+public class WordCloudFragment extends Fragment {
 
     private static final String TAG = WordCloudFragment.class.getSimpleName();
 
     private static final String ALL = "All";
     private static final String ALL_SEARCH = "(.*)";
-
+    private final String selectedMobileNumber = ALL_SEARCH;
     @Inject
     BuildWordCloudTask buildWordCloudTask;
-
     @Inject
     SmsBackupServiceImpl smsBackupService;
-
     private WordCloudView wordCloudView;
-
+    private Menu optionsMenu;
     private List<String> mobileNumbers;
-    private String selectedMobileNumber = ALL_SEARCH;
-
     private Dialog progressDialog;
 
     /**
@@ -74,49 +72,85 @@ public class WordCloudFragment extends Fragment implements PopupMenu.OnMenuItemC
         setHasOptionsMenu(true);
         wordCloudView = view.findViewById(R.id.word_cloud_view);
         mobileNumbers = smsBackupService.getSmsBackupMobileNumbersTop10();
+        mobileNumbers.add(0, ALL);
         RxBus.getInstance().listen().subscribe(getInputObserver());
         return view;
     }
 
+    /**
+     * It's where you should place actions that have a global impact on the app
+     * Only create the initial menu state and not make changes during the activity lifecycle.
+     */
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        // keep a reference to options menu
+        optionsMenu = menu;
+        // clear current menu items
         menu.clear();
+        // set fragment specific menu items
         inflater.inflate(R.menu.word_cloud_menu, menu);
-        Log.d(TAG, "onCreateOptionsMenu.menu: " + menu.getItem(0).getSubMenu());
-        // mobileNumbers.forEach(s -> menu.findItem(menu.getItem(0).getGroupId()).getSubMenu().add(s));
-    }
+        MenuItem m = menu.findItem(R.id.mobile_dropdown_menu);
+        Spinner spinner = (Spinner) m.getActionView();
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, mobileNumbers);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "spinner.onItemSelected mobile:" + mobileNumbers.get(position));
+                //updateWordCloudView(mobileNumbers.get(position), WordCloudEvent.MESSAGE_TYPE_ALL);
+            }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        Log.d(TAG, "onPrepareOptionsMenu.menu: " + menu.getItem(0).getTitle());
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.mobile_numbers_menu_group) {
-            return true;
-        } else if (item.getItemId() == R.id.sms_sent) {
-            item.setChecked(!item.isChecked());
-            updateWordCloudView(selectedMobileNumber, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
-            return true;
-        } else if (item.getItemId() == R.id.sms_received) {
-            item.setChecked(!item.isChecked());
-            updateWordCloudView(selectedMobileNumber, WordCloudEvent.MESSAGE_TYPE_INBOX);
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        Log.d(TAG, "onCreateOptionsMenu.menu: " + menu);
     }
 
     /**
-     * Save selected mobile number
+     * Modify the options menu based on events that occur during the fragment lifecycle here,
      */
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        this.selectedMobileNumber = item.getTitle().toString().replace(ALL, ALL_SEARCH);
-        updateWordCloudView(selectedMobileNumber, WordCloudEvent.MESSAGE_TYPE_ALL);
-        Log.d(TAG, "onMenuItemClick: selected mobile number: " + selectedMobileNumber);
+    public void onPrepareOptionsMenu(@NotNull Menu menu) {
+    }
+
+    /**
+     * The contextual action mode is the preferred technique for displaying contextual actions when available.
+     *
+     * @Override public void onCreateContextMenu(@NotNull ContextMenu menu, @NotNull View v, ContextMenu.ContextMenuInfo menuInfo) {
+     * super.onCreateContextMenu(menu, v, menuInfo);
+     * getActivity().getMenuInflater().inflate(R.menu.word_cloud_context_menu, menu);
+     * <p>
+     * menu.setHeaderTitle("Context Menu");
+     * menu.add(0, v.getId(), 0, "Upload");
+     * menu.add(0, v.getId(), 0, "Search");
+     * }
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Log.d(TAG + ".onOptionsItemSelected", "selected: " + item.getTitle());
+        // save the checkbox selection
+        item.setChecked(!item.isChecked());
+        handleOptionsMenuSelection(selectedMobileNumber, optionsMenu.findItem(R.id.sms_inbox_menu).isChecked(), optionsMenu.findItem(R.id.sms_outbox_menu).isChecked());
         return true;
+    }
+
+    private void handleOptionsMenuSelection(String mobileNumber, boolean isInbox, boolean isOutbox) {
+        Log.d(TAG + ".handleOptionsMenuSelection", String.format("mobile=%s, inbox=%s, outbox=%s", mobileNumber, isInbox, isOutbox));
+        if (isInbox && isOutbox) {
+            updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_ALL);
+        } else if (isOutbox) {
+            updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
+        } else if (isInbox) {
+            updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_INBOX);
+        } else {
+            // do nothing
+           // updateWordCloudView(mobileNumber, null);
+        }
     }
 
     // Get RxJava input observer instance
@@ -154,10 +188,11 @@ public class WordCloudFragment extends Fragment implements PopupMenu.OnMenuItemC
     }
 
     private void updateWordCloudView(String contactName, String smsType) {
+        Log.d(TAG, String.format("updateWordCloudView mobile: %s, smsType=%s", contactName, smsType));
         progressDialog = buildProgressDialog();
         progressDialog.show();
         // start background task for building word cloud, which may take som time, based on number of sms
-        buildWordCloudTask.buildWordCloudEventBus(mapPreferences(), new Dimension(wordCloudView.getWidth(), wordCloudView.getHeight()), contactName, smsType);
+        buildWordCloudTask.buildWordCloudEventBus(mapPreferences(), Dimension.builder().width(wordCloudView.getWidth()).height(wordCloudView.getHeight()).build(), contactName, smsType);
     }
 
     private Settings mapPreferences() {

@@ -9,8 +9,7 @@
         <EditTextPreference
             app:defaultValue="\b\w{3,}"
             app:enabled="false"
-            app:icon="@drawable/baseline_search_black_24dp"
-            app:key="pref_word_selection_regex"
+            app:key="pref_word_regex"
             app:singleLineTitle="true"
             app:summary="Regex used to filter word in sms message"
             app:title="Regexp" />

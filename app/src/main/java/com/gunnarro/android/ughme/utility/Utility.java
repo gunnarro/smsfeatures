@@ -33,7 +33,6 @@ public class Utility {
         return "";
     }
 
-
     public static LinkedHashMap<String, Integer> getTop10Values(Map<String, Integer> map) {
         return map.entrySet()
                 .stream()
@@ -48,10 +47,6 @@ public class Utility {
 
 
     public static List<Sms> diffLists(@NotNull List<Sms> smsInbox, @NotNull List<Sms> smsBackup) {
-        if (smsBackup == null) {
-            Log.d(LOG_TAG, "diffLists: no backup, return inbox");
-            return smsInbox;
-        }
         // take a local copy in order to not delete from original list
         List<Sms> tmpSmsInbox = new ArrayList<>(smsInbox);
         List<Sms> tmpSmsBackup = new ArrayList<>(smsBackup);
@@ -73,7 +68,7 @@ public class Utility {
     }
 
     public static void mergeList(@NotNull List<Sms> smsBackupList, @NotNull List<Sms> smsNewList) {
-        Log.d("Utility", String.format("merge list, backupList: %s, new list: %s ", smsBackupList.size(), smsNewList));
+        Log.d("Utility", String.format("merge list, backupList: %s, new list: %s ", smsBackupList.size(), smsNewList.size()));
         smsBackupList.addAll(smsNewList);
         smsBackupList.sort((Sms s1, Sms s2) -> s1.getTimeMs().compareTo(s2.getTimeMs()));
         Log.d("Utility", String.format("merged list: %s", smsBackupList.size()));

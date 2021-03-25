@@ -8,10 +8,6 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class BackupEvent {
-    public enum BackupEventEventTypeEnum {
-        BACKUP_FINISHED;
-    }
-
     private final BackupEventEventTypeEnum eventType;
 
     private BackupEvent(Builder builder) {
@@ -33,6 +29,10 @@ public class BackupEvent {
         sb.append("eventType=").append(eventType);
         sb.append('}');
         return sb.toString();
+    }
+
+    public enum BackupEventEventTypeEnum {
+        BACKUP_FINISHED
     }
 
     /**

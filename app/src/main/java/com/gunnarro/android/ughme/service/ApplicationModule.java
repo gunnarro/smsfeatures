@@ -10,7 +10,7 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.components.ApplicationComponent;
 
 /**
- * Registrer all services with interfaces here
+ * Register all services with interfaces here
  */
 @Module
 @InstallIn(ApplicationComponent.class)

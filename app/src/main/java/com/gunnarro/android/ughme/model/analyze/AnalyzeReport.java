@@ -2,12 +2,14 @@ package com.gunnarro.android.ughme.model.analyze;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.concurrent.Immutable;
-
-@Immutable
+/**
+ * Delombok follwoing annotations:
+ * ToString
+ * Getter
+ * Builder
+ */
 public class AnalyzeReport {
 
     private final int numberOfWords;
@@ -15,89 +17,69 @@ public class AnalyzeReport {
     private final long analyzeTimeMs;
     private final List<ReportItem> reportItems;
 
-    public AnalyzeReport(AnalyzeReport.Builder builder) {
-        this.numberOfWords = builder.numberOfWords;
-        this.numberOfUniqueWords = builder.numberOfUniqueWords;
-        this.analyzeTimeMs = builder.analyzeTimeMs;
-        this.reportItems = new ArrayList<>();
+    AnalyzeReport(int numberOfWords, int numberOfUniqueWords, long analyzeTimeMs, List<ReportItem> reportItems) {
+        this.numberOfWords = numberOfWords;
+        this.numberOfUniqueWords = numberOfUniqueWords;
+        this.analyzeTimeMs = analyzeTimeMs;
+        this.reportItems = reportItems;
     }
 
-    public static AnalyzeReport.Builder builder() {
-        return new AnalyzeReport.Builder();
+    public static AnalyzeReportBuilder builder() {
+        return new AnalyzeReportBuilder();
     }
 
     public int getNumberOfWords() {
-        return numberOfWords;
+        return this.numberOfWords;
     }
 
     public int getNumberOfUniqueWords() {
-        return numberOfUniqueWords;
+        return this.numberOfUniqueWords;
     }
 
     public long getAnalyzeTimeMs() {
-        return analyzeTimeMs;
+        return this.analyzeTimeMs;
     }
 
     public List<ReportItem> getReportItems() {
-        return reportItems;
+        return this.reportItems;
     }
 
     @NotNull
-    @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("AnalyzeReport{");
-        sb.append("numberOfWords=").append(numberOfWords);
-        sb.append(", numberOfUniqueWords=").append(numberOfUniqueWords);
-        sb.append(", analyzeTimeMs=").append(analyzeTimeMs);
-        sb.append(", reportItems=").append(reportItems);
-        sb.append('}');
-        return sb.toString();
+        return "AnalyzeReport(numberOfWords=" + this.getNumberOfWords() + ", numberOfUniqueWords=" + this.getNumberOfUniqueWords() + ", analyzeTimeMs=" + this.getAnalyzeTimeMs() + ", reportItems=" + this.getReportItems() + ")";
     }
 
-    /**
-     * Builder class
-     */
-    public static class Builder {
+    public static class AnalyzeReportBuilder {
         private int numberOfWords;
         private int numberOfUniqueWords;
         private long analyzeTimeMs;
         private List<ReportItem> reportItems;
 
-        private Builder() {
+        AnalyzeReportBuilder() {
         }
 
-        public AnalyzeReport.Builder numberOfWords(Integer numberOfWords) {
+        public AnalyzeReportBuilder numberOfWords(int numberOfWords) {
             this.numberOfWords = numberOfWords;
             return this;
         }
 
-
-        public AnalyzeReport.Builder numberOfUniqueWords(Integer numberOfUniqueWords) {
+        public AnalyzeReportBuilder numberOfUniqueWords(int numberOfUniqueWords) {
             this.numberOfUniqueWords = numberOfUniqueWords;
             return this;
         }
 
-
-        public AnalyzeReport.Builder analyzeTimeMs(Long analyzeTimeMs) {
+        public AnalyzeReportBuilder analyzeTimeMs(long analyzeTimeMs) {
             this.analyzeTimeMs = analyzeTimeMs;
             return this;
         }
 
-        public AnalyzeReport.Builder reportItems(List<ReportItem> reportItems) {
+        public AnalyzeReportBuilder reportItems(List<ReportItem> reportItems) {
             this.reportItems = reportItems;
             return this;
         }
 
-        public AnalyzeReport.Builder of(AnalyzeReport analyzeReport) {
-            this.numberOfUniqueWords = analyzeReport.numberOfWords;
-            this.numberOfUniqueWords = analyzeReport.numberOfUniqueWords;
-            this.analyzeTimeMs = analyzeReport.analyzeTimeMs;
-            this.reportItems = analyzeReport.reportItems;
-            return this;
-        }
-
         public AnalyzeReport build() {
-            return new AnalyzeReport(this);
+            return new AnalyzeReport(numberOfWords, numberOfUniqueWords, analyzeTimeMs, reportItems);
         }
     }
 }
