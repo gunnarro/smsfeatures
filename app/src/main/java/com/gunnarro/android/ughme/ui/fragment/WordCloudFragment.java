@@ -133,9 +133,11 @@ public class WordCloudFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Log.d(TAG + ".onOptionsItemSelected", "selected: " + item.getTitle());
-        // save the checkbox selection
-        item.setChecked(!item.isChecked());
-        handleOptionsMenuSelection(selectedMobileNumber, optionsMenu.findItem(R.id.sms_inbox_menu).isChecked(), optionsMenu.findItem(R.id.sms_outbox_menu).isChecked());
+        if (item.getItemId() == R.id.sms_inbox_menu ||  item.getItemId() == R.id.sms_outbox_menu ) {
+            // save the checkbox selection
+            item.setChecked(!item.isChecked());
+            handleOptionsMenuSelection(selectedMobileNumber, optionsMenu.findItem(R.id.sms_inbox_menu).isChecked(), optionsMenu.findItem(R.id.sms_outbox_menu).isChecked());
+        }
         return true;
     }
 
@@ -147,9 +149,6 @@ public class WordCloudFragment extends Fragment {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
         } else if (isInbox) {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_INBOX);
-        } else {
-            // do nothing
-           // updateWordCloudView(mobileNumber, null);
         }
     }
 

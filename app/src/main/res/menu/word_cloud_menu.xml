@@ -7,7 +7,7 @@
             android:checkable="true"
             android:title="Mobile"
             app:actionViewClass="android.widget.Spinner"
-            app:showAsAction="always" />
+            app:showAsAction="ifRoom" />
     </group>
     <group
         android:id="@+id/sms_type_menu_group"

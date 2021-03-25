@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class SmsBackupInfo implements Serializable {
 
-    BackupStatusEnum status = BackupStatusEnum.NOT_BACKED_UP;
+    BackupStatusEnum status;
     String smsBackupFilePath;
     long smsBackupFileSizeBytes;
     long storageFreeSpaceBytes;

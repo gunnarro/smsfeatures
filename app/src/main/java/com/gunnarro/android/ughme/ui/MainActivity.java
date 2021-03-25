@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Log.d(TAG + ".onOptionsItemSelected", "selected: " + item.getTitle());
+        Log.d(TAG + ".onOptionsItemSelected", "selected: " + item);
         if (item.getItemId() == android.R.id.home) {// Open Close Drawer Layout
             if (drawer.isOpen()) {
                 drawer.closeDrawers();
@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Log.d("MainActivity.onRequestPermissions", String.format("requestCode=%s, permissins=%s, grantResult=%s", requestCode, new ArrayList<>(Arrays.asList(permissions)), new ArrayList<>(Collections.singletonList(grantResults))));
         // If request is cancelled, the result arrays are empty.
         if (requestCode == PERMISSION_REQUEST) {

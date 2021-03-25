@@ -3,6 +3,8 @@ package com.gunnarro.android.ughme.model.cloud;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Delombok follwoing annotations:
  * ToString
@@ -62,6 +64,7 @@ public class Word {
         return this.rotationAngle;
     }
 
+    @NotNull
     public String toString() {
         return "Word(text=" + this.getText() + ", rect=" + this.getRect() + ", count=" + this.getCount() + ", size=" + this.getSize() + ", rotationAngle=" + this.getRotationAngle() + ")";
     }

@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/sms_features"
         android:supportsRtl="true"
         android:allowBackup="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_descriptor">
 
         <meta-data
             android:name="android.app.searchable"
