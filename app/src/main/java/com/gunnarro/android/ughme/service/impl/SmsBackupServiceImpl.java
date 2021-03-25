@@ -121,9 +121,8 @@ public class SmsBackupServiceImpl {
     }
 
     /**
-     *
      * @param contactName
-     * @param smsType can be 1 = INBOX, 2 = OUTBOX or (.*) = All
+     * @param smsType     can be 1 = INBOX, 2 = OUTBOX or (.*) = All
      * @return
      */
     public String getSmsBackupAsText(@NotNull String contactName, @NonNull String smsType) {

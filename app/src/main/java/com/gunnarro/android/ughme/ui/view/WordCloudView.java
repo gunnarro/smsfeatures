@@ -116,7 +116,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         Log.d(buildTag("updateCanvas"), String.format("canvas updated...thread=%s, %s", Thread.currentThread().getName(), word.toString()));
     }
 
-     private Runnable updateViewTask(final List<Word> wordList) {
+    private Runnable updateViewTask(final List<Word> wordList) {
         return () -> {
             try {
                 clearDrawing();

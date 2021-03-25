@@ -133,7 +133,7 @@ public class WordCloudFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Log.d(TAG + ".onOptionsItemSelected", "selected: " + item.getTitle());
-        if (item.getItemId() == R.id.sms_inbox_menu ||  item.getItemId() == R.id.sms_outbox_menu ) {
+        if (item.getItemId() == R.id.sms_inbox_menu || item.getItemId() == R.id.sms_outbox_menu) {
             // save the checkbox selection
             item.setChecked(!item.isChecked());
             handleOptionsMenuSelection(selectedMobileNumber, optionsMenu.findItem(R.id.sms_inbox_menu).isChecked(), optionsMenu.findItem(R.id.sms_outbox_menu).isChecked());
