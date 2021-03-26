@@ -43,8 +43,8 @@ public class WordCloudFragment extends Fragment {
     private static final String TAG = WordCloudFragment.class.getSimpleName();
 
     private static final String ALL = "All";
-    private static final String ALL_SEARCH = "(.*)";
-    private final String selectedMobileNumber = ALL_SEARCH;
+    public static final String ALL_SEARCH = "(.*)";
+    private String selectedMobileNumber = ALL_SEARCH;
     @Inject
     BuildWordCloudTask buildWordCloudTask;
     @Inject
@@ -100,8 +100,9 @@ public class WordCloudFragment extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "spinner.onItemSelected mobile:" + mobileNumbers.get(position));
-                //updateWordCloudView(mobileNumbers.get(position), WordCloudEvent.MESSAGE_TYPE_ALL);
+                selectedMobileNumber = mobileNumbers.get(position);
+                Log.d(TAG, "spinner.onItemSelected mobile:" + selectedMobileNumber);
+                handleOptionsMenuSelection();
             }
 
             @Override
@@ -134,14 +135,17 @@ public class WordCloudFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Log.d(TAG + ".onOptionsItemSelected", "selected: " + item.getTitle());
         if (item.getItemId() == R.id.sms_inbox_menu || item.getItemId() == R.id.sms_outbox_menu) {
-            // save the checkbox selection
+            // must save the checkbox selection
             item.setChecked(!item.isChecked());
-            handleOptionsMenuSelection(selectedMobileNumber, optionsMenu.findItem(R.id.sms_inbox_menu).isChecked(), optionsMenu.findItem(R.id.sms_outbox_menu).isChecked());
+            handleOptionsMenuSelection();
         }
         return true;
     }
 
-    private void handleOptionsMenuSelection(String mobileNumber, boolean isInbox, boolean isOutbox) {
+    private void handleOptionsMenuSelection() {
+        boolean isInbox = optionsMenu.findItem(R.id.sms_inbox_menu).isChecked();
+        boolean isOutbox = optionsMenu.findItem(R.id.sms_outbox_menu).isChecked();
+        String mobileNumber = selectedMobileNumber == ALL ? ALL_SEARCH : selectedMobileNumber;
         Log.d(TAG + ".handleOptionsMenuSelection", String.format("mobile=%s, inbox=%s, outbox=%s", mobileNumber, isInbox, isOutbox));
         if (isInbox && isOutbox) {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_ALL);
@@ -162,7 +166,6 @@ public class WordCloudFragment extends Fragment {
 
             @Override
             public void onNext(@NotNull Object obj) {
-                //Log.d(buildTag("getInputObserver.onNext"), String.format("Received new data event of type %s", obj.getClass().getSimpleName()));
                 if (obj instanceof WordCloudEvent) {
                     WordCloudEvent event = (WordCloudEvent) obj;
                     Log.d(TAG + ".getInputObserver.onNext", String.format("handle event: %s", event.toString()));
@@ -180,8 +183,7 @@ public class WordCloudFragment extends Fragment {
 
             @Override
             public void onComplete() {
-                Log.d(TAG + ".getInputObserver.onComplete"
-                        , "");
+                Log.d(TAG + ".getInputObserver.onComplete", "");
             }
         };
     }

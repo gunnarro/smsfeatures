@@ -155,6 +155,10 @@ public class Sms implements Serializable, Comparable<Sms> {
         this.count = count;
     }
 
+    public String getName() {
+        return contactName != null ? contactName : address;
+    }
+
     @NotNull
     public String toString() {
         return "Sms(isRead=" + this.isRead() + ", status=" + this.getStatus() + ", seen=" + this.getSeen() + ", timeMs=" + this.getTimeMs() + ", address=" + this.getAddress() + ", body=" + this.getBody() + ", contactName=" + this.getContactName() + ", type=" + this.getType() + ", period=" + this.getPeriod() + ", numberOfReceived=" + this.getNumberOfReceived() + ", numberOfSent=" + this.getNumberOfSent() + ", numberOfBlocked=" + this.getNumberOfBlocked() + ", count=" + this.getCount() + ")";

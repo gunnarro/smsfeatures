@@ -125,6 +125,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 wordList.forEach(this::updateCanvasText);
                 postInvalidate();
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new ApplicationException(e.getMessage(), e);
             }
         };

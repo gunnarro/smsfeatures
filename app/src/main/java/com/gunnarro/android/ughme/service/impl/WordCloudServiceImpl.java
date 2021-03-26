@@ -56,8 +56,7 @@ public class WordCloudServiceImpl implements WordCloudService {
     public List<Word> buildWordCloud(Map<String, Integer> wordMap, Integer mostFrequentWordCount, Dimension rectangleDimension, Settings settings) {
         Log.i(buildTag("buildWordCloud"), String.format("number of words size=%s, rectangle: %s", wordMap.size(), rectangleDimension));
         Log.i(buildTag("buildWordCloud"), String.format("%s", settings));
-
-        //Log.d(buildTag("buildWordCloud"), String.format("word map: %s", wordMap));
+        Log.d(buildTag("buildWordCloud"), String.format("word map: %s", wordMap.size()));
 
         if (rectangleDimension.getWidth() < 0 || rectangleDimension.getHeight() < 0) {
             throw new ApplicationException(String.format("width and height must both be greater than 0! rectangle: %s", rectangleDimension), null);

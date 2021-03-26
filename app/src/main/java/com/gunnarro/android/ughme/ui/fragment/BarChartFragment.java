@@ -93,10 +93,6 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         View view = inflater.inflate(R.layout.fragment_barchart, container, false);
         setHasOptionsMenu(true);
         /*
-        view.findViewById(R.id.day_radio_btn).setOnClickListener(this);
-        view.findViewById(R.id.month_radio_btn).setOnClickListener(this);
-        view.findViewById(R.id.year_radio_btn).setOnClickListener(this);
-        view.findViewById(R.id.number_radio_btn).setOnClickListener(this);
         mobileNumbers = new ArrayList<>();
         mobileNumbers.add(BackupFragment.ALL);
         mobileNumberSp = view.findViewById(R.id.number_spinner);
@@ -170,6 +166,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Log.d(TAG + ".onOptionsItemSelected", "selected: " + item.getTitle());
         String selectedMobileNumber = "All";//mobileNumberSp.getSelectedItem().toString();
 
         if (item.getItemId() == R.id.mobile_numbers_group) {

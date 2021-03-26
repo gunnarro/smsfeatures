@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.gunnarro.android.ughme.model.sms.Sms;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +44,7 @@ public class SmsReaderServiceImpl {
      * Inbox columns names: _id, thread_id address person date protocol read
      * status type subject body service_center locked error_code seen
      */
+    @NotNull
     public List<Sms> getSMSInbox(boolean isOnlyUnread, String filterByNumber, Long filterByTimeMs) {
         Log.d(LOG_TAG, String.format("read sms inbox, onlyRead: %s, filterByNumber: %s, filterByTime: %s", isOnlyUnread, filterByNumber, filterByTimeMs != null ? new Date(filterByTimeMs) : null));
         List<Sms> smsInbox = new ArrayList<>();

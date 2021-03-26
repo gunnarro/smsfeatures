@@ -35,6 +35,7 @@ public class SmsBackupServiceImpl {
 
     public static final String SMS_BACKUP_FILE_NAME = "sms-backup.json";
     public static final String SMS_BACKUP_METADATA_FILE_NAME = "sms-backup-metadata.json";
+
     private static final String LOG_TAG = SmsBackupServiceImpl.class.getSimpleName();
     private final File appExtDir;
     private final SmsReaderServiceImpl smsReaderService;
@@ -45,6 +46,7 @@ public class SmsBackupServiceImpl {
         this.smsReaderService = smsReaderService;
     }
 
+    @NotNull
     public List<Sms> getSmsInbox(String filterByMobileNumber, Long filterByTimeMs) {
         List<Sms> inbox = smsReaderService.getSMSInbox(false, filterByMobileNumber, filterByTimeMs);
         Log.d(LOG_TAG, String.format("getSmsInbox: filterByNumber: %s, filterByTimeMs: %s, number of sms: %s", filterByMobileNumber, filterByTimeMs, inbox.size()));
@@ -53,23 +55,23 @@ public class SmsBackupServiceImpl {
 
     @NotNull
     public List<Sms> getSmsBackup() {
-        List<Sms> smsBakupList = new ArrayList<>();
+        List<Sms> smsBackupList = new ArrayList<>();
         Gson gson = new GsonBuilder().setLenient().create();
         Type smsListType = new TypeToken<ArrayList<Sms>>() {
         }.getType();
         try {
             File smsBackupFile = getFile(SmsBackupServiceImpl.SMS_BACKUP_FILE_NAME);
-            smsBakupList = gson.fromJson(new FileReader(smsBackupFile.getPath()), smsListType);
-            if (smsBakupList == null) {
-                smsBakupList = new ArrayList<>();
+            smsBackupList = gson.fromJson(new FileReader(smsBackupFile.getPath()), smsListType);
+            if (smsBackupList == null) {
+                smsBackupList = new ArrayList<>();
             }
         } catch (FileNotFoundException e) {
             Log.d(LOG_TAG, String.format("sms backup file not found! error: %s", e.getMessage()));
         }
         // sort descending by time
         Comparator<Sms> compareByTimeMs = (Sms s1, Sms s2) -> s1.getTimeMs().compareTo(s2.getTimeMs());
-        smsBakupList.sort(compareByTimeMs.reversed());
-        return smsBakupList;
+        smsBackupList.sort(compareByTimeMs.reversed());
+        return smsBackupList;
     }
 
     public void backupSmsInbox() {
@@ -113,7 +115,7 @@ public class SmsBackupServiceImpl {
     public List<String> getSmsBackupMobileNumbersTop10() {
         try {
             List<Sms> smsList = getSmsBackup();
-            Map<String, Integer> smsMap = smsList.stream().collect(Collectors.groupingBy(Sms::getContactName, Collectors.summingInt(Sms::getCount)));
+            Map<String, Integer> smsMap = smsList.stream().collect(Collectors.groupingBy(Sms::getName, Collectors.summingInt(Sms::getCount)));
             return Utility.getTop10ValuesFromMap(smsMap);
         } catch (Exception e) {
             return new ArrayList<>();
@@ -121,16 +123,15 @@ public class SmsBackupServiceImpl {
     }
 
     /**
-     * @param contactName
+     * @param filterBy holds either mobilenumber og contactname
      * @param smsType     can be 1 = INBOX, 2 = OUTBOX or (.*) = All
      * @return
      */
-    public String getSmsBackupAsText(@NotNull String contactName, @NonNull String smsType) {
+    public String getSmsBackupAsText(@NotNull String filterBy, @NonNull String smsType) {
         List<Sms> smsList = getSmsBackup();
-        Log.d("getSmsBackupAsText", String.format("contactName=%s, smsType=%s, numberOfSms=%s", contactName, smsType, smsList.size()));
-        smsList.forEach(s -> Log.d("getSmsBackupAsText", s.getType()));
+        Log.d("getSmsBackupAsText", String.format("filterBy=%s, smsType=%s, numberOfSms=%s", filterBy, smsType, smsList.size()));
         return smsList.stream()
-                .filter(s -> s.getType().matches(smsType))
+                .filter(s -> s.getType().matches(smsType) && s.getName().matches(filterBy))
                 .map(Sms::getBody)
                 .collect(Collectors.joining(" "));
     }
