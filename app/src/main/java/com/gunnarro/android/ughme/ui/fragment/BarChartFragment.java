@@ -402,6 +402,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
                 Log.d(TAG, "getInputObserver.onSubscribe:");
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public void onNext(@NotNull Object obj) {
                 Log.d(TAG, String.format("getInputObserver.onNext: Received new data event of type %s", obj.getClass().getSimpleName()));

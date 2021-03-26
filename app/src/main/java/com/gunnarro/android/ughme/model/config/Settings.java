@@ -6,9 +6,6 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 @Entity(tableName = "settings_table")
 public class Settings {
 
