@@ -9,6 +9,7 @@ import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
+import com.gunnarro.android.ughme.utility.Utility;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -21,7 +22,6 @@ import javax.inject.Inject;
  */
 public class BuildWordCloudTask {
 
-    private static final String TAG = BuildWordCloudTask.class.getSimpleName();
     final WordCloudService wordCloudService;
     final SmsBackupServiceImpl smsBackupService;
     final TextAnalyzerServiceImpl textAnalyzerService;
@@ -48,13 +48,12 @@ public class BuildWordCloudTask {
                 RxBus.getInstance().publish(
                         WordCloudEvent.builder()
                                 .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
-                                .smsTypeAll()// TODO
                                 .wordList(wordList)
                                 .build());
-                Log.i(TAG, String.format("%s", textAnalyzerService.getReport(true)));
-                Log.i(TAG, String.format("buildWordCloud finished, execution time=%s ms, tread: %s", (System.currentTimeMillis() - startTimeMs), Thread.currentThread().getName()));
+                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("%s", textAnalyzerService.getReport(false)));
+                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("finished, exeTime=%s ms", (System.currentTimeMillis() - startTimeMs)));
             } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
+                Log.e(Utility.buildTag(getClass(), "buildWordCloudEventBus"), e.getMessage());
             }
         };
         executor.execute(buildWordCloudRunnable);

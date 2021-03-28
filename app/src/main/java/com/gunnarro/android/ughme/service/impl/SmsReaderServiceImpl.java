@@ -8,6 +8,7 @@ import android.provider.Telephony;
 import android.util.Log;
 
 import com.gunnarro.android.ughme.model.sms.Sms;
+import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -23,8 +24,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 
 @Singleton
 public class SmsReaderServiceImpl {
-
-    private static final String LOG_TAG = SmsReaderServiceImpl.class.getSimpleName();
 
     private static final String CONTENT_SMS_INBOX = "content://sms/inbox";
     private static final String CONTENT_SMS_OUTBOX = "content://sms/inbox";
@@ -46,7 +45,7 @@ public class SmsReaderServiceImpl {
      */
     @NotNull
     public List<Sms> getSMSInbox(boolean isOnlyUnread, String filterByNumber, Long filterByTimeMs) {
-        Log.d(LOG_TAG, String.format("read sms inbox, onlyRead: %s, filterByNumber: %s, filterByTime: %s", isOnlyUnread, filterByNumber, filterByTimeMs != null ? new Date(filterByTimeMs) : null));
+        Log.d(Utility.buildTag(getClass(), "getSMSInbox"), String.format("read sms inbox, onlyRead: %s, filterByNumber: %s, filterByTime: %s", isOnlyUnread, filterByNumber, filterByTimeMs != null ? new Date(filterByTimeMs) : null));
         List<Sms> smsInbox = new ArrayList<>();
         String[] projection = new String[]{ID, Telephony.Sms.ADDRESS, Telephony.Sms.BODY, Telephony.Sms.DATE, Telephony.Sms.READ, Telephony.Sms.STATUS, Telephony.Sms.SEEN, Telephony.Sms.TYPE, "datetime(julianday(date)) AS group_by"};
         try (Cursor cursor = context.getContentResolver().query(Telephony.Sms.CONTENT_URI
@@ -60,7 +59,7 @@ public class SmsReaderServiceImpl {
                     if (isOnlyUnread) {
                         if (read == MESSAGE_IS_READ) {
                             // Skip read sms
-                            Log.d(LOG_TAG, String.format("skip sms, ead: %s", read));
+                            Log.d(Utility.buildTag(getClass(), "getSMSInbox"), String.format("skip sms, ead: %s", read));
                             continue;
                         }
                     }
@@ -71,7 +70,7 @@ public class SmsReaderServiceImpl {
                     if (filterByTimeMs != null) {
                         if (smsTimeMs <= filterByTimeMs) {
                             // skip this sms
-                            Log.d(LOG_TAG, String.format("skip sms, date: %s", new Date(smsTimeMs)));
+                            Log.d(Utility.buildTag(getClass(), "getSMSInbox"), String.format("skip sms, date: %s", new Date(smsTimeMs)));
                             continue;
                         }
                     }
@@ -81,7 +80,7 @@ public class SmsReaderServiceImpl {
                     if (filterByNumber != null && !filterByNumber.isEmpty() && !filterByNumber.equalsIgnoreCase(SMS_ALL) && mobileNumber != null) {
                         if (!mobileNumber.equals(filterByNumber)) {
                             // skip this sms
-                            Log.d(LOG_TAG, String.format("skip sms, number: %s", mobileNumber));
+                            Log.d(Utility.buildTag(getClass(), "getSMSInbox"), String.format("skip sms, number: %s", mobileNumber));
                             continue;
                         }
                     }
@@ -101,7 +100,7 @@ public class SmsReaderServiceImpl {
                             .count(1)
                             .build();
 
-                    Log.d(LOG_TAG, String.format("add sms, number: %s, date: %s", mobileNumber, new Date(smsTimeMs)));
+                    Log.d(Utility.buildTag(getClass(), "getSMSInbox"), String.format("add sms, number: %s, date: %s", mobileNumber, new Date(smsTimeMs)));
                     smsInbox.add(sms);
                 } while (cursor.moveToNext());
             }
@@ -124,7 +123,7 @@ public class SmsReaderServiceImpl {
                 cursor.close();
             }
         } catch (Exception e) {
-            Log.e(LOG_TAG, Objects.requireNonNull(e.getMessage()));
+            Log.e(Utility.buildTag(getClass(), "getSMSInbox"), Objects.requireNonNull(e.getMessage()));
         }
         return contactDisplayName;
     }

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.BackupEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
+import com.gunnarro.android.ughme.utility.Utility;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,8 +16,6 @@ import javax.inject.Inject;
  * Run the word cloud build as a background task
  */
 public class SmsBackupTask {
-
-    private static final String TAG = SmsBackupTask.class.getSimpleName();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -37,9 +36,9 @@ public class SmsBackupTask {
                         BackupEvent.builder()
                                 .eventType(BackupEvent.BackupEventEventTypeEnum.BACKUP_FINISHED)
                                 .build());
-                Log.i(TAG, String.format("SmsBackupTask finished, execution time=%s ms, tread: %s", (System.currentTimeMillis() - startTimeMs), Thread.currentThread().getName()));
+                Log.i(Utility.buildTag(getClass(), "backupSms"), String.format("finished, execution time=%s ms", (System.currentTimeMillis() - startTimeMs)));
             } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
+                Log.e(Utility.buildTag(getClass(), "backupSms"), e.getMessage());
             }
         };
         executor.execute(backupSmsRunnable);

@@ -46,7 +46,7 @@ public class AnalyzeReport {
 
     @NotNull
     public String toString() {
-        return "AnalyzeReport(numberOfWords=" + this.getNumberOfWords() + ", numberOfUniqueWords=" + this.getNumberOfUniqueWords() + ", analyzeTimeMs=" + this.getAnalyzeTimeMs() + ", reportItems=" + this.getReportItems() + ")";
+        return "AnalyzeReport(numberOfWords=" + this.getNumberOfWords() + ",\n numberOfUniqueWords=" + this.getNumberOfUniqueWords() + ",\n analyzeTimeMs=" + this.getAnalyzeTimeMs() + ",\n reportItems=" + this.getReportItems() + ")";
     }
 
     public static class AnalyzeReportBuilder {

@@ -26,9 +26,11 @@ import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.BuildWordCloudTask;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.ui.view.WordCloudView;
+import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,8 +41,6 @@ import io.reactivex.disposables.Disposable;
 
 @AndroidEntryPoint
 public class WordCloudFragment extends Fragment {
-
-    private static final String TAG = WordCloudFragment.class.getSimpleName();
 
     private static final String ALL = "All";
     public static final String ALL_SEARCH = "(.*)";
@@ -101,7 +101,7 @@ public class WordCloudFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedMobileNumber = mobileNumbers.get(position);
-                Log.d(TAG, "spinner.onItemSelected mobile:" + selectedMobileNumber);
+                Log.d(Utility.buildTag(getClass(), "onCreateOptionsMenu"), "spinner.onItemSelected mobile:" + selectedMobileNumber);
                 handleOptionsMenuSelection();
             }
 
@@ -109,7 +109,7 @@ public class WordCloudFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        Log.d(TAG, "onCreateOptionsMenu.menu: " + menu);
+        Log.d(Utility.buildTag(getClass(), "onCreateOptionsMenu"), "menu: " + menu);
     }
 
     /**
@@ -133,7 +133,7 @@ public class WordCloudFragment extends Fragment {
      */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Log.d(TAG + ".onOptionsItemSelected", "selected: " + item.getTitle());
+        Log.d(Utility.buildTag(getClass(), "onOptionsItemSelected"), "selected: " + item.getTitle());
         if (item.getItemId() == R.id.sms_inbox_menu || item.getItemId() == R.id.sms_outbox_menu) {
             // must save the checkbox selection
             item.setChecked(!item.isChecked());
@@ -146,13 +146,15 @@ public class WordCloudFragment extends Fragment {
         boolean isInbox = optionsMenu.findItem(R.id.sms_inbox_menu).isChecked();
         boolean isOutbox = optionsMenu.findItem(R.id.sms_outbox_menu).isChecked();
         String mobileNumber = selectedMobileNumber == ALL ? ALL_SEARCH : selectedMobileNumber;
-        Log.d(TAG + ".handleOptionsMenuSelection", String.format("mobile=%s, inbox=%s, outbox=%s", mobileNumber, isInbox, isOutbox));
+        Log.d(Utility.buildTag(getClass(), "handleOptionsMenuSelection"), String.format("mobile=%s, inbox=%s, outbox=%s", mobileNumber, isInbox, isOutbox));
         if (isInbox && isOutbox) {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_ALL);
         } else if (isOutbox) {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
         } else if (isInbox) {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_INBOX);
+        } else {
+            // clear current view
         }
     }
 
@@ -161,14 +163,14 @@ public class WordCloudFragment extends Fragment {
         return new Observer<Object>() {
             @Override
             public void onSubscribe(@NotNull Disposable d) {
-                Log.d(TAG + ".getInputObserver.onSubscribe", "getInputObserver.onSubscribe");
+                Log.d(Utility.buildTag(getClass(), "getInputObserver.onSubscribe"), "");
             }
 
             @Override
             public void onNext(@NotNull Object obj) {
                 if (obj instanceof WordCloudEvent) {
                     WordCloudEvent event = (WordCloudEvent) obj;
-                    Log.d(TAG + ".getInputObserver.onNext", String.format("handle event: %s", event.toString()));
+                    Log.d(Utility.buildTag(getClass(), "getInputObserver.onNext"), String.format("handle event: %s", event.toString()));
                     if (event.isUpdateEvent()) {
                         // hide progress dialog
                         progressDialog.dismiss();
@@ -178,18 +180,18 @@ public class WordCloudFragment extends Fragment {
 
             @Override
             public void onError(@NotNull Throwable e) {
-                Log.e(TAG + ".getInputObserver.onError", String.format("%s", e.getMessage()));
+                Log.e(Utility.buildTag(getClass(), "getInputObserver.onError"), String.format("%s", e.getMessage()));
             }
 
             @Override
             public void onComplete() {
-                Log.d(TAG + ".getInputObserver.onComplete", "");
+                Log.d(Utility.buildTag(getClass(), "getInputObserver.onComplete"), "");
             }
         };
     }
 
     private void updateWordCloudView(String contactName, String smsType) {
-        Log.d(TAG, String.format("updateWordCloudView mobile: %s, smsType=%s", contactName, smsType));
+        Log.d(Utility.buildTag(getClass(), "updateWordCloudView"), String.format("mobile=%s, smsType=%s", contactName, smsType));
         progressDialog = buildProgressDialog();
         progressDialog.show();
         // start background task for building word cloud, which may take som time, based on number of sms

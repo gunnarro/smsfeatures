@@ -1,12 +1,14 @@
 package com.gunnarro.android.ughme.service.impl;
 
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.github.davidmoten.rtree.Entry;
 import com.github.davidmoten.rtree.RTree;
 import com.github.davidmoten.rtree.geometry.Geometries;
 import com.github.davidmoten.rtree.geometry.Rectangle;
 import com.gunnarro.android.ughme.exception.ApplicationException;
+import com.gunnarro.android.ughme.utility.Utility;
 
 import rx.Observable;
 
@@ -15,7 +17,7 @@ public class TreeWordPlacer {
     private RTree<String, Rectangle> placedWordRTree;
 
     public void reset() {
-        placedWordRTree = RTree.maxChildren(4).create();
+        placedWordRTree = RTree.maxChildren(RTree.MAX_CHILDREN_DEFAULT_GUTTMAN).create();
     }
 
 
@@ -27,6 +29,7 @@ public class TreeWordPlacer {
      * bottom: The Y coordinate of the bottom of the rectangle
      */
     public boolean place(final String word, Rect wordRect) {
+        long startTime = System.currentTimeMillis();
         final Rectangle wordRectangle = Geometries.rectangle(
                 (float) wordRect.left,
                 (float) wordRect.top,
@@ -41,6 +44,7 @@ public class TreeWordPlacer {
             return false;
         }
         placedWordRTree = placedWordRTree.add(word, wordRectangle);
+        //Log.i(Utility.buildTag(getClass(), "place"), String.format("word=%s, exeTime=%s ms", word, (System.currentTimeMillis() - startTime)));
         return true;
     }
 

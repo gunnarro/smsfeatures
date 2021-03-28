@@ -3,6 +3,7 @@ package com.gunnarro.android.ughme.utility;
 import android.util.Log;
 
 import com.gunnarro.android.ughme.model.sms.Sms;
+import com.gunnarro.android.ughme.ui.view.WordCloudView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -21,10 +22,29 @@ public class Utility {
     private static final String LOG_TAG = Utility.class.getSimpleName();
     private static final SimpleDateFormat dateFormat;
 
+    private static String currentUUID;
+
+    private Utility() {
+        genNewUUID();
+    }
+
     static {
         dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
+
+    public static void genNewUUID() {
+        currentUUID = java.util.UUID.randomUUID().toString();
+    }
+
+    public static String buildTag(Class clazz, String tagName) {
+        return new StringBuilder(clazz.getSimpleName())
+                .append(".").append(tagName)
+                .append(", thread=").append(Thread.currentThread().getName())
+                .append(", UUID=").append(currentUUID)
+                .toString();
+    }
+
 
     public static String formatTime(Long timeMs) {
         if (timeMs != null && timeMs >= 0) {

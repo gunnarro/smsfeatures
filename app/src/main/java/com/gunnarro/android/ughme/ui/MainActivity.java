@@ -165,9 +165,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void checkPermissions() {
+        Log.i(TAG + ".checkPermissions", "Start check permissions...");
         // check and ask user for permission if not granted
         String[] permissions = new String[]{Manifest.permission.READ_SMS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        // FIXME can only ask for one permission at time error: Can reqeust only one set of permissions at a time
+        // FIXME can only ask for one permission at time error: Can request only one set of permissions at a time
         for (String permission : permissions) {
             if (super.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                 Log.i(TAG + ".checkPermissions", String.format("Not Granted, send request: %s", permission));

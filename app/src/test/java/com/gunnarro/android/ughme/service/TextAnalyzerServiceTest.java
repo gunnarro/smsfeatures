@@ -18,5 +18,25 @@ public class TextAnalyzerServiceTest {
         Assert.assertEquals(0.64f, w.getHighestWordCountPercent(), 0);
     }
 
+    @Test
+    public void analyzeTextEmptyText() {
+        TextAnalyzerServiceImpl w = new TextAnalyzerServiceImpl();
+        w.analyzeText("", TextAnalyzerServiceImpl.DEFAULT_WORD_REGEXP);
+        Assert.assertEquals(0, w.getNumberOfWords().intValue());
+        Assert.assertEquals(0, w.getWordCountMap(10).size());
+        Assert.assertEquals(0, w.getHighestWordCount());
+        Assert.assertEquals(0.0f, w.getHighestWordCountPercent(), 0);
+    }
+
+    @Test
+    public void analyzeTextShortText() {
+        TextAnalyzerServiceImpl w = new TextAnalyzerServiceImpl();
+        w.analyzeText("Android is always a sweet treat!", TextAnalyzerServiceImpl.DEFAULT_WORD_REGEXP);
+        Assert.assertEquals(4, w.getNumberOfWords().intValue());
+        Assert.assertEquals(4, w.getWordCountMap(10).size());
+        Assert.assertEquals(1, w.getHighestWordCount());
+        Assert.assertEquals(0.04f, w.getHighestWordCountPercent(), 0);
+    }
+
 }
 

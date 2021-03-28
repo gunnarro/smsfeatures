@@ -35,8 +35,6 @@ public class SmsBackupServiceImpl {
 
     public static final String SMS_BACKUP_FILE_NAME = "sms-backup.json";
     public static final String SMS_BACKUP_METADATA_FILE_NAME = "sms-backup-metadata.json";
-
-    private static final String LOG_TAG = SmsBackupServiceImpl.class.getSimpleName();
     private final File appExtDir;
     private final SmsReaderServiceImpl smsReaderService;
 
@@ -49,12 +47,13 @@ public class SmsBackupServiceImpl {
     @NotNull
     public List<Sms> getSmsInbox(String filterByMobileNumber, Long filterByTimeMs) {
         List<Sms> inbox = smsReaderService.getSMSInbox(false, filterByMobileNumber, filterByTimeMs);
-        Log.d(LOG_TAG, String.format("getSmsInbox: filterByNumber: %s, filterByTimeMs: %s, number of sms: %s", filterByMobileNumber, filterByTimeMs, inbox.size()));
+        Log.d(Utility.buildTag(getClass(), "getSmsInbox"), String.format("filterByNumber: %s, filterByTimeMs: %s, number of sms: %s", filterByMobileNumber, filterByTimeMs, inbox.size()));
         return inbox;
     }
 
     @NotNull
     public List<Sms> getSmsBackup() {
+        long startTime = System.currentTimeMillis();
         List<Sms> smsBackupList = new ArrayList<>();
         Gson gson = new GsonBuilder().setLenient().create();
         Type smsListType = new TypeToken<ArrayList<Sms>>() {
@@ -66,31 +65,34 @@ public class SmsBackupServiceImpl {
                 smsBackupList = new ArrayList<>();
             }
         } catch (FileNotFoundException e) {
-            Log.d(LOG_TAG, String.format("sms backup file not found! error: %s", e.getMessage()));
+            Log.d(Utility.buildTag(getClass(), "getSmsBackup"), String.format("sms backup file not found! error: %s", e.getMessage()));
         }
         // sort descending by time
         Comparator<Sms> compareByTimeMs = (Sms s1, Sms s2) -> s1.getTimeMs().compareTo(s2.getTimeMs());
         smsBackupList.sort(compareByTimeMs.reversed());
+        Log.i(Utility.buildTag(getClass(),"getSmsBackup"), String.format("exeTime= %s ms", (System.currentTimeMillis() - startTime)));
         return smsBackupList;
     }
 
     public void backupSmsInbox() {
         try {
+            long startTime = System.currentTimeMillis();
             List<Sms> smsBackupList = getSmsBackup();
             Long lastBackupSmsTimeMs = !smsBackupList.isEmpty() ? smsBackupList.get(0).getTimeMs() : null;
             // only get sms that is not already in the backup list
             List<Sms> inbox = getSmsInbox(SmsReaderServiceImpl.SMS_ALL, lastBackupSmsTimeMs);
             List<Sms> newSmsList = Utility.diffLists(inbox, smsBackupList);
-            Log.d(LOG_TAG, String.format("backupSmsInbox: diff sms inbox (%s) and sms backup (%s)", inbox.size(), smsBackupList.size()));
+            Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("diff sms inbox (%s) and sms backup (%s)", inbox.size(), smsBackupList.size()));
             if (!newSmsList.isEmpty()) {
                 Utility.mergeList(smsBackupList, newSmsList);
-                Log.d(LOG_TAG, String.format("backupSmsInbox: Update backup, new sms: %s, current: %s", newSmsList.size(), smsBackupList.size()));
+                Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Update backup, new sms: %s, current: %s", newSmsList.size(), smsBackupList.size()));
                 saveSmsBackup(smsBackupList);
-                Log.d(LOG_TAG, String.format("backupSmsInbox: Saved sms (%s) backup, path: %s", smsBackupList.size(), SMS_BACKUP_FILE_NAME));
+                Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Saved sms (%s) backup, path: %s", smsBackupList.size(), SMS_BACKUP_FILE_NAME));
             } else {
-                Log.d(LOG_TAG, String.format("backupSmsInbox: Backup up to date, %s", SMS_BACKUP_FILE_NAME));
+                Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Backup up to date, %s", SMS_BACKUP_FILE_NAME));
             }
             saveSmsBackupMetaData(smsBackupList);
+            Log.i(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("exeTime= %s ms", (System.currentTimeMillis() - startTime), Thread.currentThread().getName()));
         } catch (Exception e) {
             throw new ApplicationException(e.getMessage(), e);
         }
@@ -101,13 +103,13 @@ public class SmsBackupServiceImpl {
             File backupFile = getFile(SMS_BACKUP_FILE_NAME);
             if (backupFile.exists()) {
                 deleteFileContent(backupFile);
-                Log.d(LOG_TAG, String.format("clearSmsBackupFile: file: %s", backupFile.getPath()));
+                Log.d(Utility.buildTag(getClass(), "clearSmsBackupFile"), String.format("file: %s", backupFile.getPath()));
             } else {
-                Log.e(LOG_TAG, String.format("clearSmsBackupFile: backup file not found! %s", backupFile.getPath()));
+                Log.e(Utility.buildTag(getClass(), "clearSmsBackupFile"), String.format("backup file not found! %s", backupFile.getPath()));
             }
             saveSmsBackupMetaData(getSmsBackup());
         } catch (Exception e) {
-            Log.e(LOG_TAG, String.format("clearSmsBackupFile: Error backup file! %s", e.getLocalizedMessage()));
+            Log.e(Utility.buildTag(getClass(), "clearSmsBackupFile"), String.format("Error backup file! %s", e.getLocalizedMessage()));
             throw new ApplicationException(e.getMessage(), e);
         }
     }
@@ -129,7 +131,7 @@ public class SmsBackupServiceImpl {
      */
     public String getSmsBackupAsText(@NotNull String filterBy, @NonNull String smsType) {
         List<Sms> smsList = getSmsBackup();
-        Log.d("getSmsBackupAsText", String.format("filterBy=%s, smsType=%s, numberOfSms=%s", filterBy, smsType, smsList.size()));
+        Log.d(Utility.buildTag(getClass(), "getSmsBackupAtText"), String.format("filterBy=%s, smsType=%s, numberOfSms=%s", filterBy, smsType, smsList.size()));
         return smsList.stream()
                 .filter(s -> s.getType().matches(smsType) && s.getName().matches(filterBy))
                 .map(Sms::getBody)
@@ -158,9 +160,9 @@ public class SmsBackupServiceImpl {
             gson.toJson(info, fw);
             fw.flush();
             fw.close();
-            Log.d(LOG_TAG, String.format("Saved sms backup info to: %s", backupMetaFile.getPath()));
+            Log.d(Utility.buildTag(getClass(), "saveSmsBackupMetaData"), String.format("Saved sms backup info to: %s", backupMetaFile.getPath()));
         } catch (Exception e) {
-            Log.e(LOG_TAG, e.getMessage());
+            Log.e(Utility.buildTag(getClass(), "saveSmsBackupMetaData"), e.getMessage());
             throw new ApplicationException(e.getMessage(), e);
         }
     }
@@ -182,7 +184,7 @@ public class SmsBackupServiceImpl {
                         .toDateTime(null)
                         .build();
             }
-            Log.d(LOG_TAG, String.format("readSmsBackupInfo: %s", info));
+            Log.d(Utility.buildTag(getClass(), "readSmsBackupInfo"), String.format("%s", info));
             return info;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -207,7 +209,7 @@ public class SmsBackupServiceImpl {
         try {
             new FileWriter(file, false).close();
         } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage());
+            Log.e(Utility.buildTag(getClass(), "deleteFileContent"), e.getMessage());
             throw new ApplicationException(e.getMessage(), e);
         }
     }

@@ -4,7 +4,11 @@ import android.util.Log;
 
 import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
 import com.gunnarro.android.ughme.model.analyze.ReportItem;
+import com.gunnarro.android.ughme.utility.Utility;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,7 +26,6 @@ import static java.util.stream.Collectors.toMap;
 public class TextAnalyzerServiceImpl {
 
     public static final String DEFAULT_WORD_REGEXP = "\\b\\w{3,}"; // match only word with length > 3
-    private static final String lOG_TAG = TextAnalyzerServiceImpl.class.getSimpleName();
     private Map<String, Integer> sortedWordMap = new LinkedHashMap<>();
     private Integer numberOfWords = 0;
     private int highestWordCount = 0;
@@ -35,7 +38,7 @@ public class TextAnalyzerServiceImpl {
     public TextAnalyzerServiceImpl() {
     }
 
-    public void analyzeText(final String text, String regexp) {
+    public void analyzeText(@NotNull final String text, String regexp) {
         // always clear previous analyse result
         sortedWordMap.clear();
         Log.d("analyzeText", String.format("start, text.length=%s, regexp=%s", text.length(), regexp));
@@ -68,6 +71,7 @@ public class TextAnalyzerServiceImpl {
             highestWordCount = sortedWordMap.values().iterator().next();
         }
         analyzeTimeMs = System.currentTimeMillis() - startTimeMs;
+        Log.d(Utility.buildTag(getClass(), "analyzeText"), String.format("exeTime=%s ms, thread=%s", analyzeTimeMs, Thread.currentThread().getName()));
     }
 
     /**
@@ -92,7 +96,7 @@ public class TextAnalyzerServiceImpl {
     }
 
     public AnalyzeReport getReport(boolean isDetails) {
-        AnalyzeReport report = AnalyzeReport.builder().numberOfWords(numberOfWords).numberOfUniqueWords(getNumberOfUniqueWords()).analyzeTimeMs(analyzeTimeMs).build();
+        AnalyzeReport report = AnalyzeReport.builder().numberOfWords(numberOfWords).numberOfUniqueWords(getNumberOfUniqueWords()).analyzeTimeMs(analyzeTimeMs).reportItems(new ArrayList<>()).build();
         if (isDetails) {
             sortedWordMap.forEach((k, v) -> report.getReportItems().add(ReportItem.builder().word(k).count(v).percentage(v * 100 / numberOfWords).build()));
         }

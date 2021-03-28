@@ -12,7 +12,12 @@ import org.jetbrains.annotations.NotNull;
  * Builder
  */
 public class Word {
+    enum StatusEnum {
+        PLACED, NOT_PLACED;
+    }
+
     String text;
+    StatusEnum status;
     Paint paint;
     Rect rect;
     Integer count;
@@ -62,6 +67,18 @@ public class Word {
 
     public float getRotationAngle() {
         return this.rotationAngle;
+    }
+
+    public void setStatusPlaced() {
+        status = StatusEnum.PLACED;
+    }
+
+    public void setStatusNotPlaced() {
+        status = StatusEnum.NOT_PLACED;
+    }
+
+    public boolean isPlaced() {
+        return status.equals(StatusEnum.PLACED);
     }
 
     @NotNull

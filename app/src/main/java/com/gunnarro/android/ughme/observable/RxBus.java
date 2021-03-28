@@ -2,6 +2,8 @@ package com.gunnarro.android.ughme.observable;
 
 import android.util.Log;
 
+import com.gunnarro.android.ughme.utility.Utility;
+
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
@@ -24,10 +26,10 @@ public class RxBus {
 
     public void publish(Object data) {
         if (data != null) {
-            Log.d("RxBus", String.format("publish: new data object, type:  %s", data.getClass().getSimpleName()));
+            Log.d(Utility.buildTag(getClass(), "publish"), String.format("new data object, type:  %s", data.getClass().getSimpleName()));
             publisher.onNext(data);
         } else {
-            Log.w("RxBus", "publish: do not publish data objects which is equal to null");
+            Log.w(Utility.buildTag(getClass(), "publish"), "do not publish data objects which is equal to null");
         }
     }
 
