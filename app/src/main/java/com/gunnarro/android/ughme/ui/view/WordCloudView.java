@@ -129,6 +129,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         };
     }
 
+
     // Listen to RxJava publish event
     private Observer<Object> getInputObserver() {
         return new Observer<Object>() {
