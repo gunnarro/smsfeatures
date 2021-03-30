@@ -25,6 +25,7 @@ import com.gunnarro.android.ughme.ui.fragment.BarChartFragment;
 import com.gunnarro.android.ughme.ui.fragment.PreferencesFragment;
 import com.gunnarro.android.ughme.ui.fragment.SmsSearchFragment;
 import com.gunnarro.android.ughme.ui.fragment.WordCloudFragment;
+import com.gunnarro.android.ughme.utility.Utility;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             setContentView(R.layout.activity_main);
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(Utility.buildTag(getClass(), "onCreate"), "Failed starting! " + e.getMessage());
         }
         drawer = findViewById(id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, string.title_backup, string.title_backup);
@@ -97,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Associate searchable configuration with the SearchView
         // SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search_sms).getActionView();
-        Log.d(TAG, "onCreateOptionsMenu: " + searchView.toString());
         // searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         //searchView.setOnClickListener(v -> Log.d(TAG, "search clicked 1"));
         searchView.setOnSearchClickListener(v -> viewFragment(smsSearchFragment));
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Log.d(TAG + ".onOptionsItemSelected", "selected: " + item);
+        Log.d(Utility.buildTag(getClass(), "onOptionsItemSelected"), "selected: " + item);
         if (item.getItemId() == android.R.id.home) {// Open Close Drawer Layout
             if (drawer.isOpen()) {
                 drawer.closeDrawers();
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void handleIntent(Intent intent) {
-        Log.d("MainActivity", "handleIntent : " + intent.getAction());
+        Log.d(Utility.buildTag(getClass(), "handleIntent"), "Action: " + intent.getAction());
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             //use the query to search your data somehow
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void viewFragment(@NonNull Fragment fragment) {
-        Log.d(TAG, "viewFragment: " + fragment.getTag());
+        Log.d(Utility.buildTag(getClass(), "viewFragment"), "fragment: " + fragment.getTag());
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(id.content_frame, fragment)
@@ -165,18 +166,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void checkPermissions() {
-        Log.i(TAG + ".checkPermissions", "Start check permissions...");
+        Log.i(Utility.buildTag(getClass(), "checkPermissions"), "Start check permissions...");
         // check and ask user for permission if not granted
         String[] permissions = new String[]{Manifest.permission.READ_SMS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         // FIXME can only ask for one permission at time error: Can request only one set of permissions at a time
         for (String permission : permissions) {
             if (super.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                Log.i(TAG + ".checkPermissions", String.format("Not Granted, send request: %s", permission));
+                Log.i(Utility.buildTag(getClass(), "checkPermissions"), String.format("Not Granted, send request: %s", permission));
                 super.requestPermissions(new String[]{permission}, PERMISSION_REQUEST);
             } else {
                 // show dialog explaining why this permission is needed
                 if (super.shouldShowRequestPermissionRationale(permission)) {
-                    Log.i(TAG + ".checkPermissions", "explain why we need this permission! permission: " + permission);
+                    Log.i(Utility.buildTag(getClass(), "checkPermissions"), "explain why we need this permission! permission: " + permission);
                 }
             }
         }
@@ -190,13 +191,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.d("MainActivity.onRequestPermissions", String.format("requestCode=%s, permissins=%s, grantResult=%s", requestCode, new ArrayList<>(Arrays.asList(permissions)), new ArrayList<>(Collections.singletonList(grantResults))));
+        Log.d(Utility.buildTag(getClass(), "onRequestPermissions"), String.format("requestCode=%s, permissins=%s, grantResult=%s", requestCode, new ArrayList<>(Arrays.asList(permissions)), new ArrayList<>(Collections.singletonList(grantResults))));
         // If request is cancelled, the result arrays are empty.
         if (requestCode == PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(TAG + ".onRequestPermissions", String.format("permission granted for permission: %s", Arrays.asList(permissions)));
+                Log.i(Utility.buildTag(getClass(), "onRequestPermissions"), String.format("permission granted for permission: %s", Arrays.asList(permissions)));
             } else {
-                Log.i(TAG + ".onRequestPermissions", String.format("permission denied for permission: %s", Arrays.asList(permissions)));
+                Log.i(Utility.buildTag(getClass(), "onRequestPermissions"), String.format("permission denied for permission: %s", Arrays.asList(permissions)));
             }
         }
     }
