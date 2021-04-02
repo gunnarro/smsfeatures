@@ -13,8 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -42,8 +45,8 @@ import io.reactivex.disposables.Disposable;
 @AndroidEntryPoint
 public class BackupFragment extends Fragment implements View.OnClickListener, DialogActionListener {
 
-    private static final String LOG_TAG = BackupFragment.class.getSimpleName();
     public static final String ALL = "all";
+    private static final String LOG_TAG = BackupFragment.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_CODE_READ_SMS = 22;
 
     @Inject
@@ -53,6 +56,20 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     SmsBackupServiceImpl smsBackupService;
 
     private Dialog progressDialog;
+    // Check permission
+    // Register the permissions callback, which handles the user's response to the
+    // system permissions dialog. Save the return value, an instance of
+    // ActivityResultLauncher, as an instance variable.
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                   return;
+                } else {
+                    Log.d(Utility.buildTag(ActivityResultContracts.class, "RequestPermission"), "permission not granted!");
+                    // explain for user why this permission is needed
+                    return;
+                }
+            });
 
     @Inject
     public BackupFragment() {
@@ -130,6 +147,14 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
 
     @Override
     public void onClick(View view) {
+        // ask every time
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_MEDIA_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // You have not been granted access, ask for permission now.
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_MEDIA_LOCATION);
+        } else {
+            Log.d(Utility.buildTag(getClass(), "onClick"), "backup button, permission granted");
+        }
+
         int id = view.getId();
         if (id == R.id.btn_sms_backup_btn) {
             startBackupSms();
@@ -177,7 +202,9 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         }
     }
 
+    // *********************************************************************************************
     // Get RxJava input observer instance
+    // *********************************************************************************************
     private Observer<Object> getInputObserver() {
         return new Observer<Object>() {
             @Override

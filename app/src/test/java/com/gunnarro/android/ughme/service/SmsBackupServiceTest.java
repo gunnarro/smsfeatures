@@ -1,5 +1,6 @@
 package com.gunnarro.android.ughme.service;
 
+import android.content.Context;
 import android.os.Environment;
 
 import com.gunnarro.android.ughme.exception.ApplicationException;
@@ -31,15 +32,18 @@ public class SmsBackupServiceTest {
     @Mock
     private SmsReaderServiceImpl smsReaderServiceMock;
 
-    MockedStatic<Environment> mockedStatic = Mockito.mockStatic(Environment.class);
+    @Mock
+    private Context applicationContextMock;
+
+    MockedStatic<Context> mockedStatic = Mockito.mockStatic(Context.class);
 
     @Before
     public void init() {
         MockitoAnnotations.openMocks(this);
         mockedStatic
-                .when(Environment::getExternalStorageDirectory)
+                .when(applicationContextMock::getFilesDir)
                 .thenReturn(new File("src/test/resources"));
-        smsBackupService = new SmsBackupServiceImpl(smsReaderServiceMock);
+        smsBackupService = new SmsBackupServiceImpl(smsReaderServiceMock, applicationContextMock);
     }
 
     @After

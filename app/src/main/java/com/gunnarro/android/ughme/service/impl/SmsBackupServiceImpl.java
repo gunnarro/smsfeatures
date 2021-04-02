@@ -1,5 +1,6 @@
 package com.gunnarro.android.ughme.service.impl;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -30,18 +31,22 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 @Singleton
 public class SmsBackupServiceImpl {
 
     public static final String SMS_BACKUP_FILE_NAME = "sms-backup.json";
     public static final String SMS_BACKUP_METADATA_FILE_NAME = "sms-backup-metadata.json";
-    private final File appExtDir;
+    // Files meant for your app's use only
+    private final File appExternalDir;
     private final SmsReaderServiceImpl smsReaderService;
 
     @Inject
-    public SmsBackupServiceImpl(@NonNull SmsReaderServiceImpl smsReaderService) {
-        this.appExtDir = Environment.getExternalStorageDirectory();
+    public SmsBackupServiceImpl(@NonNull SmsReaderServiceImpl smsReaderService, @ApplicationContext Context context) {
+        this.appExternalDir = context.getFilesDir();
         this.smsReaderService = smsReaderService;
+        Log.d(Utility.buildTag(getClass(), ""), "app file dir: " + appExternalDir.getPath());
     }
 
     @NotNull
@@ -127,7 +132,7 @@ public class SmsBackupServiceImpl {
     /**
      * @param filterBy holds either mobilenumber og contactname
      * @param smsType     can be 1 = INBOX, 2 = OUTBOX or (.*) = All
-     * @return
+     * @return all sms messages bundled as a plain text string
      */
     public String getSmsBackupAsText(@NotNull String filterBy, @NonNull String smsType) {
         List<Sms> smsList = getSmsBackup();
@@ -193,7 +198,7 @@ public class SmsBackupServiceImpl {
     }
 
     private File getFile(String fileName) {
-        return new File(String.format("%s/%s", appExtDir.getPath(), fileName));
+        return new File(String.format("%s/%s", appExternalDir.getPath(), fileName));
     }
 
     public void saveSmsBackup(@NotNull List<Sms> smsList) throws IOException {

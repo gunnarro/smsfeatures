@@ -4,9 +4,15 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.gunnarro.android.ughme.TestData;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
+import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
 import com.gunnarro.android.ughme.service.impl.WordCloudServiceImpl;
 
@@ -14,12 +20,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runners.model.InvalidTestClassError;
 import org.mockito.Mockito;
 
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WordCloudServiceTest {
@@ -45,6 +57,11 @@ public class WordCloudServiceTest {
  */
     }
 
+    @Test
+    public void buildWordCloud_loadtest() throws IOException {
+        List<Sms> smsList = TestData.createSmsList();
+        Assert.assertEquals(12292, smsList.size());
+    }
 
     @Test
     public void buildWordCloud() {

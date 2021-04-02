@@ -1,14 +1,12 @@
 package com.gunnarro.android.ughme.service.impl;
 
 import android.graphics.Rect;
-import android.util.Log;
 
 import com.github.davidmoten.rtree.Entry;
 import com.github.davidmoten.rtree.RTree;
 import com.github.davidmoten.rtree.geometry.Geometries;
 import com.github.davidmoten.rtree.geometry.Rectangle;
 import com.gunnarro.android.ughme.exception.ApplicationException;
-import com.gunnarro.android.ughme.utility.Utility;
 
 import rx.Observable;
 

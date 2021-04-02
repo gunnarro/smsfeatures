@@ -27,6 +27,9 @@ import com.gunnarro.android.ughme.ui.fragment.SmsSearchFragment;
 import com.gunnarro.android.ughme.ui.fragment.WordCloudFragment;
 import com.gunnarro.android.ughme.utility.Utility;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,8 +64,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate, context: " + getApplicationContext());
         super.onCreate(savedInstanceState);
+        Log.d(Utility.buildTag(getClass(), "onCreate"), "context: " + getApplicationContext());
+        Log.d(Utility.buildTag(getClass(), "onCreate"), "app file dir: " + getApplicationContext().getFilesDir().getPath());
+
+        if (!new File(getApplicationContext().getFilesDir().getPath()).exists()) {
+            Log.d(Utility.buildTag(getClass(), "onCreate"), "app file dir missing! " + getApplicationContext().getFilesDir().getPath());
+        }
+
         try {
             setContentView(R.layout.activity_main);
         } catch (Exception e) {
@@ -168,7 +177,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void checkPermissions() {
         Log.i(Utility.buildTag(getClass(), "checkPermissions"), "Start check permissions...");
         // check and ask user for permission if not granted
-        String[] permissions = new String[]{Manifest.permission.READ_SMS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        String[] permissions = new String[]{
+                Manifest.permission.READ_SMS,
+                Manifest.permission.READ_CONTACTS};
         // FIXME can only ask for one permission at time error: Can request only one set of permissions at a time
         for (String permission : permissions) {
             if (super.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
@@ -191,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.d(Utility.buildTag(getClass(), "onRequestPermissions"), String.format("requestCode=%s, permissins=%s, grantResult=%s", requestCode, new ArrayList<>(Arrays.asList(permissions)), new ArrayList<>(Collections.singletonList(grantResults))));
+        Log.d(Utility.buildTag(getClass(), "onRequestPermissions"), String.format("requestCode=%s, permission=%s, grantResult=%s", requestCode, new ArrayList<>(Arrays.asList(permissions)), new ArrayList<>(Collections.singletonList(grantResults))));
         // If request is cancelled, the result arrays are empty.
         if (requestCode == PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

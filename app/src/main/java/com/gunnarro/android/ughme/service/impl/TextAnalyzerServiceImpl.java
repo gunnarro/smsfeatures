@@ -38,6 +38,13 @@ public class TextAnalyzerServiceImpl {
     public TextAnalyzerServiceImpl() {
     }
 
+    /**
+     * Simply breaks the text based on white spaces and keeps only chars [aA-zZ] and æÆøØåÅ for norwegian.
+     * The length of the word is specified in the regexp.
+     *
+     * @param text text to split into single words
+     * @param regexp regex which hold the word extraction rule
+     */
     public void analyzeText(@NotNull final String text, String regexp) {
         // always clear previous analyse result
         sortedWordMap.clear();
