@@ -3,6 +3,7 @@ package com.gunnarro.android.ughme.ui.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -55,10 +56,10 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
     }
 
     private void initCanvas(int width, int height) {
-        Log.d(Utility.buildTag(getClass(),"initCanvas"), String.format("initialize word cloud bitmap, width=%s, height=%s", width, height));
+        Log.d(Utility.buildTag(getClass(), "initCanvas"), String.format("initialize word cloud bitmap, width=%s, height=%s", width, height));
         if (this.canvas == null) {
             clearDrawing();
-            Log.d(Utility.buildTag(getClass(),"initCanvas"), String.format("initialized word cloud bitmap, width=%s, height=%s", width, height));
+            Log.d(Utility.buildTag(getClass(), "initCanvas"), String.format("initialized word cloud bitmap, width=%s, height=%s", width, height));
         }
     }
 
@@ -67,7 +68,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         long startTime = System.currentTimeMillis();
         super.onDraw(canvas);
         initCanvas(getWidth(), getHeight());
-        Log.i(Utility.buildTag(getClass(),"onDraw"), String.format("Finished! width=%s, height=%s, exeTime=%s ms", getWidth(), getHeight(), (System.currentTimeMillis() - startTime)));
+        Log.i(Utility.buildTag(getClass(), "onDraw"), String.format("Finished! width=%s, height=%s, exeTime=%s ms", getWidth(), getHeight(), (System.currentTimeMillis() - startTime)));
     }
 
     private void clearDrawing() {
@@ -77,7 +78,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         // Create a Canvas with the bitmap.
         this.canvas = new Canvas(bitmap);
         this.canvas.drawColor(getDrawingCacheBackgroundColor());
-        Log.d(Utility.buildTag(getClass(),"clearDrawing"), "clear current drawing");
+        Log.d(Utility.buildTag(getClass(), "clearDrawing"), "clear current drawing");
     }
 
     private void updateCanvasText(Word word) {
@@ -109,9 +110,21 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
             this.canvas.restore();
         }
         this.canvas.save();
-        //Log.d(Utility.buildTag(getClass(),"updateCanvasText"), String.format("canvas updated... %s", word.toString()));
+        Log.d(Utility.buildTag(getClass(), "updateCanvasText"), String.format("canvas updated...word=%s", word.getText()));
     }
 
+    private void runOnUiThread(final List<Word> wordList) {
+        new Thread(new Runnable() {
+            public void run() {
+                post(updateViewTask(wordList));
+            }
+        }).start();
+
+    }
+
+    /**
+     * Note that you cannot update the UI from any thread other than the UI thread or the "main" thread.
+     */
     private Runnable updateViewTask(final List<Word> wordList) {
         return () -> {
             try {
@@ -120,10 +133,8 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 // simply place each word on the bitmap
                 wordList.forEach(this::updateCanvasText);
                 postInvalidate();
-                Log.i(Utility.buildTag(getClass(),"updateViewTask"), String.format("words=%s, exeTime=%s ms", wordList.size(), (System.currentTimeMillis() - startTime)));
+                Log.i(Utility.buildTag(getClass(), "updateViewTask"), String.format("words=%s, exeTime=%s ms", wordList.size(), (System.currentTimeMillis() - startTime)));
             } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(Utility.buildTag(getClass(),"updateViewTask"), e.getMessage());
                 throw new ApplicationException(e.getMessage(), e);
             }
         };
@@ -135,7 +146,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         return new Observer<Object>() {
             @Override
             public void onSubscribe(@NotNull Disposable d) {
-                Log.d(Utility.buildTag(getClass(),"getInputObserver.onSubscribe"), "");
+                Log.d(Utility.buildTag(getClass(), "getInputObserver.onSubscribe"), "");
             }
 
             @Override
@@ -144,20 +155,24 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 if (obj instanceof WordCloudEvent) {
                     WordCloudEvent event = (WordCloudEvent) obj;
                     if (event.isUpdateEvent()) {
-                        Log.d(Utility.buildTag(getClass(),"getInputObserver.onNext"), String.format("handle word cloud event: %s", event.toString()));
-                        Executors.newSingleThreadExecutor().execute(updateViewTask(event.getWordList()));
+                        Log.d(Utility.buildTag(getClass(), "getInputObserver.onNext"), String.format("handle word cloud event: %s", event.toString()));
+                        if (Build.VERSION.SDK_INT < 26) {
+                            runOnUiThread(event.getWordList());
+                        } else {
+                            Executors.newSingleThreadExecutor().execute(updateViewTask(event.getWordList()));
+                        }
                     }
                 }
             }
 
             @Override
             public void onError(@NotNull Throwable e) {
-                Log.e(Utility.buildTag(getClass(),"getInputObserver.onError"), String.format("%s", e.getMessage()));
+                Log.e(Utility.buildTag(getClass(), "getInputObserver.onError"), String.format("%s", e.getMessage()));
             }
 
             @Override
             public void onComplete() {
-                Log.d(Utility.buildTag(getClass(),"getInputObserver.onComplete"), "");
+                Log.d(Utility.buildTag(getClass(), "getInputObserver.onComplete"), "");
             }
         };
     }

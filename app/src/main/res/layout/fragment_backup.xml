@@ -7,7 +7,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="648dp"
+        android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:orientation="vertical"
         tools:ignore="UselessParent">
@@ -31,7 +31,6 @@
             android:stretchColumns="0,1">
 
             <TableRow>
-
                 <TextView
                     android:padding="3dip"
                     android:text="@string/lbl_filepath" />
@@ -44,7 +43,6 @@
             </TableRow>
 
             <TableRow>
-
                 <TextView
                     android:padding="3dip"
                     android:text="@string/lbl_filename" />
@@ -57,7 +55,6 @@
             </TableRow>
 
             <TableRow>
-
                 <TextView
                     android:padding="3dip"
                     android:text="@string/lbl_file_size" />
@@ -70,7 +67,6 @@
             </TableRow>
 
             <TableRow>
-
                 <TextView
                     android:padding="3dip"
                     android:text="@string/lbl_storage_free_space" />
@@ -96,7 +92,6 @@
             </TableRow>
 
             <TableRow>
-
                 <TextView
                     android:padding="3dip"
                     android:text="@string/lbl_backup_date" />
@@ -110,7 +105,6 @@
             </TableRow>
 
             <TableRow>
-
                 <TextView
                     android:padding="3dip"
                     android:text="@string/lbl_sms_from_date" />
@@ -124,7 +118,6 @@
             </TableRow>
 
             <TableRow>
-
                 <TextView
                     android:padding="3dip"
                     android:text="@string/lbl_sms_to_date" />
@@ -138,7 +131,6 @@
             </TableRow>
 
             <TableRow>
-
                 <TextView
                     android:padding="3dip"
                     android:text="# sms" />
@@ -152,7 +144,6 @@
             </TableRow>
 
             <TableRow>
-
                 <TextView
                     android:padding="3dip"
                     android:text="# mobilenumbers" />
@@ -167,7 +158,6 @@
             </TableRow>
 
             <TableRow>
-
                 <Button
                     android:id="@+id/btn_sms_backup_btn"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
@@ -193,7 +183,6 @@
                     android:text="@string/btn_sms_backup_delete"
                     android:textAppearance="?android:attr/textAppearanceButton" />
             </TableRow>
-
         </TableLayout>
     </RelativeLayout>
 </FrameLayout>
