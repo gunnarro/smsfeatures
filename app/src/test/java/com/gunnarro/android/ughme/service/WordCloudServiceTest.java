@@ -50,12 +50,6 @@ public class WordCloudServiceTest {
     }
 
     @Test
-    public void buildWordCloud_loadtest() throws IOException {
-        List<Sms> smsList = TestData.createSmsList();
-        Assert.assertEquals(12292, smsList.size());
-    }
-
-    @Test
     public void buildWordCloud() {
         //doNothing().when(rectMock).offsetTo(Mockito.anyInt(), Mockito.anyInt());
         //doNothing().when(rectMock).offset(Mockito.anyInt(), Mockito.anyInt());
@@ -90,33 +84,5 @@ public class WordCloudServiceTest {
         Assert.assertEquals("[Word(text=kun, rect=null, count=2, size=100.0, rotationAngle=0.0), Word(text=enhets, rect=null, count=2, size=100.0, rotationAngle=0.0)]", notPlacedWords.toString());
 
         words.forEach(w -> Log.i("unit-test", String.format("x=%s, y=%s, size=%s, word=%s, occurrences=%s", w.getRect().left, w.getRect().top, w.getSize(), w.getText(), w.getCount())));
-    }
-
-    @Ignore
-    @Test
-    public void place() {
-        // 1. create mock
-        Rect rect = Mockito.mock(Rect.class);
-        Mockito.when(rect.width()).thenReturn(75);
-        Mockito.when(rect.height()).thenReturn(75);
-
-        WordCloudService builder = new WordCloudServiceImpl();
-        Word word = Word.builder()
-                .text("test")
-                .rect(rect)
-                .paint(new Paint())
-                .count(1)
-                .size(10)
-                .build();
-
-        Assert.assertEquals(75, word.getRect().height());
-
-        //  Assert.assertEquals(1920, word.getPosition().x);
-        //  Assert.assertEquals(1920, word.getPosition().y);
-        //  Assert.assertNotNull(builder.place(word, new Point(1920, 1920)));
-        // Assert.assertNotNull(builder.place(word, new Point(1920, 1920)));
-
-        //  canvas updated... Word{word=sveen, size=200.0, count=5, rect=[430,789][929,899] width=499 height=110}
-        //  canvas updated... Word{word=det, size=400.0, count=10, rect=[448,903][993,1210] width=545 height=307}
     }
 }

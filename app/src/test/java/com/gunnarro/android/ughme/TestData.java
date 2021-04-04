@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,14 @@ public class TestData {
                 .filter(s -> s.getType().matches(WordCloudEvent.MESSAGE_TYPE_ALL) && s.getName().matches(WordCloudFragment.ALL_SEARCH))
                 .map(Sms::getBody)
                 .collect(Collectors.joining(" "));
+    }
+
+    public static List<Sms> generateSms(int numberOfSms) {
+        List<Sms> smsList = new ArrayList<>();
+        for (int i=0; i<numberOfSms; i++) {
+            smsList.add(Sms.builder().type("1").address(Integer.toString(i*100)).body("sms msg " + 1).build());
+        }
+        return smsList;
     }
 }
 

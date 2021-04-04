@@ -5,8 +5,10 @@ import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
 import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class TextAnalyzerServiceLoadTest {
 
     @Test
