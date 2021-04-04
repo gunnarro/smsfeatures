@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import com.gunnarro.android.ughme.exception.ApplicationException;
+import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
+import com.gunnarro.android.ughme.model.analyze.ProfileItem;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
@@ -22,8 +24,10 @@ import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -128,12 +132,26 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
     private Runnable updateViewTask(final List<Word> wordList) {
         return () -> {
             try {
+                RxBus.getInstance().publish(
+                        WordCloudEvent.builder()
+                                .eventType(WordCloudEvent.WordCloudEventTypeEnum.PROGRESS)
+                                .wordList(new ArrayList<>())
+                                .progressMsg("draw word cloud view...")
+                                .progressStep(10)
+                                .build());
                 long startTime = System.currentTimeMillis();
                 clearDrawing();
+
+                // filter out not placed words
+                List<Word> placedWords = wordList.stream().filter(Word::isPlaced).collect(Collectors.toList());
+
                 // simply place each word on the bitmap
-                wordList.forEach(this::updateCanvasText);
+                placedWords.forEach(this::updateCanvasText);
                 postInvalidate();
-                Log.i(Utility.buildTag(getClass(), "updateViewTask"), String.format("words=%s, exeTime=%s ms", wordList.size(), (System.currentTimeMillis() - startTime)));
+                AnalyzeReport report = smsBackupService.readAnalyzeReport();
+                report.getProfileItems().add(ProfileItem.builder().className("WordCloudView").method("updateViewTask").executionTime(System.currentTimeMillis() - startTime).build());
+                smsBackupService.saveAnalyseReport(report);
+                Log.i(Utility.buildTag(getClass(), "updateViewTask"), String.format("words=%s, exeTime=%s ms", placedWords.size(), (System.currentTimeMillis() - startTime)));
             } catch (Exception e) {
                 throw new ApplicationException(e.getMessage(), e);
             }
@@ -146,7 +164,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         return new Observer<Object>() {
             @Override
             public void onSubscribe(@NotNull Disposable d) {
-                Log.d(Utility.buildTag(getClass(), "getInputObserver.onSubscribe"), "");
+                Log.d(Utility.buildTag(getClass(), "onSubscribe"), "");
             }
 
             @Override
@@ -155,7 +173,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 if (obj instanceof WordCloudEvent) {
                     WordCloudEvent event = (WordCloudEvent) obj;
                     if (event.isUpdateEvent()) {
-                        Log.d(Utility.buildTag(getClass(), "getInputObserver.onNext"), String.format("handle word cloud event: %s", event.toString()));
+                        Log.d(Utility.buildTag(getClass(), "onNext"), String.format("handle word cloud event: %s", event.toString()));
                         if (Build.VERSION.SDK_INT < 26) {
                             runOnUiThread(event.getWordList());
                         } else {
@@ -167,12 +185,12 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
 
             @Override
             public void onError(@NotNull Throwable e) {
-                Log.e(Utility.buildTag(getClass(), "getInputObserver.onError"), String.format("%s", e.getMessage()));
+                Log.e(Utility.buildTag(getClass(), "onError"), String.format("%s", e.getMessage()));
             }
 
             @Override
             public void onComplete() {
-                Log.d(Utility.buildTag(getClass(), "getInputObserver.onComplete"), "");
+                Log.d(Utility.buildTag(getClass(), "onComplete"), "");
             }
         };
     }

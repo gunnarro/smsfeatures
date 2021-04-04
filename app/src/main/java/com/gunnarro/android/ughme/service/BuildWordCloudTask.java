@@ -2,6 +2,8 @@ package com.gunnarro.android.ughme.service;
 
 import android.util.Log;
 
+import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
+import com.gunnarro.android.ughme.model.analyze.ProfileItem;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
@@ -11,6 +13,7 @@ import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
 import com.gunnarro.android.ughme.utility.Utility;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,24 +41,49 @@ public class BuildWordCloudTask {
         Log.d("", "Start build word cloud task..." + settings.toString());
         Runnable buildWordCloudRunnable = () -> {
             try {
-                long startTimeMs = System.currentTimeMillis();
-                textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex);
+                long startTime = System.currentTimeMillis();
+                postProgress("analyse sms content...", 10);
+                AnalyzeReport analyzeReport = textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex);
+                analyzeReport.getProfileItems().add(ProfileItem.builder().className("textAnalyzerService").method("analyzeText").executionTime(System.currentTimeMillis() - startTime).build());
+                //postProgress("build word cloud...", 25);
+                long startTimeStep2 = System.currentTimeMillis();
                 List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(settings.numberOfWords)
-                        , textAnalyzerService.getHighestWordCount()
+                        , analyzeReport.getTextHighestWordCount()
                         , cloudDimension
                         , settings);
+
+                analyzeReport.getProfileItems().add(ProfileItem.builder().className("wordCloudService").method("buildWordCloud").executionTime(System.currentTimeMillis() - startTimeStep2).build());
                 // when finished publish result so word cloud view can pick up the word list and redraw the word cloud
                 RxBus.getInstance().publish(
                         WordCloudEvent.builder()
                                 .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
                                 .wordList(wordList)
                                 .build());
-                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("%s", textAnalyzerService.getReport(false)));
-                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("finished, exeTime=%s ms", (System.currentTimeMillis() - startTimeMs)));
+
+                analyzeReport.setCloudWordCount(wordList.size());
+                analyzeReport.setCloudPlacedWordCount((int)wordList.stream().filter(Word::isPlaced).count());
+                analyzeReport.setCloudNotPlacedWordCount((int)wordList.stream().filter(Word::isNotPlaced).count());
+
+                // save last analyze report
+                smsBackupService.saveAnalyseReport( analyzeReport );
+                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("%s", analyzeReport));
+                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("finished, exeTime=%s ms", (System.currentTimeMillis() - startTime)));
+                //postProgress("finished building word list...", 10);
             } catch (Exception e) {
+                e.printStackTrace();
                 Log.e(Utility.buildTag(getClass(), "buildWordCloudEventBus"), e.getMessage());
             }
         };
         executor.execute(buildWordCloudRunnable);
+    }
+
+    private void postProgress(String msg, int step) {
+        RxBus.getInstance().publish(
+                WordCloudEvent.builder()
+                        .eventType(WordCloudEvent.WordCloudEventTypeEnum.PROGRESS)
+                        .wordList(new ArrayList<>())
+                        .progressMsg(msg)
+                        .progressStep(step)
+                        .build());
     }
 }

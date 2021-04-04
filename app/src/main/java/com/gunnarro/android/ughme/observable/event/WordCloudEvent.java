@@ -16,10 +16,14 @@ public class WordCloudEvent {
     public static final String MESSAGE_TYPE_OUTBOX = "2";
     private final WordCloudEventTypeEnum eventType;
     private final List<Word> wordList;
+    private final String progressMsg;
+    private final int progressStep;
 
     private WordCloudEvent(Builder builder) {
         this.eventType = Objects.requireNonNull(builder.eventType, "eventType");
         this.wordList = Objects.requireNonNull(builder.wordList, "wordList");
+        this.progressMsg = builder.progressMsg;
+        this.progressStep = builder.progressStep;
     }
 
     public static Builder builder() {
@@ -30,9 +34,17 @@ public class WordCloudEvent {
         return eventType.equals(WordCloudEventTypeEnum.UPDATE_MESSAGE);
     }
 
+    public boolean isProgressEvent() {
+        return eventType.equals(WordCloudEventTypeEnum.PROGRESS);
+    }
+
     public List<Word> getWordList() {
         return wordList;
     }
+
+    public String getProgressMsg() { return progressMsg; }
+
+    public int getProgressStep() { return progressStep; }
 
     @NotNull
     @Override
@@ -45,7 +57,7 @@ public class WordCloudEvent {
     }
 
     public enum WordCloudEventTypeEnum {
-        UPDATE_MESSAGE;
+        UPDATE_MESSAGE, PROGRESS;
     }
 
     /**
@@ -54,6 +66,8 @@ public class WordCloudEvent {
     public static class Builder {
         private WordCloudEventTypeEnum eventType;
         private List<Word> wordList;
+        private String progressMsg;
+        private int progressStep;
 
         private Builder() {
         }
@@ -68,9 +82,21 @@ public class WordCloudEvent {
             return this;
         }
 
+        public Builder progressMsg(String progressMsg) {
+            this.progressMsg = progressMsg;
+            return this;
+        }
+
+        public Builder progressStep(int progressStep) {
+            this.progressStep = progressStep;
+            return this;
+        }
+
         public Builder of(WordCloudEvent wordCloudEvent) {
             this.eventType = wordCloudEvent.eventType;
             this.wordList = wordCloudEvent.wordList;
+            this.progressMsg = wordCloudEvent.progressMsg;
+            this.progressStep = wordCloudEvent.progressStep;
             return this;
         }
 

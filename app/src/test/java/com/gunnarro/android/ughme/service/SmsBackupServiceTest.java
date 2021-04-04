@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 
 import com.gunnarro.android.ughme.exception.ApplicationException;
+import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
@@ -146,5 +147,16 @@ public class SmsBackupServiceTest {
     public void readSmsBackupMetaData() {
         SmsBackupInfo info = smsBackupService.readSmsBackupMetaData();
         Assert.assertEquals("BACKED_UP", info.getStatus().name());
+    }
+
+    @Test
+    public void saveAnalyseReport() throws IOException {
+        smsBackupService.saveAnalyseReport(AnalyzeReport.builder().analyzeTimeMs(2035).profileItems(new ArrayList<>()).reportItems(new ArrayList<>()).build());
+    }
+
+    @Test
+    public void readAnalyzeReport() {
+        AnalyzeReport report = smsBackupService.readAnalyzeReport();
+        Assert.assertEquals(2035, report.getAnalyzeTimeMs());
     }
 }

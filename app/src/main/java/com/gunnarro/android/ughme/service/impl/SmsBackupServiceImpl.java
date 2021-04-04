@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.gunnarro.android.ughme.exception.ApplicationException;
+import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
 import com.gunnarro.android.ughme.utility.Utility;
@@ -38,6 +39,8 @@ public class SmsBackupServiceImpl {
 
     public static final String SMS_BACKUP_FILE_NAME = "sms-backup.json";
     public static final String SMS_BACKUP_METADATA_FILE_NAME = "sms-backup-metadata.json";
+    public static final String SMS_ANALYZE_REPORT_FILE_NAME = "sms-analyze-report.json";
+
     // Files meant for your app's use only
     private final File appExternalDir;
     private final SmsReaderServiceImpl smsReaderService;
@@ -208,6 +211,35 @@ public class SmsBackupServiceImpl {
         gson.toJson(smsList, fw);
         fw.flush();
         fw.close();
+    }
+
+    public void saveAnalyseReport(@NotNull AnalyzeReport analyzeReport) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
+        FileWriter fw = new FileWriter(getFile(SMS_ANALYZE_REPORT_FILE_NAME), false);
+        gson.toJson(analyzeReport, fw);
+        fw.flush();
+        fw.close();
+    }
+
+    public AnalyzeReport readAnalyzeReport() {
+        try {
+            File backUpMetaFile = getFile(SMS_ANALYZE_REPORT_FILE_NAME);
+            Gson gson = new GsonBuilder().setLenient().create();
+            Type smsListType = new TypeToken<AnalyzeReport>() {
+            }.getType();
+            AnalyzeReport report;
+            if (backUpMetaFile.exists()) {
+                report = gson.fromJson(new FileReader(backUpMetaFile), smsListType);
+            } else {
+                report = AnalyzeReport.builder()
+                        .build();
+            }
+            Log.d(Utility.buildTag(getClass(), "readSmsAnalyzeReport"), String.format("%s", report));
+            return report;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return AnalyzeReport.builder().build();
+        }
     }
 
     private void deleteFileContent(@NotNull File file) {

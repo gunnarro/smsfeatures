@@ -48,7 +48,6 @@ import io.reactivex.disposables.Disposable;
 public class BackupFragment extends Fragment implements View.OnClickListener, DialogActionListener {
 
     public static final String ALL = "all";
-    private static final String LOG_TAG = BackupFragment.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_CODE_READ_SMS = 22;
 
     @Inject
@@ -81,7 +80,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        Log.d(LOG_TAG, "onCreate");
+        Log.d(Utility.buildTag(getClass(), "onCreate"), "");
     }
 
     @Override
@@ -91,7 +90,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         view.findViewById(R.id.btn_sms_backup_btn).setOnClickListener(this);
         view.findViewById(R.id.btn_sms_delete_backup_btn).setOnClickListener(this);
         RxBus.getInstance().listen().observeOn(AndroidSchedulers.mainThread()).subscribe(getInputObserver());
-        Log.d(LOG_TAG, "onCreateView");
+        Log.d(Utility.buildTag(getClass(), "onCreateView"), "");
         return view;
     }
 
@@ -141,9 +140,9 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             TextView mobileView = view.findViewById(R.id.number_of_mobile_nr_value);
             mobileView.setText(String.format("%s", info.getNumberOfMobileNumbers()));
 
-            Log.d(LOG_TAG, String.format(".updateSmsBackupInfo: updated view with sms backup metadata. %s ", info));
+            Log.d(Utility.buildTag(getClass(), "updateSmsBackupInfo"), String.format("updated view with sms backup metadata. %s ", info));
         } else {
-            Log.e(LOG_TAG, ".updateSmsBackupInfo: ERROR: view or info is null!");
+            Log.e(Utility.buildTag(getClass(), "updateSmsBackupInfo"), "ERROR: view or info is null!");
         }
     }
 
@@ -192,7 +191,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             Snackbar.make(requireView(), "Deleted sms backup files.", Snackbar.LENGTH_LONG).show();
         } else {
             // dismiss, do nothing, the user canceled the operation
-            Log.d(LOG_TAG, "delete sms backup file action cancelled by user");
+            Log.d(Utility.buildTag(getClass(), "onDialogAction"), "delete sms backup file action cancelled by user");
         }
     }
 
@@ -211,7 +210,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
                 //Log.d(buildTag("getInputObserver.onNext"), String.format("Received new data event of type %s", obj.getClass().getSimpleName()));
                 if (obj instanceof BackupEvent) {
                     BackupEvent event = (BackupEvent) obj;
-                    Log.d(LOG_TAG, String.format(".getInputObserver.onNext: thread=%s event= %s", Thread.currentThread().getName(), event.toString()));
+                    Log.d(Utility.buildTag(getClass(), "onNext"), String.format("thread=%s event= %s", Thread.currentThread().getName(), event.toString()));
                     if (event.isBackupFinished()) {
                         updateSmsBackupInfo(getView(), smsBackupService.readSmsBackupMetaData());
                         progressDialog.dismiss();
@@ -221,12 +220,12 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
 
             @Override
             public void onError(@NotNull Throwable e) {
-                Log.e(LOG_TAG, String.format("%s: %s", LOG_TAG, e.getMessage()));
+                Log.e(Utility.buildTag(getClass(), "onError"), String.format("%s", e.getMessage()));
             }
 
             @Override
             public void onComplete() {
-                Log.d(LOG_TAG, ".getInputObserver.onComplete");
+                Log.d(Utility.buildTag(getClass(), "onComplete"), "");
             }
         };
     }

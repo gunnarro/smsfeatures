@@ -4,11 +4,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import com.gunnarro.android.ughme.TestData;
+import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
@@ -20,19 +17,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runners.model.InvalidTestClassError;
 import org.mockito.Mockito;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class WordCloudServiceTest {
 
@@ -77,12 +69,26 @@ public class WordCloudServiceTest {
 
 
         TextAnalyzerServiceImpl textAnalyzer = new TextAnalyzerServiceImpl();
-        textAnalyzer.analyzeText(smsPlainTxt.toString(), null);
+        AnalyzeReport report = textAnalyzer.analyzeText(smsPlainTxt.toString(), null);
 
         WordCloudService builder = new WordCloudServiceImpl();
-        List<Word> words = builder.buildWordCloud(textAnalyzer.getWordCountMap(3), textAnalyzer.getHighestWordCount(), Dimension.builder().width(1440).height(1944).build(), new Settings());
-        Assert.assertEquals("[Word(text=dette, rect=null, count=4, size=200.0, rotationAngle=0.0)]", words.toString());
-        Assert.assertEquals("Word(text=dette, rect=null, count=4, size=200.0, rotationAngle=0.0)", words.get(0).toString());
+        List<Word> words = builder.buildWordCloud(textAnalyzer.getWordCountMap(3), report.getTextHighestWordCount(), Dimension.builder().width(1440).height(1944).build(), new Settings());
+
+        Assert.assertEquals(3, words.size());
+        // check placed
+        Assert.assertEquals(1, (int)words.stream().filter(Word::isPlaced).count());
+        // check not placed
+        Assert.assertEquals(2, (int)words.stream().filter(Word::isNotPlaced).count());
+
+        // filter out and check placed
+        List<Word> placedWords = words.stream().filter(Word::isPlaced).collect(Collectors.toList());
+        Assert.assertEquals("[Word(text=dette, rect=null, count=4, size=200.0, rotationAngle=0.0)]", placedWords.toString());
+        Assert.assertEquals("Word(text=dette, rect=null, count=4, size=200.0, rotationAngle=0.0)", placedWords.get(0).toString());
+
+        // filter out and check not placed
+        List<Word> notPlacedWords = words.stream().filter(Word::isNotPlaced).collect(Collectors.toList());
+        Assert.assertEquals("[Word(text=kun, rect=null, count=2, size=100.0, rotationAngle=0.0), Word(text=enhets, rect=null, count=2, size=100.0, rotationAngle=0.0)]", notPlacedWords.toString());
+
         words.forEach(w -> Log.i("unit-test", String.format("x=%s, y=%s, size=%s, word=%s, occurrences=%s", w.getRect().left, w.getRect().top, w.getSize(), w.getText(), w.getCount())));
     }
 

@@ -19,7 +19,7 @@
 
         <SeekBarPreference
             android:max="250"
-            app:defaultValue="100"
+            app:defaultValue="50"
             app:key="pref_number_of_words"
             app:min="1"
             app:seekBarIncrement="10"
@@ -30,7 +30,7 @@
 
         <SeekBarPreference
             android:max="40"
-            app:defaultValue="20"
+            app:defaultValue="30"
             app:key="pref_word_max_font_size"
             app:min="20"
             app:seekBarIncrement="1"
@@ -52,7 +52,7 @@
 
         <SeekBarPreference
             android:max="100"
-            app:defaultValue="25"
+            app:defaultValue="50"
             app:key="pref_radius_step"
             app:min="25"
             app:seekBarIncrement="5"
@@ -63,7 +63,7 @@
 
         <SeekBarPreference
             android:max="100"
-            app:defaultValue="25"
+            app:defaultValue="50"
             app:key="pref_offset_step"
             app:min="25"
             app:seekBarIncrement="5"

@@ -81,6 +81,10 @@ public class Word {
         return status.equals(StatusEnum.PLACED);
     }
 
+    public boolean isNotPlaced() {
+        return status.equals(StatusEnum.NOT_PLACED);
+    }
+
     @NotNull
     public String toString() {
         return "Word(text=" + this.getText() + ", rect=" + this.getRect() + ", count=" + this.getCount() + ", size=" + this.getSize() + ", rotationAngle=" + this.getRotationAngle() + ")";

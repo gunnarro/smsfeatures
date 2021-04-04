@@ -2,7 +2,10 @@ package com.gunnarro.android.ughme.ui.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,7 +55,7 @@ public class WordCloudFragment extends Fragment {
     private WordCloudView wordCloudView;
     private Menu optionsMenu;
     private List<String> mobileNumbers;
-    private Dialog progressDialog;
+    private ProgressDialog progressDialog;
 
     /**
      * default constructor, needed when screen is rotated
@@ -174,6 +177,11 @@ public class WordCloudFragment extends Fragment {
                     if (event.isUpdateEvent()) {
                         // hide progress dialog
                         progressDialog.dismiss();
+                    } else if (event.isProgressEvent()) {
+                        // update progress
+                        Log.i(Utility.buildTag(getClass(), "onNext"), "progress: " + event.getProgressMsg());
+                        progressDialog.setMessage(event.getProgressMsg());
+                        progressDialog.incrementProgressBy(progressDialog.getProgress() + event.getProgressStep());
                     }
                 }
             }
@@ -217,9 +225,22 @@ public class WordCloudFragment extends Fragment {
         return settings;
     }
 
-    private AlertDialog buildProgressDialog() {
+    /**
+     * A ProgressDialog is used when we want to prevent the user from interacting with the application while waiting. The Dialog aspect freezes the user from doing anything until it is dismissed
+     *
+    private AlertDialog buildAlertDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this.getActivity());
         alertDialog.setView(R.layout.dlg_progress);
         return alertDialog.setTitle("Build WordCloud").setCancelable(true).create();
+    }
+*/
+
+    private ProgressDialog buildProgressDialog() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMax(100);
+        progressDialog.setMessage("Start...");
+        progressDialog.setTitle("Build word cloud");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        return progressDialog;
     }
 }

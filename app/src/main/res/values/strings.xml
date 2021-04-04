@@ -15,6 +15,7 @@
     <string name="title_search">search</string>
     <string name="title_backup">backup</string>
     <string name="title_settings">settings</string>
+    <string name="title_report">report</string>
 
     <string name="pref_number_of_words">pref_number_of_words</string>
     <string name="pref_word_min_chars">pref_word_min_chars</string>
@@ -34,5 +35,14 @@
 
     <string name="msg_delete_sms_backup">Delete SMS backup</string>
     <string name="msg_confirm_delete">Are You Sure?</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 
 </resources>

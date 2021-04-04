@@ -92,13 +92,13 @@ public class WordCloudServiceImpl implements WordCloudService {
 
             if (placed) {
                 newWord.setStatusPlaced();
-                wordList.add(newWord);
                 // Log.d(buildTag("buildWordCloud"), String.format("placed, word: %s, rect=%s,%s, placed-words=%s, count=%s, size=%s", newWord.getText(), newWord.getRect().left, newWord.getRect().top, numberOfdWords, newWord.getCount(), newWord.getSize()));
             } else {
                 newWord.setStatusNotPlaced();
                 numberOfCollisions++;
                 // Log.d(buildTag("buildWordCloud"), String.format("skipped, word: %s, rect=%s,%s collisions=%s", newWord.getText(), newWord.getRect().left, newWord.getRect().top, numberOfCollisions));
             }
+            wordList.add(newWord);
         }
 
         List<Word> sortedWordList = wordList.stream()
@@ -106,7 +106,7 @@ public class WordCloudServiceImpl implements WordCloudService {
                 .collect(Collectors.toList());
 
         // for debug only
-        sortedWordList.forEach(w -> Log.i(Utility.buildTag(getClass(),"buildWordCloud"), String.format("coordinates=%s, size=%s, word=%s, occurrences=%s", w.getRect().toShortString(), w.getSize(), w.getText(), w.getCount())));
+        // sortedWordList.forEach(w -> Log.i(Utility.buildTag(getClass(),"buildWordCloud"), String.format("coordinates=%s, size=%s, word=%s, occurrences=%s", w.getRect().toShortString(), w.getSize(), w.getText(), w.getCount())));
         Log.i(Utility.buildTag(getClass(),"buildWordCloud"), String.format("finished! numberOfWords=%s, numberOfCollisions=%s, totalNumberOfWords=%s", wordList.size(), numberOfCollisions, wordMap.size()));
         return sortedWordList;
     }
@@ -116,13 +116,13 @@ public class WordCloudServiceImpl implements WordCloudService {
      */
     private int determineWordFontSize(int wordCount, int highestWordCount, int minFontSize, int maxFontSize) {
         float wordFontSize = ((float) wordCount / (float) highestWordCount) * maxFontSize;
-        Log.d(Utility.buildTag(getClass(),"determineWordSize"), String.format("wordSize=%s", wordFontSize));
+        Log.d(Utility.buildTag(getClass(),"determineWordSize"), String.format("wordFontSize=%s", wordFontSize));
         if (wordFontSize < minFontSize) {
             wordFontSize = minFontSize;
         } else if (wordFontSize > maxFontSize) {
             wordFontSize = maxFontSize;
         }
-        Log.d(Utility.buildTag(getClass(),"determineWordSize"), String.format("wordCount=%s, highestWordCount=%s, wordSize=%s", wordCount, highestWordCount, wordFontSize));
+        Log.d(Utility.buildTag(getClass(),"determineWordSize"), String.format("wordCount=%s, highestWordCount=%s, wordFontSize=%s", wordCount, highestWordCount, wordFontSize));
         return (int) wordFontSize;
     }
 

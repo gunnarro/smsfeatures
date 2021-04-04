@@ -23,6 +23,7 @@ import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.ui.fragment.BackupFragment;
 import com.gunnarro.android.ughme.ui.fragment.BarChartFragment;
 import com.gunnarro.android.ughme.ui.fragment.PreferencesFragment;
+import com.gunnarro.android.ughme.ui.fragment.ReportFragment;
 import com.gunnarro.android.ughme.ui.fragment.SmsSearchFragment;
 import com.gunnarro.android.ughme.ui.fragment.WordCloudFragment;
 import com.gunnarro.android.ughme.utility.Utility;
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     BarChartFragment barChartFragment;
     @Inject
     PreferencesFragment preferencesFragment;
+    @Inject
+    ReportFragment reportFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +149,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else if (id == R.id.nav_settings) {
                 setTitle(string.title_settings);
                 viewFragment(preferencesFragment);
+            } else if (id == R.id.nav_report) {
+                setTitle(string.title_report);
+                viewFragment(reportFragment);
             }
             // close drawer after clicking the menu item
             DrawerLayout drawer = findViewById(R.id.drawer_layout);

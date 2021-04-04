@@ -49,6 +49,10 @@ android {
             unitTests.returnDefaultValues = true
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 
@@ -75,6 +79,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'com.google.dagger:hilt-android:2.31.2-alpha'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     kapt 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
     // div
     implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
@@ -107,7 +114,6 @@ dependencies {
     androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
 
     debugImplementation "androidx.fragment:fragment-testing:1.3.2"
-
 }
 
 repositories {

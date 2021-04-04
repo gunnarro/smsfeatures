@@ -19,6 +19,7 @@ public class RxBus {
 
     public static RxBus getInstance() {
         if (instance == null) {
+            Log.d(Utility.buildTag(RxBus.class, "getInstance"), "init RxBus instance");
             instance = new RxBus();
         }
         return instance;
