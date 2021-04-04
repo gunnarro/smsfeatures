@@ -1,0 +1,13 @@
+{
+  "createdDateTime": "2021-04-04 21:32:36",
+  "textWordCount": 0,
+  "textUniqueWordCount": 0,
+  "textHighestWordCount": 0,
+  "textHighestWordCountPercent": 0.0,
+  "analyzeTimeMs": 2035,
+  "cloudWordCount": 0,
+  "cloudPlacedWordCount": 0,
+  "cloudNotPlacedWordCount": 0,
+  "reportItems": [],
+  "profileItems": []
+}

@@ -1,7 +1,6 @@
 package com.gunnarro.android.ughme.service;
 
 import android.content.Context;
-import android.os.Environment;
 
 import com.gunnarro.android.ughme.exception.ApplicationException;
 import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
@@ -150,12 +149,8 @@ public class SmsBackupServiceTest {
     }
 
     @Test
-    public void saveAnalyseReport() throws IOException {
+    public void saveAndReadAnalyzeReport() throws IOException {
         smsBackupService.saveAnalyseReport(AnalyzeReport.builder().analyzeTimeMs(2035).profileItems(new ArrayList<>()).reportItems(new ArrayList<>()).build());
-    }
-
-    @Test
-    public void readAnalyzeReport() {
         AnalyzeReport report = smsBackupService.readAnalyzeReport();
         Assert.assertEquals(2035, report.getAnalyzeTimeMs());
     }
