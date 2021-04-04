@@ -1,9 +1,9 @@
 name: Android Build
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
+    branches: [ master ]
+  push:
     branches: [ master ]
 
 jobs:
@@ -24,4 +24,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --debug
