@@ -46,6 +46,7 @@ public class BuildWordCloudTask {
                 postProgress("analyse sms content...", 10);
                 AnalyzeReport analyzeReport = textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex);
                 analyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("analyzeText").executionTime(System.currentTimeMillis() - startTime).build());
+                smsBackupService.saveAnalyseReport( analyzeReport );
                 //postProgress("build word cloud...", 25);
                 long startTimeStep2 = System.currentTimeMillis();
                 List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(settings.numberOfWords)
@@ -54,13 +55,6 @@ public class BuildWordCloudTask {
                         , settings);
 
                 analyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("buildWordCloud").executionTime(System.currentTimeMillis() - startTimeStep2).build());
-                // when finished publish result so word cloud view can pick up the word list and redraw the word cloud
-                RxBus.getInstance().publish(
-                        WordCloudEvent.builder()
-                                .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
-                                .wordList(wordList)
-                                .build());
-
                 analyzeReport.setCloudWordCount(wordList.size());
                 analyzeReport.setCloudPlacedWordCount((int)wordList.stream().filter(Word::isPlaced).count());
                 analyzeReport.setCloudNotPlacedWordCount((int)wordList.stream().filter(Word::isNotPlaced).count());
@@ -70,6 +64,12 @@ public class BuildWordCloudTask {
                 Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("%s", analyzeReport));
                 Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("finished, exeTime=%s ms", (System.currentTimeMillis() - startTime)));
                 //postProgress("finished building word list...", 10);
+                // finally, publish result so word cloud view can pick up the word list and redraw the word cloud
+                RxBus.getInstance().publish(
+                        WordCloudEvent.builder()
+                                .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
+                                .wordList(wordList)
+                                .build());
             } catch (Exception e) {
                 e.printStackTrace();
                 smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("BuildWordCloudTask").method("buildWordCloudEventBus").executionTime(System.currentTimeMillis() - startTime).exception(e.getMessage()).build()));

@@ -1,5 +1,6 @@
 package com.gunnarro.android.ughme.ui.fragment;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,7 +51,7 @@ public class WordCloudFragment extends Fragment {
     private WordCloudView wordCloudView;
     private Menu optionsMenu;
     private List<String> mobileNumbers;
-    private ProgressDialog progressDialog;
+    private AlertDialog progressDialog;
 
     /**
      * default constructor, needed when screen is rotated
@@ -175,8 +176,8 @@ public class WordCloudFragment extends Fragment {
                     } else if (event.isProgressEvent()) {
                         // update progress
                         Log.i(Utility.buildTag(getClass(), "onNext"), "progress: " + event.getProgressMsg());
-                        progressDialog.setMessage(event.getProgressMsg());
-                        progressDialog.incrementProgressBy(progressDialog.getProgress() + event.getProgressStep());
+                       // progressDialog.setMessage(event.getProgressMsg());
+                       // progressDialog.incrementProgressBy(progressDialog.getProgress() + event.getProgressStep());
                     }
                 }
             }
@@ -195,8 +196,8 @@ public class WordCloudFragment extends Fragment {
 
     private void updateWordCloudView(String contactName, String smsType) {
         Log.d(Utility.buildTag(getClass(), "updateWordCloudView"), String.format("mobile=%s, smsType=%s", contactName, smsType));
-        progressDialog = buildProgressDialog();
-        progressDialog.show();
+        progressDialog = buildAlertDialog();
+        //progressDialog.show();
         // start background task for building word cloud, which may take som time, based on number of sms
         buildWordCloudTask.buildWordCloudEventBus(mapPreferences(), Dimension.builder().width(wordCloudView.getWidth()).height(wordCloudView.getHeight()).build(), contactName, smsType);
     }
@@ -222,14 +223,14 @@ public class WordCloudFragment extends Fragment {
 
     /**
      * A ProgressDialog is used when we want to prevent the user from interacting with the application while waiting. The Dialog aspect freezes the user from doing anything until it is dismissed
-     *
+     */
     private AlertDialog buildAlertDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this.getActivity());
         alertDialog.setView(R.layout.dlg_progress);
         return alertDialog.setTitle("Build WordCloud").setCancelable(true).create();
     }
-*/
 
+/*
     private ProgressDialog buildProgressDialog() {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMax(100);
@@ -238,4 +239,6 @@ public class WordCloudFragment extends Fragment {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         return progressDialog;
     }
+
+ */
 }
