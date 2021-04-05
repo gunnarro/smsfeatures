@@ -2,11 +2,13 @@ package com.gunnarro.android.ughme.service;
 
 import android.util.Log;
 
+import com.gunnarro.android.ughme.model.analyze.ProfileItem;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.BackupEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.utility.Utility;
 
+import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,17 +30,19 @@ public class SmsBackupTask {
 
     public void backupSms() {
         Runnable backupSmsRunnable = () -> {
+            long startTime = System.currentTimeMillis();
             try {
-                long startTimeMs = System.currentTimeMillis();
                 smsBackupService.backupSmsInbox();
                 // when finished publish result so fragment can pick up the word list
                 RxBus.getInstance().publish(
                         BackupEvent.builder()
                                 .eventType(BackupEvent.BackupEventEventTypeEnum.BACKUP_FINISHED)
                                 .build());
-                Log.i(Utility.buildTag(getClass(), "backupSms"), String.format("finished, execution time=%s ms", (System.currentTimeMillis() - startTimeMs)));
+                Log.i(Utility.buildTag(getClass(), "backupSms"), String.format("finished, execution time=%s ms", (System.currentTimeMillis() - startTime)));
+                smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("SmsBackupTask").method("backupSms").executionTime(System.currentTimeMillis() - startTime).build()));
             } catch (Exception e) {
-                Log.e(Utility.buildTag(getClass(), "backupSms"), e.getMessage());
+                smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("SmsBackupTask").method("backupSms").executionTime(System.currentTimeMillis() - startTime).exception(e.getMessage()).build()));
+                Log.e(Utility.buildTag(getClass(), "SmsBackupTask failed"), e.getMessage());
             }
         };
         executor.execute(backupSmsRunnable);

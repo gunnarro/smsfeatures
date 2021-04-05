@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import com.gunnarro.android.ughme.exception.ApplicationException;
-import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
 import com.gunnarro.android.ughme.model.analyze.ProfileItem;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.observable.RxBus;
@@ -25,6 +24,7 @@ import com.gunnarro.android.ughme.utility.Utility;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -131,6 +131,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
      */
     private Runnable updateViewTask(final List<Word> wordList) {
         return () -> {
+            long startTime = System.currentTimeMillis();
             try {
                 RxBus.getInstance().publish(
                         WordCloudEvent.builder()
@@ -139,7 +140,6 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                                 .progressMsg("draw word cloud view...")
                                 .progressStep(10)
                                 .build());
-                long startTime = System.currentTimeMillis();
                 clearDrawing();
 
                 // filter out not placed words
@@ -148,11 +148,11 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 // simply place each word on the bitmap
                 placedWords.forEach(this::updateCanvasText);
                 postInvalidate();
-                AnalyzeReport report = smsBackupService.readAnalyzeReport();
-                report.getProfileItems().add(ProfileItem.builder().className("WordCloudView").method("updateViewTask").executionTime(System.currentTimeMillis() - startTime).build());
-                smsBackupService.saveAnalyseReport(report);
+                smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("WordCloudView").method("updateViewTask").executionTime(System.currentTimeMillis() - startTime).build()));
                 Log.i(Utility.buildTag(getClass(), "updateViewTask"), String.format("words=%s, exeTime=%s ms", placedWords.size(), (System.currentTimeMillis() - startTime)));
             } catch (Exception e) {
+                e.printStackTrace();
+                smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("WordCloudView").method("updateViewTask").executionTime(System.currentTimeMillis() - startTime).exception(e.getMessage()).build()));
                 throw new ApplicationException(e.getMessage(), e);
             }
         };

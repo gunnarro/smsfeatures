@@ -4,33 +4,24 @@ public class ProfileItem {
     private final String className;
     private final String method;
     private final long executionTime;
+    private final String exception;
 
-    public ProfileItem(String className, String method, long executionTime) {
+    public ProfileItem(String className, String method, long executionTime, String exception) {
         this.className = className;
         this.method = method;
         this.executionTime = executionTime;
+        this.exception = exception;
     }
 
     public static ProfileItem.ProfileItemBuilder builder() {
         return new ProfileItem.ProfileItemBuilder();
     }
 
-    public String getClassName() {
-        return className;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public long getExecutionTime() {
-        return executionTime;
-    }
-
     public static class ProfileItemBuilder {
         private String className;
         private String method;
         private long executionTime;
+        private String exception;
 
         ProfileItemBuilder() {
         }
@@ -49,8 +40,14 @@ public class ProfileItem {
             this.executionTime = executionTime;
             return this;
         }
+
+        public ProfileItem.ProfileItemBuilder exception(String exception) {
+            this.exception = exception;
+            return this;
+        }
+
         public ProfileItem build() {
-            return new ProfileItem(className, method, executionTime);
+            return new ProfileItem(className, method, executionTime, exception);
         }
 
     }

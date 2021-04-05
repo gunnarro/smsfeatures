@@ -3,6 +3,7 @@ package com.gunnarro.android.ughme.model.analyze;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class AnalyzeReport {
     private int cloudPlacedWordCount;
     private int cloudNotPlacedWordCount;
 
-    private final List<ReportItem> reportItems;
-    private final List<ProfileItem> profileItems;
+    private List<ReportItem> reportItems;
+    private List<ProfileItem> profileItems;
 
     AnalyzeReport(int textWordCount, int textUniqueWordCount, int textHighestWordCount, float textHighestWordCountPercent, long analyzeTimeMs, List<ReportItem> reportItems, List<ProfileItem> profileItems) {
         this.createdDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());;
@@ -100,8 +101,8 @@ public class AnalyzeReport {
         private int textHighestWordCount;
         private float textHighestWordCountPercent;
         private long analyzeTimeMs;
-        private List<ReportItem> reportItems;
-        private List<ProfileItem> profileItems;
+        private List<ReportItem> reportItems = new ArrayList<>();
+        private List<ProfileItem> profileItems = new ArrayList<>();
 
         AnalyzeReportBuilder() {
         }

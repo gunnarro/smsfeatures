@@ -1,7 +1,6 @@
 package com.gunnarro.android.ughme.service.impl;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -11,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.gunnarro.android.ughme.exception.ApplicationException;
 import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
+import com.gunnarro.android.ughme.model.analyze.ProfileItem;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
 import com.gunnarro.android.ughme.utility.Utility;
@@ -84,12 +84,18 @@ public class SmsBackupServiceImpl {
 
     public void backupSmsInbox() {
         try {
+            List<ProfileItem> profileItems = new ArrayList<>();
             long startTime = System.currentTimeMillis();
             List<Sms> smsBackupList = getSmsBackup();
+            profileItems.add(ProfileItem.builder().className("SmsBackupServiceImpl").method("getSmsBackup").executionTime(System.currentTimeMillis() - startTime).build());
             Long lastBackupSmsTimeMs = !smsBackupList.isEmpty() ? smsBackupList.get(0).getTimeMs() : null;
             // only get sms that is not already in the backup list
             List<Sms> inbox = getSmsInbox(SmsReaderServiceImpl.SMS_ALL, lastBackupSmsTimeMs);
+            profileItems.add(ProfileItem.builder().className("SmsBackupServiceImpl").method("getSmsInbox").executionTime(System.currentTimeMillis() - startTime).build());
+
             List<Sms> newSmsList = Utility.diffLists(inbox, smsBackupList);
+            profileItems.add(ProfileItem.builder().className("SmsBackupServiceImpl").method("diffLists").executionTime(System.currentTimeMillis() - startTime).build());
+
             Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("diff sms inbox (%s) and sms backup (%s)", inbox.size(), smsBackupList.size()));
             if (!newSmsList.isEmpty()) {
                 Utility.mergeList(smsBackupList, newSmsList);
@@ -100,7 +106,8 @@ public class SmsBackupServiceImpl {
                 Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Backup up to date, %s", SMS_BACKUP_FILE_NAME));
             }
             saveSmsBackupMetaData(smsBackupList);
-            Log.i(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("exeTime= %s ms", (System.currentTimeMillis() - startTime), Thread.currentThread().getName()));
+            profile(profileItems);
+            Log.i(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("exeTime= %s ms", (System.currentTimeMillis() - startTime)));
         } catch (Exception e) {
             throw new ApplicationException(e.getMessage(), e);
         }
@@ -213,12 +220,16 @@ public class SmsBackupServiceImpl {
         fw.close();
     }
 
-    public void saveAnalyseReport(@NotNull AnalyzeReport analyzeReport) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
-        FileWriter fw = new FileWriter(getFile(SMS_ANALYZE_REPORT_FILE_NAME), false);
-        gson.toJson(analyzeReport, fw);
-        fw.flush();
-        fw.close();
+    public void saveAnalyseReport(@NotNull AnalyzeReport analyzeReport) {
+        try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
+            FileWriter fw = new FileWriter(getFile(SMS_ANALYZE_REPORT_FILE_NAME), false);
+            gson.toJson(analyzeReport, fw);
+            fw.flush();
+            fw.close();
+        } catch (IOException ioe) {
+            Log.e("saveAnalyseReport failed", ioe.getMessage());
+        }
     }
 
     public AnalyzeReport readAnalyzeReport() {
@@ -237,9 +248,14 @@ public class SmsBackupServiceImpl {
             Log.d(Utility.buildTag(getClass(), "readSmsAnalyzeReport"), String.format("%s", report));
             return report;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             return AnalyzeReport.builder().build();
         }
+    }
+
+    public void profile(List<ProfileItem> profileItems ) {
+            AnalyzeReport report = readAnalyzeReport();
+            profileItems.forEach(p -> report.getProfileItems().add(p));
+            saveAnalyseReport(report);
     }
 
     private void deleteFileContent(@NotNull File file) {
