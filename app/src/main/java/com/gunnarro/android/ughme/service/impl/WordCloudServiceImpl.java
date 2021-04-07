@@ -16,6 +16,7 @@ import com.gunnarro.android.ughme.utility.Utility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -47,7 +48,14 @@ public class WordCloudServiceImpl implements WordCloudService {
         return (int) Math.ceil(Math.sqrt(maxDistanceX * maxDistanceX + maxDistanceY * maxDistanceY));
     }
 
-    public List<Word> buildWordCloud(Map<String, Integer> wordMap, Integer mostFrequentWordCount, final Dimension rectangleDimension, Settings settings) {
+    /**
+     *
+     * @param wordMap map sorted by highest occurrences of words
+     * @param rectangleDimension holds dimension of the word cloud bitmap
+     * @param settings holds word cloud settings
+     * @return
+     */
+    public List<Word> buildWordCloud(Map<String, Integer> wordMap, final Dimension rectangleDimension, Settings settings) {
         Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("number of words size=%s, rectangle: %s", wordMap.size(), rectangleDimension));
         Log.i(Utility.buildTag(getClass(),"buildWordCloud"), String.format("%s", settings));
         Log.d(Utility.buildTag(getClass(),"buildWordCloud"), String.format("word map: %s", wordMap.size()));
@@ -55,6 +63,11 @@ public class WordCloudServiceImpl implements WordCloudService {
         if (rectangleDimension.getWidth() < 0 || rectangleDimension.getHeight() < 0) {
             throw new ApplicationException(String.format("width and height must both be greater than 0! rectangle: %s", rectangleDimension), null);
         }
+        int highestWordCount = wordMap.values()
+                .stream()
+                .mapToInt(Integer::valueOf)
+                .max().getAsInt();
+
         // reset previous build
         wordPlacer.reset();
         int numberOfCollisions = 0;
@@ -62,7 +75,8 @@ public class WordCloudServiceImpl implements WordCloudService {
         Random rand = new Random();
         List<Word> wordList = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : wordMap.entrySet()) {
-            int wordFontSize = determineWordFontSize(entry.getValue(), mostFrequentWordCount, settings.minWordFontSize, settings.maxWordFontSize);
+            Log.i(Utility.buildTag(getClass(), ""), String.format("x2x word=%s, count=%s", entry.getKey(), entry.getValue()));
+            int wordFontSize = determineWordFontSize(entry.getValue(), highestWordCount, settings.minWordFontSize, settings.maxWordFontSize);
             Paint wordPaint = createPaint(wordFontSize, Paint.Align.CENTER);
             Rect wordRect = new Rect();
             // Retrieve the text boundary box and store to bounds
@@ -112,7 +126,12 @@ public class WordCloudServiceImpl implements WordCloudService {
     }
 
     /**
-     * Determine the font size.
+     *
+     * @param wordCount number of words for this query
+     * @param highestWordCount highest number of occurrences for a word
+     * @param minFontSize minimum allowed font size
+     * @param maxFontSize maximum allowed font size
+     * @return font size used for this word
      */
     private int determineWordFontSize(int wordCount, int highestWordCount, int minFontSize, int maxFontSize) {
         float wordFontSize = ((float) wordCount / (float) highestWordCount) * maxFontSize;

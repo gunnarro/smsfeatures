@@ -1,11 +1,17 @@
 package com.gunnarro.android.ughme.model.analyze;
 
+import com.gunnarro.android.ughme.model.cloud.Word;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Delombok following annotations:
@@ -81,6 +87,14 @@ public class AnalyzeReport {
         return this.profileItems;
     }
 
+    public Map<String, Integer> getWordMap() {
+        return getReportItems()
+                .stream()
+                .sorted(Comparator.comparing(ReportItem::getCount).reversed())
+                .collect(Collectors.toMap(ReportItem::getWord, ReportItem::getCount,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+    }
+
 
     @NotNull
     @Override
@@ -101,6 +115,7 @@ public class AnalyzeReport {
         private int textHighestWordCount;
         private float textHighestWordCountPercent;
         private long analyzeTimeMs;
+        private List<Word> wordList;
         private List<ReportItem> reportItems = new ArrayList<>();
         private List<ProfileItem> profileItems = new ArrayList<>();
 

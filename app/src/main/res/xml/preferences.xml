@@ -41,9 +41,9 @@
 
         <SeekBarPreference
             android:max="20"
-            app:defaultValue="10"
+            app:defaultValue="5"
             app:key="pref_word_min_font_size"
-            app:min="10"
+            app:min="5"
             app:seekBarIncrement="1"
             app:showSeekBarValue="true"
             app:singleLineTitle="true"

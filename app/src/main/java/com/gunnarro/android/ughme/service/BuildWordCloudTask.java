@@ -44,13 +44,14 @@ public class BuildWordCloudTask {
             long startTime = System.currentTimeMillis();
             try {
                 postProgress("analyse sms content...", 10);
-                AnalyzeReport analyzeReport = textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex);
+                AnalyzeReport analyzeReport = textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex, settings.numberOfWords  );
                 analyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("analyzeText").executionTime(System.currentTimeMillis() - startTime).build());
                 smsBackupService.saveAnalyseReport( analyzeReport );
                 //postProgress("build word cloud...", 25);
                 long startTimeStep2 = System.currentTimeMillis();
-                List<Word> wordList = wordCloudService.buildWordCloud(textAnalyzerService.getWordCountMap(settings.numberOfWords)
-                        , analyzeReport.getTextHighestWordCount()
+
+                List<Word> wordList = wordCloudService.buildWordCloud(
+                        analyzeReport.getWordMap()
                         , cloudDimension
                         , settings);
 
@@ -71,7 +72,6 @@ public class BuildWordCloudTask {
                                 .wordList(wordList)
                                 .build());
             } catch (Exception e) {
-                e.printStackTrace();
                 smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("BuildWordCloudTask").method("buildWordCloudEventBus").executionTime(System.currentTimeMillis() - startTime).exception(e.getMessage()).build()));
                 Log.e(Utility.buildTag(getClass(), "buildWordCloudEventBus"), e.getMessage());
             }

@@ -1,6 +1,7 @@
 package com.gunnarro.android.ughme.ui.fragment;
 
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,6 +72,7 @@ public class ReportFragment extends Fragment {
         StringWriter sw = new StringWriter();
         gson.toJson(analyseReport, sw);
         reportView.setText(sw.toString());
+        reportView.setMovementMethod(new ScrollingMovementMethod());
     }
 
 }

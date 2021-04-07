@@ -68,7 +68,7 @@ public class SmsBackupServiceTest {
         Sms sms1 = Sms.builder().timeMs(System.currentTimeMillis()).address("23545454").contactName("gunnar").type("1").body("inbox-message1").count(1).numberOfBlocked(0).numberOfSent(0).numberOfReceived(1).build();
         Sms sms2 = Sms.builder().timeMs(System.currentTimeMillis() + 1000).address("92019486").contactName("per").type("1").body("inbox-message2").count(1).numberOfBlocked(0).numberOfSent(0).numberOfReceived(1).build();
         Sms sms3 = Sms.builder().timeMs(System.currentTimeMillis() + 2000).address("461230").contactName("mom").type("2").body("outbox-message3").count(1).numberOfBlocked(0).numberOfSent(0).numberOfReceived(1).build();
-        Sms sms4 = Sms.builder().timeMs(System.currentTimeMillis() + 3000).address("93019486").type("1").body("inbox-message4").count(1).numberOfBlocked(0).numberOfSent(0).numberOfReceived(1).build();
+        Sms sms4 = Sms.builder().timeMs(System.currentTimeMillis() + 3000).address("+4793019486").type("1").body("inbox-message4").count(1).numberOfBlocked(0).numberOfSent(0).numberOfReceived(1).build();
 
         smsList.add(sms1);
         smsList.add(sms2);
@@ -92,7 +92,7 @@ public class SmsBackupServiceTest {
     @Test
     public void getSmsBackupMobileNumbersTop10() {
         List<String> list = smsBackupService.getSmsBackupMobileNumbersTop10();
-        Assert.assertEquals("[93019486, gunnar, mom, per]", list.toString());
+        Assert.assertEquals("[gunnar, mom, per, +4793019486]", list.toString());
     }
 
     @Test
@@ -115,14 +115,14 @@ public class SmsBackupServiceTest {
 
     @Test
     public void getSmsBackupAsTextByMobileNumber() {
-        String txt = smsBackupService.getSmsBackupAsText("93019486", WordCloudEvent.MESSAGE_TYPE_INBOX);
+        String txt = smsBackupService.getSmsBackupAsText("+4793019486", WordCloudEvent.MESSAGE_TYPE_INBOX);
         Assert.assertEquals("inbox-message4", txt);
 
         txt = smsBackupService.getSmsBackupAsText("93019486", WordCloudEvent.MESSAGE_TYPE_OUTBOX);
         Assert.assertEquals("", txt);
 
         txt = smsBackupService.getSmsBackupAsText("93019486", WordCloudEvent.MESSAGE_TYPE_ALL);
-        Assert.assertEquals("inbox-message4", txt);
+        Assert.assertEquals("", txt);
     }
 
     @Test

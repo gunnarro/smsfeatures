@@ -58,6 +58,12 @@ public class Utility {
         return "";
     }
 
+    /**
+     *
+     * @param map the map of words to be sorted
+     *
+     * @return return a sorted map by value, i.e most frequent word at top
+     */
     public static LinkedHashMap<String, Integer> getTop10Values(Map<String, Integer> map) {
         return map.entrySet()
                 .stream()

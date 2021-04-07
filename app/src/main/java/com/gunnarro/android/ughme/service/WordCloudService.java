@@ -9,6 +9,6 @@ import java.util.Map;
 
 public interface WordCloudService {
 
-    List<Word> buildWordCloud(Map<String, Integer> wordMap, Integer mostFrequentWordCount, Dimension rectangleDimension, Settings settings);
+    List<Word> buildWordCloud(Map<String, Integer> wordMap, Dimension rectangleDimension, Settings settings);
 
 }

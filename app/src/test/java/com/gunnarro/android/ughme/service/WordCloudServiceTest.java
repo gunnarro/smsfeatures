@@ -1,23 +1,17 @@
 package com.gunnarro.android.ughme.service;
 
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.Log;
 
-import com.gunnarro.android.ughme.TestData;
 import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
-import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
 import com.gunnarro.android.ughme.service.impl.WordCloudServiceImpl;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -63,10 +57,10 @@ public class WordCloudServiceTest {
 
 
         TextAnalyzerServiceImpl textAnalyzer = new TextAnalyzerServiceImpl();
-        AnalyzeReport report = textAnalyzer.analyzeText(smsPlainTxt.toString(), null);
+        AnalyzeReport report = textAnalyzer.analyzeText(smsPlainTxt.toString(), null, 3);
 
         WordCloudService builder = new WordCloudServiceImpl();
-        List<Word> words = builder.buildWordCloud(textAnalyzer.getWordCountMap(3), report.getTextHighestWordCount(), Dimension.builder().width(1440).height(1944).build(), new Settings());
+        List<Word> words = builder.buildWordCloud(report.getWordMap(), Dimension.builder().width(1440).height(1944).build(), new Settings());
 
         Assert.assertEquals(3, words.size());
         // check placed

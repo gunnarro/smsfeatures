@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ public class SmsBackupServiceImpl {
     public static final String SMS_BACKUP_FILE_NAME = "sms-backup.json";
     public static final String SMS_BACKUP_METADATA_FILE_NAME = "sms-backup-metadata.json";
     public static final String SMS_ANALYZE_REPORT_FILE_NAME = "sms-analyze-report.json";
+    public static final String SMS_WORD_MAP_FILE_NAME = "sms-word-map.json";
+
 
     // Files meant for your app's use only
     private final File appExternalDir;
@@ -146,9 +149,10 @@ public class SmsBackupServiceImpl {
      */
     public String getSmsBackupAsText(@NotNull String filterBy, @NonNull String smsType) {
         List<Sms> smsList = getSmsBackup();
-        Log.d(Utility.buildTag(getClass(), "getSmsBackupAtText"), String.format("filterBy=%s, smsType=%s, numberOfSms=%s", filterBy, smsType, smsList.size()));
+        String regexp = filterBy.replace("+", "\\+");
+        Log.d(Utility.buildTag(getClass(), "getSmsBackupAtText"), String.format("filterBy=%s, smsType=%s, numberOfSms=%s", regexp, smsType, smsList.size()));
         return smsList.stream()
-                .filter(s -> s.getType().matches(smsType) && s.getName().matches(filterBy))
+                .filter(s -> s.getType().matches(smsType) && s.getName().matches(regexp))
                 .map(Sms::getBody)
                 .collect(Collectors.joining(" "));
     }
@@ -234,28 +238,58 @@ public class SmsBackupServiceImpl {
 
     public AnalyzeReport readAnalyzeReport() {
         try {
+            AnalyzeReport report = AnalyzeReport.builder().build();
             File backUpMetaFile = getFile(SMS_ANALYZE_REPORT_FILE_NAME);
             Gson gson = new GsonBuilder().setLenient().create();
             Type smsListType = new TypeToken<AnalyzeReport>() {
             }.getType();
-            AnalyzeReport report;
             if (backUpMetaFile.exists()) {
                 report = gson.fromJson(new FileReader(backUpMetaFile), smsListType);
-            } else {
-                report = AnalyzeReport.builder()
-                        .build();
             }
             Log.d(Utility.buildTag(getClass(), "readSmsAnalyzeReport"), String.format("%s", report));
             return report;
-        } catch (FileNotFoundException e) {
-            return AnalyzeReport.builder().build();
+        } catch (FileNotFoundException ioe) {
+            Log.e(Utility.buildTag(getClass(), "readAnalyzeReport"), ioe.getMessage());
+            return null;
         }
     }
 
     public void profile(List<ProfileItem> profileItems ) {
             AnalyzeReport report = readAnalyzeReport();
-            profileItems.forEach(p -> report.getProfileItems().add(p));
-            saveAnalyseReport(report);
+            if (report != null && report.getProfileItems() != null) {
+                profileItems.forEach(p -> report.getProfileItems().add(p));
+                saveAnalyseReport(report);
+            }
+    }
+
+    public void saveWordMap(@NotNull Map<String, Integer> wordMap) {
+        try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
+            FileWriter fw = new FileWriter(getFile(SMS_WORD_MAP_FILE_NAME), false);
+            gson.toJson(wordMap, fw);
+            fw.flush();
+            fw.close();
+        } catch (IOException ioe) {
+            Log.e(Utility.buildTag(getClass(), "saveWordMap"), ioe.getMessage());
+        }
+    }
+
+    public Map<String, Integer> readWordMap() {
+        try {
+            File wordMapFile = getFile(SMS_WORD_MAP_FILE_NAME);
+            Gson gson = new GsonBuilder().setLenient().create();
+            Type mapType = new TypeToken<Map<String, Integer>>() {
+            }.getType();
+            Map<String, Integer> wordMap = new HashMap<>();
+            if (wordMapFile.exists()) {
+                wordMap = gson.fromJson(new FileReader(wordMapFile), mapType);
+            }
+            Log.d(Utility.buildTag(getClass(), "readWordMap"), String.format("%s", wordMap));
+            return wordMap;
+        } catch (FileNotFoundException ioe) {
+            Log.e(Utility.buildTag(getClass(), "readWordMap"), ioe.getMessage());
+            return readWordMap();
+        }
     }
 
     private void deleteFileContent(@NotNull File file) {
