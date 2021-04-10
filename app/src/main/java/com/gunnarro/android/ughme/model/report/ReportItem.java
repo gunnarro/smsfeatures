@@ -1,4 +1,4 @@
-package com.gunnarro.android.ughme.model.analyze;
+package com.gunnarro.android.ughme.model.report;
 
 import org.jetbrains.annotations.NotNull;
 

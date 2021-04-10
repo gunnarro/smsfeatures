@@ -1,4 +1,4 @@
-package com.gunnarro.android.ughme.model.analyze;
+package com.gunnarro.android.ughme.model.report;
 
 import com.gunnarro.android.ughme.model.cloud.Word;
 
@@ -33,11 +33,27 @@ public class AnalyzeReport {
     private int cloudPlacedWordCount;
     private int cloudNotPlacedWordCount;
 
-    private List<ReportItem> reportItems;
-    private List<ProfileItem> profileItems;
+    private final List<ReportItem> reportItems;
+    private final List<ProfileItem> profileItems;
+
+    public String getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public int getCloudWordCount() {
+        return cloudWordCount;
+    }
+
+    public int getCloudPlacedWordCount() {
+        return cloudPlacedWordCount;
+    }
+
+    public int getCloudNotPlacedWordCount() {
+        return cloudNotPlacedWordCount;
+    }
 
     AnalyzeReport(int textWordCount, int textUniqueWordCount, int textHighestWordCount, float textHighestWordCountPercent, long analyzeTimeMs, List<ReportItem> reportItems, List<ProfileItem> profileItems) {
-        this.createdDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());;
+        this.createdDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         this.textWordCount = textWordCount;
         this.textUniqueWordCount = textUniqueWordCount;
         this.textHighestWordCount = textHighestWordCount;
@@ -50,6 +66,8 @@ public class AnalyzeReport {
     public static AnalyzeReportBuilder builder() {
         return new AnalyzeReportBuilder();
     }
+
+
 
     public int getTextWordCount() {
         return this.textWordCount;
@@ -99,7 +117,7 @@ public class AnalyzeReport {
     @NotNull
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("AnalyzeReportBuilder{");
+        final StringBuilder sb = new StringBuilder("AnalyzeReportBuilder{");
         sb.append("numberOfWords=").append(textWordCount);
         sb.append("\n, numberOfUniqueWords=").append(textUniqueWordCount);
         sb.append("\n, highestWordCount=").append(textHighestWordCount);

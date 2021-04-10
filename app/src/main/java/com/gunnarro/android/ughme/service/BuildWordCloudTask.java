@@ -2,11 +2,11 @@ package com.gunnarro.android.ughme.service;
 
 import android.util.Log;
 
-import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
-import com.gunnarro.android.ughme.model.analyze.ProfileItem;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
+import com.gunnarro.android.ughme.model.report.AnalyzeReport;
+import com.gunnarro.android.ughme.model.report.ProfileItem;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;

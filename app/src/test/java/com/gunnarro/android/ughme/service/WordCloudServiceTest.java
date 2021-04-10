@@ -2,7 +2,7 @@ package com.gunnarro.android.ughme.service;
 
 import android.util.Log;
 
-import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
+import com.gunnarro.android.ughme.model.report.AnalyzeReport;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;

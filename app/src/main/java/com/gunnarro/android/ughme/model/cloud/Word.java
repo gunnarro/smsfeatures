@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Word {
     enum StatusEnum {
-        PLACED, NOT_PLACED;
+        PLACED, NOT_PLACED
     }
 
     String text;

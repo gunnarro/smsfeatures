@@ -3,7 +3,7 @@ package com.gunnarro.android.ughme.service;
 import android.content.Context;
 
 import com.gunnarro.android.ughme.exception.ApplicationException;
-import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
+import com.gunnarro.android.ughme.model.report.AnalyzeReport;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;

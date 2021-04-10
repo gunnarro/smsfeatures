@@ -10,21 +10,16 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
-import com.gunnarro.android.ughme.model.sms.Sms;
+import com.gunnarro.android.ughme.model.report.AnalyzeReport;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 

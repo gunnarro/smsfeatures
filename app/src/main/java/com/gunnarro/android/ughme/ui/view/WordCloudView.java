@@ -11,8 +11,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import com.gunnarro.android.ughme.exception.ApplicationException;
-import com.gunnarro.android.ughme.model.analyze.ProfileItem;
 import com.gunnarro.android.ughme.model.cloud.Word;
+import com.gunnarro.android.ughme.model.report.ProfileItem;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.BuildWordCloudTask;

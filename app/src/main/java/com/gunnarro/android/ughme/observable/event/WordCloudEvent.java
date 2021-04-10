@@ -57,7 +57,7 @@ public class WordCloudEvent {
     }
 
     public enum WordCloudEventTypeEnum {
-        UPDATE_MESSAGE, PROGRESS;
+        UPDATE_MESSAGE, PROGRESS
     }
 
     /**

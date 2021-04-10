@@ -1,7 +1,6 @@
 package com.gunnarro.android.ughme.ui.fragment;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -121,9 +120,6 @@ public class WordCloudFragment extends Fragment {
     /**
      * The contextual action mode is the preferred technique for displaying contextual actions when available.
      *
-     * @Override public void onCreateContextMenu(@NotNull ContextMenu menu, @NotNull View v, ContextMenu.ContextMenuInfo menuInfo) {
-     * super.onCreateContextMenu(menu, v, menuInfo);
-     * getActivity().getMenuInflater().inflate(R.menu.word_cloud_context_menu, menu);
      * <p>
      * menu.setHeaderTitle("Context Menu");
      * menu.add(0, v.getId(), 0, "Upload");
@@ -144,7 +140,7 @@ public class WordCloudFragment extends Fragment {
     private void handleOptionsMenuSelection() {
         boolean isInbox = optionsMenu.findItem(R.id.sms_inbox_menu).isChecked();
         boolean isOutbox = optionsMenu.findItem(R.id.sms_outbox_menu).isChecked();
-        String mobileNumber = selectedMobileNumber == ALL ? ALL_SEARCH : selectedMobileNumber;
+        String mobileNumber = selectedMobileNumber.equals(ALL) ? ALL_SEARCH : selectedMobileNumber;
         Log.d(Utility.buildTag(getClass(), "handleOptionsMenuSelection"), String.format("mobile=%s, inbox=%s, outbox=%s", mobileNumber, isInbox, isOutbox));
         if (isInbox && isOutbox) {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_ALL);
@@ -154,6 +150,7 @@ public class WordCloudFragment extends Fragment {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_INBOX);
         } else {
             // clear current view
+            Log.d(Utility.buildTag(getClass(), "handleOptionsMenuSelection"), "none is selected");
         }
     }
 
@@ -172,12 +169,17 @@ public class WordCloudFragment extends Fragment {
                     Log.d(Utility.buildTag(getClass(), "getInputObserver.onNext"), String.format("handle event: %s", event.toString()));
                     if (event.isUpdateEvent()) {
                         // hide progress dialog
-                        progressDialog.dismiss();
+                        if (progressDialog != null) {
+                            progressDialog.dismiss();
+                            progressDialog = null;
+                        }
                     } else if (event.isProgressEvent()) {
                         // update progress
                         Log.i(Utility.buildTag(getClass(), "onNext"), "progress: " + event.getProgressMsg());
-                       // progressDialog.setMessage(event.getProgressMsg());
-                       // progressDialog.incrementProgressBy(progressDialog.getProgress() + event.getProgressStep());
+                        if (progressDialog != null) {
+                            // progressDialog.setMessage(event.getProgressMsg());
+                            // progressDialog.incrementProgressBy(progressDialog.getProgress() + event.getProgressStep());
+                        }
                     }
                 }
             }

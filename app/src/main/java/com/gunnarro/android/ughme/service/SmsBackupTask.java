@@ -2,7 +2,7 @@ package com.gunnarro.android.ughme.service;
 
 import android.util.Log;
 
-import com.gunnarro.android.ughme.model.analyze.ProfileItem;
+import com.gunnarro.android.ughme.model.report.ProfileItem;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.BackupEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;

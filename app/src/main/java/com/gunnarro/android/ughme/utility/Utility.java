@@ -2,16 +2,10 @@ package com.gunnarro.android.ughme.utility;
 
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.gunnarro.android.ughme.model.sms.Sms;
-import com.gunnarro.android.ughme.ui.view.WordCloudView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,7 +36,7 @@ public class Utility {
         currentUUID = java.util.UUID.randomUUID().toString();
     }
 
-    public static String buildTag(Class clazz, String tagName) {
+    public static String buildTag(Class<?> clazz, String tagName) {
         return new StringBuilder(clazz.getSimpleName())
                 .append(".").append(tagName)
                 .append(", thread=").append(Thread.currentThread().getName())

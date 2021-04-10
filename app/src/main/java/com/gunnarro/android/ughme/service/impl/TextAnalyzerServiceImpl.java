@@ -2,8 +2,8 @@ package com.gunnarro.android.ughme.service.impl;
 
 import android.util.Log;
 
-import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
-import com.gunnarro.android.ughme.model.analyze.ReportItem;
+import com.gunnarro.android.ughme.model.report.AnalyzeReport;
+import com.gunnarro.android.ughme.model.report.ReportItem;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;

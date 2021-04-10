@@ -1,4 +1,4 @@
-package com.gunnarro.android.ughme.model.analyze;
+package com.gunnarro.android.ughme.model.report;
 
 public class ProfileItem {
     private final String className;
@@ -11,6 +11,23 @@ public class ProfileItem {
         this.method = method;
         this.executionTime = executionTime;
         this.exception = exception;
+    }
+
+
+    public String getClassName() {
+        return className;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public long getExecutionTime() {
+        return executionTime;
+    }
+
+    public String getException() {
+        return exception;
     }
 
     public static ProfileItem.ProfileItemBuilder builder() {

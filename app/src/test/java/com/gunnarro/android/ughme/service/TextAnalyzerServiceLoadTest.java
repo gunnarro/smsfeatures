@@ -1,7 +1,7 @@
 package com.gunnarro.android.ughme.service;
 
 import com.gunnarro.android.ughme.TestData;
-import com.gunnarro.android.ughme.model.analyze.AnalyzeReport;
+import com.gunnarro.android.ughme.model.report.AnalyzeReport;
 import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
 
 import org.junit.Assert;

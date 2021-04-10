@@ -358,32 +358,6 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         }
     }
 
-    /**
-     * @Override public void onClick(View view) {
-     * String selectedMobileNumber = mobileNumberSp.getSelectedItem().toString();
-     * // Is the button now checked?
-     * boolean checked = ((RadioButton) view).isChecked();
-     * // Check which radio button was clicked
-     * int id = view.getId();
-     * if (id == R.id.day_radio_btn) {
-     * if (checked) {
-     * updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.DAY);
-     * }
-     * } else if (id == R.id.month_radio_btn) {
-     * if (checked) {
-     * updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.MONTH);
-     * }
-     * } else if (id == R.id.year_radio_btn) {
-     * if (checked) {
-     * updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.YEAR);
-     * }
-     * } else if (id == R.id.number_radio_btn) {
-     * if (checked) {
-     * updateChartData(getSmsBackup(selectedMobileNumber), StatTypeEnum.NUMBER);
-     * }
-     * }
-     * }
-     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position,
                                long id) {
