@@ -1,7 +1,6 @@
 package com.gunnarro.android.ughme.ui;
 
 import android.Manifest;
-import android.app.SearchManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -164,8 +163,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void handleIntent(Intent intent) {
         Log.d(Utility.buildTag(getClass(), "handleIntent"), "Action: " + intent.getAction());
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //use the query to search your data somehow
             viewFragment(smsSearchFragment);
         }
     }
@@ -184,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String[] permissions = new String[]{
                 Manifest.permission.READ_SMS,
                 Manifest.permission.READ_CONTACTS};
-        // FIXME can only ask for one permission at time error: Can request only one set of permissions at a time
+        // FIXME For API 24 only ask for one permission at time error: Can request only one set of permissions at a time
         for (String permission : permissions) {
             if (super.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                 Log.i(Utility.buildTag(getClass(), "checkPermissions"), String.format("Not Granted, send request: %s", permission));

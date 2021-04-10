@@ -49,7 +49,6 @@ import io.reactivex.disposables.Disposable;
 public class BackupFragment extends Fragment implements View.OnClickListener, DialogActionListener {
 
     public static final String ALL = "all";
-    private static final int REQUEST_PERMISSIONS_CODE_READ_SMS = 22;
 
     @Inject
     SmsBackupTask backupTask;
