@@ -67,7 +67,7 @@ public class WordCloudServiceImpl implements WordCloudService {
         int highestWordCount = wordMap.values()
                 .stream()
                 .max(Comparator.comparing( Integer::valueOf ))
-                .get();
+                .orElse(0);
 
         // reset previous build
         wordPlacer.reset();
