@@ -14,6 +14,7 @@ import com.gunnarro.android.ughme.service.WordCloudService;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -52,7 +53,7 @@ public class WordCloudServiceImpl implements WordCloudService {
      * @param wordMap map sorted by highest occurrences of words
      * @param rectangleDimension holds dimension of the word cloud bitmap
      * @param settings holds word cloud settings
-     * @return
+     * @return list of most used words
      */
     public List<Word> buildWordCloud(Map<String, Integer> wordMap, final Dimension rectangleDimension, Settings settings) {
         Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("number of words size=%s, rectangle: %s", wordMap.size(), rectangleDimension));
@@ -62,10 +63,11 @@ public class WordCloudServiceImpl implements WordCloudService {
         if (rectangleDimension.getWidth() < 0 || rectangleDimension.getHeight() < 0) {
             throw new ApplicationException(String.format("width and height must both be greater than 0! rectangle: %s", rectangleDimension), null);
         }
+
         int highestWordCount = wordMap.values()
                 .stream()
-                .mapToInt(Integer::valueOf)
-                .max().getAsInt();
+                .max(Comparator.comparing( Integer::valueOf ))
+                .get();
 
         // reset previous build
         wordPlacer.reset();
@@ -76,7 +78,7 @@ public class WordCloudServiceImpl implements WordCloudService {
         for (Map.Entry<String, Integer> entry : wordMap.entrySet()) {
             Log.i(Utility.buildTag(getClass(), ""), String.format("x2x word=%s, count=%s", entry.getKey(), entry.getValue()));
             int wordFontSize = determineWordFontSize(entry.getValue(), highestWordCount, settings.minWordFontSize, settings.maxWordFontSize);
-            Paint wordPaint = createPaint(wordFontSize, Paint.Align.CENTER);
+            Paint wordPaint = createPaint(wordFontSize);
             Rect wordRect = new Rect();
             // Retrieve the text boundary box and store to bounds
             wordPaint.getTextBounds(entry.getKey(), 0, entry.getKey().length(), wordRect);
@@ -147,7 +149,7 @@ public class WordCloudServiceImpl implements WordCloudService {
     /**
      * Create paint object
      */
-    private Paint createPaint(int fontSize, Paint.Align align) {
+    private Paint createPaint(int fontSize) {
         Paint wordPaint = new Paint();
         // Eliminating sawtooth
         wordPaint.setAntiAlias(true);
@@ -155,11 +157,7 @@ public class WordCloudServiceImpl implements WordCloudService {
         wordPaint.setTypeface(Typeface.DEFAULT);
         wordPaint.setARGB(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
         wordPaint.setTextSize(fontSize * 10);//getResources().getDisplayMetrics().density);
-        if (align != null) {
-            wordPaint.setTextAlign(align);
-        } else {
-            wordPaint.setTextAlign(Paint.Align.LEFT);
-        }
+        wordPaint.setTextAlign(Paint.Align.CENTER);
         Log.d(Utility.buildTag(getClass(),"createPaint"), String.format("fontSize=%s", fontSize));
         return wordPaint;
     }

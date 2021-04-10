@@ -118,12 +118,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
     }
 
     private void runOnUiThread(final List<Word> wordList) {
-        new Thread(new Runnable() {
-            public void run() {
-                post(updateViewTask(wordList));
-            }
-        }).start();
-
+        new Thread(() -> post(updateViewTask(wordList))).start();
     }
 
     /**

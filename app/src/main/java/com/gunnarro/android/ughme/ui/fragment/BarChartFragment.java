@@ -32,7 +32,7 @@ import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.gunnarro.android.ughme.R;
-import com.gunnarro.android.ughme.model.chart.CustomeMarkerView;
+import com.gunnarro.android.ughme.model.chart.CustomMarkerView;
 import com.gunnarro.android.ughme.model.chart.StackedBarEntry;
 import com.gunnarro.android.ughme.model.chart.formatter.DayAxisValueFormatter;
 import com.gunnarro.android.ughme.model.chart.formatter.MonthXAxisFormatter;
@@ -106,7 +106,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
         chart = view.findViewById(R.id.barchart);
         chart.getDescription().setEnabled(false);
         chart.setOnChartGestureListener(this);
-        CustomeMarkerView mv = new CustomeMarkerView(getActivity(), R.layout.custom_marker_view);
+        CustomMarkerView mv = new CustomMarkerView(getActivity(), R.layout.custom_marker_view);
         mv.setChartView(chart); // For bounds control
         chart.setMarker(mv);
         chart.setDrawGridBackground(false);

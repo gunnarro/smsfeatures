@@ -3,7 +3,7 @@ package com.gunnarro.android.ughme.model.cloud;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Delombok follwoing annotations:
+ * Delombok following annotations:
  * ToString
  * Getter
  * Builder

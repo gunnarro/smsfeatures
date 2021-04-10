@@ -16,13 +16,13 @@ public class Word {
         PLACED, NOT_PLACED
     }
 
-    String text;
+    final String text;
     StatusEnum status;
-    Paint paint;
-    Rect rect;
-    Integer count;
-    float size;
-    float rotationAngle;
+    final Paint paint;
+    final Rect rect;
+    final Integer count;
+    final float size;
+    final float rotationAngle;
 
     Word(String text, Paint paint, Rect rect, Integer count, float size, float rotationAngle) {
         this.text = text;

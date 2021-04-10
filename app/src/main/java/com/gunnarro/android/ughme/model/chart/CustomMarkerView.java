@@ -18,11 +18,11 @@ import com.gunnarro.android.ughme.R;
  * @author Philipp Jahoda
  */
 @SuppressLint("ViewConstructor")
-public class CustomeMarkerView extends MarkerView {
+public class CustomMarkerView extends MarkerView {
 
     private final TextView tvContent;
 
-    public CustomeMarkerView(Context context, int layoutResource) {
+    public CustomMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
         tvContent = findViewById(R.id.tvContent);
     }

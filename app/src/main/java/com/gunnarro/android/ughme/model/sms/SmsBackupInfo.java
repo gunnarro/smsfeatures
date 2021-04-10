@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 
 /**
- * Delombok follwoing annotations:
+ * Delombok following annotations:
  * Builder
  */
 public class SmsBackupInfo implements Serializable {
