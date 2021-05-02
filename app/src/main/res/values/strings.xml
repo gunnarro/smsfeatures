@@ -44,6 +44,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="lbl_save_to_external_dir">Save to Backup folder</string>
+    <string name="lbl_save_to_download_folder">Save to Download folder</string>
+    <string name="lbl_download_folder_path">Download folder path</string>
 
 </resources>

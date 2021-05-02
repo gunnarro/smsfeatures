@@ -33,14 +33,26 @@
             <TableRow>
                 <TextView
                     android:padding="3dip"
-                    android:text="@string/lbl_save_to_external_dir" />
+                    android:text="@string/lbl_save_to_download_folder" />
 
                 <CheckBox
                     android:id="@+id/check_save_external"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
                     android:gravity="end"
+                    android:padding="3dip" />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:padding="3dip"
+                    android:text="@string/lbl_download_folder_path" />
+
+                <TextView
+                    android:id="@+id/download_folder_path_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
                     android:padding="3dip" />
             </TableRow>
 

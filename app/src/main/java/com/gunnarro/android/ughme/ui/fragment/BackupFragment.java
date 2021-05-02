@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -116,6 +117,9 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
 
             TextView backUpDateView = view.findViewById(R.id.sms_backup_date_value);
             backUpDateView.setText(Utility.formatTime(info.getLastBackupTime()));
+
+            TextView downloadPathView = view.findViewById(R.id.download_folder_path_value);
+            downloadPathView.setText(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath());
 
             TextView filePathView = view.findViewById(R.id.file_path_value);
             filePathView.setText(info.getBackupFilePath());

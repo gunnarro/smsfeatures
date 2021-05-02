@@ -74,7 +74,7 @@ public class SmsBackupServiceTest {
         smsList.add(sms2);
         smsList.add(sms3);
         smsList.add(sms4);
-        smsBackupService.saveSmsBackup(smsList, true);
+        smsBackupService.saveSmsBackup(smsList, false);
     }
 
     @Test
