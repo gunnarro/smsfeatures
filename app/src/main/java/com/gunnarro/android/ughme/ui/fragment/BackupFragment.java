@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -170,7 +171,8 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         progressDialog = buildProgressDialog();
         progressDialog.show();
         // start background task for building word cloud, which may take som time, based on number of sms
-        backupTask.backupSms();
+        CheckBox saveExternal = getActivity().findViewById(R.id.check_save_external);
+        backupTask.backupSms(saveExternal.isChecked());
     }
 
     private Dialog buildProgressDialog() {

@@ -60,7 +60,7 @@ public class SmsBackupServiceLoadTest {
         List<Sms> smsInbox = TestData.createSmsList();
         Mockito.when(smsReaderServiceMock.getSMSInbox(Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyLong())).thenReturn(smsInbox);
         try {
-            smsBackupService.backupSmsInbox();
+            smsBackupService.backupSmsInbox(true);
         } catch (ApplicationException e) {
             Assert.fail();
         }

@@ -28,11 +28,11 @@ public class SmsBackupTask {
         this.smsBackupService = smsBackupService;
     }
 
-    public void backupSms() {
+    public void backupSms(final boolean saveToExternalFolder) {
         Runnable backupSmsRunnable = () -> {
             long startTime = System.currentTimeMillis();
             try {
-                smsBackupService.backupSmsInbox();
+                smsBackupService.backupSmsInbox(saveToExternalFolder);
                 // when finished publish result so fragment can pick up the word list
                 RxBus.getInstance().publish(
                         BackupEvent.builder()

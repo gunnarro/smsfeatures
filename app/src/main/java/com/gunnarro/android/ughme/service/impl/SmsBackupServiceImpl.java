@@ -1,6 +1,7 @@
 package com.gunnarro.android.ughme.service.impl;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -85,7 +87,7 @@ public class SmsBackupServiceImpl {
         return smsBackupList;
     }
 
-    public void backupSmsInbox() {
+    public void backupSmsInbox(boolean isSaveExternal) {
         try {
             List<ProfileItem> profileItems = new ArrayList<>();
             long startTime = System.currentTimeMillis();
@@ -103,7 +105,7 @@ public class SmsBackupServiceImpl {
             if (!newSmsList.isEmpty()) {
                 Utility.mergeList(smsBackupList, newSmsList);
                 Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Update backup, new sms: %s, current: %s", newSmsList.size(), smsBackupList.size()));
-                saveSmsBackup(smsBackupList);
+                saveSmsBackup(smsBackupList, isSaveExternal);
                 Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Saved sms (%s) backup, path: %s", smsBackupList.size(), SMS_BACKUP_FILE_NAME));
             } else {
                 Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Backup up to date, %s", SMS_BACKUP_FILE_NAME));
@@ -215,13 +217,23 @@ public class SmsBackupServiceImpl {
         return new File(String.format("%s/%s", appExternalDir.getPath(), fileName));
     }
 
-    public void saveSmsBackup(@NotNull List<Sms> smsList) throws IOException {
+    public void saveSmsBackup(@NotNull List<Sms> smsList, boolean isSaveExternal) throws IOException {
         File smsBackupFile = getFile(SMS_BACKUP_FILE_NAME);
         Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
         FileWriter fw = new FileWriter(smsBackupFile, false);
         gson.toJson(smsList, fw);
         fw.flush();
         fw.close();
+
+        if (isSaveExternal) {
+            File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File smsBackupFileExternal = new File(folder, SMS_BACKUP_FILE_NAME);
+            FileWriter fwExt = new FileWriter(smsBackupFile, false);
+            gson.toJson(smsList, fwExt);
+            fwExt.flush();
+            fwExt.close();
+            Log.d(Utility.buildTag(getClass(), "saveSmsBackup"), String.format("Saved sms (%s) backup, path: %s/%s", smsList.size(), folder.getPath(), SMS_BACKUP_FILE_NAME));
+        }
     }
 
     public void saveAnalyseReport(@NotNull AnalyzeReport analyzeReport) {
