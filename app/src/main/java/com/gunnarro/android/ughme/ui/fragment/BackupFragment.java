@@ -89,8 +89,8 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_backup, container, false);
-        view.findViewById(R.id.btn_sms_backup_btn).setOnClickListener(this);
-        view.findViewById(R.id.btn_sms_delete_backup_btn).setOnClickListener(this);
+        view.findViewById(R.id.btn_sms_backup_save).setOnClickListener(this);
+        view.findViewById(R.id.btn_sms_backup_delete).setOnClickListener(this);
         RxBus.getInstance().listen().observeOn(AndroidSchedulers.mainThread()).subscribe(getInputObserver());
         Log.d(Utility.buildTag(getClass(), "onCreateView"), "");
         return view;
@@ -163,9 +163,9 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         }
 
         int id = view.getId();
-        if (id == R.id.btn_sms_backup_btn) {
+        if (id == R.id.btn_sms_backup_save) {
             startBackupSms();
-        } else if (id == R.id.btn_sms_delete_backup_btn) {
+        } else if (id == R.id.btn_sms_backup_delete) {
             DialogFragment confirmDialog = ConfirmDialogFragment.newInstance(getString(R.string.msg_delete_sms_backup), getString(R.string.msg_confirm_delete));
             confirmDialog.show(getChildFragmentManager(), "dialog");
         }

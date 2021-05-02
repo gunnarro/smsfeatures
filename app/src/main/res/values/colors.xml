@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="colorDate">#0074d9</color>
@@ -8,4 +8,7 @@
     <color name="colorSection">#FFF</color>
     <color name="colorSmsSent">#f3fc6e</color>
     <color name="colorSmsReceived">#dee1bb</color>
+    <color name="color_btn_border">#dee1bb</color>
+    <color name="color_btn_bg_default">#dee1bb</color>
+    <color name="color_btn_bg_delete">#FFFFFF</color>
 </resources>
