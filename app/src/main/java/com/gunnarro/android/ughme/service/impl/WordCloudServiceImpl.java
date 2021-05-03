@@ -1,8 +1,10 @@
 package com.gunnarro.android.ughme.service.impl;
 
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.Log;
 
@@ -202,6 +204,21 @@ public class WordCloudServiceImpl implements WordCloudService {
                     Log.d(Utility.buildTag(getClass(),"place"), String.format("finished, placed negative adjustment, word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s, exeTime=%s", word.getText(), position, radiusLoopCount, positionLoopCount, (System.currentTimeMillis() - startTime)));
                     return true;
                 }
+
+                // try rotate
+                Random random = new Random();
+                // rotate 90 or 270 random
+                int rotateDegrees = 90;
+                if (random.nextInt(2) == 1 ) {
+                    rotateDegrees = 270;
+                }
+                Rect rotatedRect = rotateRect(rotateDegrees, word.getRect());
+                if (canPlace(word.getText(), rotatedRect, rectangleDimension)) {
+                   // word.getRect().set(rotatedRect.left, rotatedRect.top, rotatedRect.right, rotatedRect.bottom);
+                    word.setRotationAngle(rotateDegrees);
+                    Log.d(Utility.buildTag(getClass(),"place"), String.format("finished, placed rotated, word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s, exeTime=%s", word.getText(), position, radiusLoopCount, positionLoopCount, (System.currentTimeMillis() - startTime)));
+                    return true;
+                }
             }
         }
         Log.d(Utility.buildTag(getClass(),"place"), String.format("finished, word not placed,  word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s", word.getText(), position, radiusLoopCount, positionLoopCount));
@@ -228,6 +245,18 @@ public class WordCloudServiceImpl implements WordCloudService {
         final int x = (rectangleDimension.getWidth() / 2) - (word.getRect().width() / 2);
         final int y = (rectangleDimension.getHeight() / 2) - (word.getRect().height() / 2);
         return new Point(x, y);
+    }
+
+    /**
+     * Use formula:
+     * R(0,0),90∘​(x,y)=(−y,x
+     */
+    public static Rect rotateRect(int degrees, final Rect rect) {
+        final RectF rectF = new RectF(rect);
+        final Matrix matrix = new Matrix();
+        matrix.setRotate(degrees, rect.left, rect.top);
+        matrix.mapRect(rectF);
+        return new Rect((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom);
     }
 }
 

@@ -18,7 +18,6 @@ public class TreeWordPlacer {
         placedWordRTree = RTree.maxChildren(RTree.MAX_CHILDREN_DEFAULT_GUTTMAN).create();
     }
 
-
     /**
      * Rect:
      * left: The X coordinate of the left side of the rectangle
@@ -34,7 +33,6 @@ public class TreeWordPlacer {
                 (float) (wordRect.bottom));
 
         //checkRect(wordRect, wordRectangle);
-
         final Observable<Entry<String, Rectangle>> results = placedWordRTree.search(wordRectangle);
         final int matches = results.count().toBlocking().single();
         if (matches > 0) {

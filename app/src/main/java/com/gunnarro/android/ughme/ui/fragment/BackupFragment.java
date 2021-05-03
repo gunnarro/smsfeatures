@@ -165,8 +165,8 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
 
         int id = view.getId();
         if (id == R.id.btn_sms_backup_save) {
-            //startBackupSms();
-            sendEmail("test send epost fra android app");
+            startBackupSms();
+            //sendEmail("test send epost fra android app");
         } else if (id == R.id.btn_sms_backup_delete) {
             DialogFragment confirmDialog = ConfirmDialogFragment.newInstance(getString(R.string.msg_delete_sms_backup), getString(R.string.msg_confirm_delete));
             confirmDialog.show(getChildFragmentManager(), "dialog");
@@ -176,10 +176,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     private void sendEmail(String msg) {
         // with action attribute as ACTION_SEND
         Intent intent = new Intent(Intent.ACTION_SEND);
-
-        // add three fiels to intent using putExtra function
-        intent.putExtra(Intent.EXTRA_EMAIL,
-                new String[] { "gunnar_ronneberg@yahoo.no" });
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "gunnar_ronneberg@yahoo.no" });
         intent.putExtra(Intent.EXTRA_SUBJECT, "sms backup");
         intent.putExtra(Intent.EXTRA_TEXT, msg);
         // set type of intent

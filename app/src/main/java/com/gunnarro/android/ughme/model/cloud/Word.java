@@ -22,7 +22,7 @@ public class Word {
     final Rect rect;
     final Integer count;
     final float size;
-    final float rotationAngle;
+    float rotationAngle;
 
     Word(String text, Paint paint, Rect rect, Integer count, float size, float rotationAngle) {
         this.text = text;
@@ -67,6 +67,10 @@ public class Word {
 
     public float getRotationAngle() {
         return this.rotationAngle;
+    }
+
+    public void setRotationAngle(float rotationAngle) {
+        this.rotationAngle = rotationAngle;
     }
 
     public void setStatusPlaced() {
