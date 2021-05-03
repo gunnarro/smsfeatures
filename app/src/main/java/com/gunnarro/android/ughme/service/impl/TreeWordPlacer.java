@@ -27,7 +27,6 @@ public class TreeWordPlacer {
      * bottom: The Y coordinate of the bottom of the rectangle
      */
     public boolean place(final String word, Rect wordRect) {
-        long startTime = System.currentTimeMillis();
         final Rectangle wordRectangle = Geometries.rectangle(
                 (float) wordRect.left,
                 (float) wordRect.top,
@@ -42,7 +41,6 @@ public class TreeWordPlacer {
             return false;
         }
         placedWordRTree = placedWordRTree.add(word, wordRectangle);
-        //Log.i(Utility.buildTag(getClass(), "place"), String.format("word=%s, exeTime=%s ms", word, (System.currentTimeMillis() - startTime)));
         return true;
     }
 

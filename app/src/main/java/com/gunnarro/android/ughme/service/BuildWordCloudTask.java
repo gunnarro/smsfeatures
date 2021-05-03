@@ -7,6 +7,7 @@ import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
 import com.gunnarro.android.ughme.model.report.AnalyzeReport;
 import com.gunnarro.android.ughme.model.report.ProfileItem;
+import com.gunnarro.android.ughme.model.report.ReportItem;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
@@ -55,6 +56,8 @@ public class BuildWordCloudTask {
                         , cloudDimension
                         , settings);
 
+                wordList.forEach(w -> analyzeReport.getReportItems().forEach( r -> updateStatus(r,w)));
+
                 analyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("buildWordCloud").executionTime(System.currentTimeMillis() - startTimeStep2).build());
                 analyzeReport.setCloudWordCount(wordList.size());
                 analyzeReport.setCloudPlacedWordCount((int)wordList.stream().filter(Word::isPlaced).count());
@@ -77,6 +80,10 @@ public class BuildWordCloudTask {
             }
         };
         executor.execute(buildWordCloudRunnable);
+    }
+
+    private void updateStatus(ReportItem r, Word w) {
+        r.setStatus(w.isPlaced());
     }
 
     private void postProgress(String msg, int step) {

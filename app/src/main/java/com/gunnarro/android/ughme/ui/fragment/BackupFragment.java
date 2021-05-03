@@ -2,6 +2,7 @@ package com.gunnarro.android.ughme.ui.fragment;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -164,11 +165,29 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
 
         int id = view.getId();
         if (id == R.id.btn_sms_backup_save) {
-            startBackupSms();
+            //startBackupSms();
+            sendEmail("test send epost fra android app");
         } else if (id == R.id.btn_sms_backup_delete) {
             DialogFragment confirmDialog = ConfirmDialogFragment.newInstance(getString(R.string.msg_delete_sms_backup), getString(R.string.msg_confirm_delete));
             confirmDialog.show(getChildFragmentManager(), "dialog");
         }
+    }
+
+    private void sendEmail(String msg) {
+        // with action attribute as ACTION_SEND
+        Intent intent = new Intent(Intent.ACTION_SEND);
+
+        // add three fiels to intent using putExtra function
+        intent.putExtra(Intent.EXTRA_EMAIL,
+                new String[] { "gunnar_ronneberg@yahoo.no" });
+        intent.putExtra(Intent.EXTRA_SUBJECT, "sms backup");
+        intent.putExtra(Intent.EXTRA_TEXT, msg);
+        // set type of intent
+        intent.setType("message/rfc822");
+
+        // startActivity with intent with chooser
+        // as Email client using createChooser function
+        startActivity(Intent.createChooser(intent, "Choose an Email client :"));
     }
 
     private void startBackupSms() {

@@ -15,7 +15,7 @@ public class ReportItem {
     private final Integer count;
     private final Integer percentage;
     // can be PLACED and NOT_PLACED
-    private final String status;
+    private String status;
 
     ReportItem(String word, Integer count, Integer percentage, String status) {
         this.word = word;
@@ -40,7 +40,9 @@ public class ReportItem {
         return this.percentage;
     }
 
-    public String getStatus() { return status; }
+    public void setStatus(boolean isPlaced) {
+        status = isPlaced ? "PLACED" : "NOT_PLACED";
+    }
 
     @NotNull
     public String toString() {

@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -226,6 +227,7 @@ public class SmsBackupServiceImpl {
         fw.close();
 
         if (isSaveExternal) {
+            // before android 10
             File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             File smsBackupFileExternal = new File(folder, SMS_BACKUP_FILE_NAME);
             FileWriter fwExt = new FileWriter(smsBackupFile, false);

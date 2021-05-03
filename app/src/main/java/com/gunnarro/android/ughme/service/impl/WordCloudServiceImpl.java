@@ -107,11 +107,9 @@ public class WordCloudServiceImpl implements WordCloudService {
 
             if (placed) {
                 newWord.setStatusPlaced();
-                // Log.d(buildTag("buildWordCloud"), String.format("placed, word: %s, rect=%s,%s, placed-words=%s, count=%s, size=%s", newWord.getText(), newWord.getRect().left, newWord.getRect().top, numberOfdWords, newWord.getCount(), newWord.getSize()));
             } else {
                 newWord.setStatusNotPlaced();
                 numberOfCollisions++;
-                // Log.d(buildTag("buildWordCloud"), String.format("skipped, word: %s, rect=%s,%s collisions=%s", newWord.getText(), newWord.getRect().left, newWord.getRect().top, numberOfCollisions));
             }
             wordList.add(newWord);
         }
