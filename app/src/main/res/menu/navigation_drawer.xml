@@ -9,11 +9,6 @@
             android:title="@string/title_backup" />
 
         <item
-            android:id="@+id/nav_sms_search"
-            android:icon="@drawable/baseline_search_black_24dp"
-            android:title="@string/title_search" />
-
-        <item
             android:id="@+id/nav_sms_chart"
             android:icon="@drawable/baseline_leaderboard_black_24dp"
             android:title="@string/title_chart" />

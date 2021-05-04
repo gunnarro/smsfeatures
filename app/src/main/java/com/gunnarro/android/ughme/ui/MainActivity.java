@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Inject
     BackupFragment backupFragment;
     @Inject
-    SmsSearchFragment smsSearchFragment;
-    @Inject
     WordCloudFragment wordCloudFragment;
     @Inject
     BarChartFragment barChartFragment;
@@ -94,24 +92,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         // Finally, check and grant or deny permissions
         checkPermissions();
-        handleIntent(getIntent());
-    }
-
-    /**
-     * It's where you should place actions that have a global impact on the app.
-     * Only create the initial menu state and not make changes during the activity lifecycle.
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
-        // Associate searchable configuration with the SearchView
-        // SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_sms).getActionView();
-        // searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        //searchView.setOnClickListener(v -> Log.d(TAG, "search clicked 1"));
-        searchView.setOnSearchClickListener(v -> viewFragment(smsSearchFragment));
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -134,9 +114,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (id == R.id.nav_sms_backup) {
                 setTitle(string.title_backup);
                 viewFragment(backupFragment);
-            } else if (id == R.id.nav_sms_search) {
-                setTitle(string.title_search);
-                viewFragment(smsSearchFragment);
             } else if (id == R.id.nav_sms_chart) {
                 setTitle(string.title_chart);
                 viewFragment(barChartFragment);
@@ -157,13 +134,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             return false;
-        }
-    }
-
-    private void handleIntent(Intent intent) {
-        Log.d(Utility.buildTag(getClass(), "handleIntent"), "Action: " + intent.getAction());
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            viewFragment(smsSearchFragment);
         }
     }
 

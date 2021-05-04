@@ -28,9 +28,7 @@ import com.gunnarro.android.ughme.ui.view.WordCloudView;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -90,7 +88,7 @@ public class WordCloudFragment extends Fragment {
         MenuItem m = menu.findItem(R.id.mobile_dropdown_menu);
         Spinner spinner = (Spinner) m.getActionView();
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, mobileNumbers);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, mobileNumbers);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
