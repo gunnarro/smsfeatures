@@ -1,13 +1,10 @@
 package com.gunnarro.android.ughme.service;
 
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.os.Environment;
 
 import com.gunnarro.android.ughme.TestData;
 import com.gunnarro.android.ughme.exception.ApplicationException;
 import com.gunnarro.android.ughme.model.sms.Sms;
-import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.service.impl.SmsReaderServiceImpl;
@@ -24,8 +21,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Ignore
