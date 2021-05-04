@@ -58,7 +58,7 @@ public class TextAnalyzerServiceImpl {
         Log.d("analyzeText", String.format("start, text.length=%s, regexp=%s", text.length(), regexp));
         long startTimeMs = System.currentTimeMillis();
         Map<String, Integer> tmpWordMap = new HashMap<>();
-        if (text == null || text.isEmpty()) {
+        if (text.isEmpty()) {
             Log.d("TextAnalyzer.analyzeText", "text is null or empty!");
             return getReport(new HashMap<>(), 0);
         }

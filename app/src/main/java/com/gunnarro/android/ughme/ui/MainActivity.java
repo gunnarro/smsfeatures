@@ -1,14 +1,10 @@
 package com.gunnarro.android.ughme.ui;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -23,7 +19,6 @@ import com.gunnarro.android.ughme.ui.fragment.BackupFragment;
 import com.gunnarro.android.ughme.ui.fragment.BarChartFragment;
 import com.gunnarro.android.ughme.ui.fragment.PreferencesFragment;
 import com.gunnarro.android.ughme.ui.fragment.ReportFragment;
-import com.gunnarro.android.ughme.ui.fragment.SmsSearchFragment;
 import com.gunnarro.android.ughme.ui.fragment.WordCloudFragment;
 import com.gunnarro.android.ughme.utility.Utility;
 

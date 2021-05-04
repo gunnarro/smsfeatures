@@ -2,8 +2,8 @@
   "status": "BACKED_UP",
   "smsBackupFilePath": "src/test/resources/sms-backup.json",
   "smsBackupFileSizeBytes": 981,
-  "storageFreeSpaceBytes": 175509151744,
-  "lastBackupTime": 1620065219000,
+  "storageFreeSpaceBytes": 176021647360,
+  "lastBackupTime": 1620154728000,
   "numberOfSms": 0,
   "numberOfMobileNumbers": 0
 }

@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -227,8 +226,7 @@ public class SmsBackupServiceImpl {
         if (isSaveExternal) {
             // before android 10
             File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            File smsBackupFileExternal = new File(folder, SMS_BACKUP_FILE_NAME);
-            FileWriter fwExt = new FileWriter(smsBackupFile, false);
+            FileWriter fwExt = new FileWriter(new File(folder, SMS_BACKUP_FILE_NAME), false);
             gson.toJson(smsList, fwExt);
             fwExt.flush();
             fwExt.close();
@@ -283,24 +281,6 @@ public class SmsBackupServiceImpl {
             fw.close();
         } catch (IOException ioe) {
             Log.e(Utility.buildTag(getClass(), "saveWordMap"), ioe.getMessage());
-        }
-    }
-
-    public Map<String, Integer> readWordMap() {
-        try {
-            File wordMapFile = getFile(SMS_WORD_MAP_FILE_NAME);
-            Gson gson = new GsonBuilder().setLenient().create();
-            Type mapType = new TypeToken<Map<String, Integer>>() {
-            }.getType();
-            Map<String, Integer> wordMap = new HashMap<>();
-            if (wordMapFile.exists()) {
-                wordMap = gson.fromJson(new FileReader(wordMapFile), mapType);
-            }
-            Log.d(Utility.buildTag(getClass(), "readWordMap"), String.format("%s", wordMap));
-            return wordMap;
-        } catch (FileNotFoundException ioe) {
-            Log.e(Utility.buildTag(getClass(), "readWordMap"), ioe.getMessage());
-            return readWordMap();
         }
     }
 

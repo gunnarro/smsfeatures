@@ -2,7 +2,6 @@ package com.gunnarro.android.ughme.ui.fragment;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -132,7 +131,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             fileSizeView.setText(Formatter.formatFileSize(requireActivity().getApplicationContext(), info.getSmsBackupFileSizeBytes()));
 
             TextView storageFreeSpaceView = view.findViewById(R.id.storage_free_space_value);
-            storageFreeSpaceView.setText(Formatter.formatFileSize(getActivity().getApplicationContext(), info.getStorageFreeSpaceBytes()));
+            storageFreeSpaceView.setText(Formatter.formatFileSize(requireActivity().getApplicationContext(), info.getStorageFreeSpaceBytes()));
 
             TextView smsFromDateView = view.findViewById(R.id.sms_from_date_value);
             smsFromDateView.setText(Utility.formatTime(info.getFromDateTime()));
@@ -156,7 +155,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     @Override
     public void onClick(View view) {
         // ask every time
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_MEDIA_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_MEDIA_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // You have not been granted access, ask for permission now.
             //requestPermissionLauncher.launch(Manifest.permission.ACCESS_MEDIA_LOCATION);
         } else {
@@ -173,25 +172,11 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         }
     }
 
-    private void sendEmail(String msg) {
-        // with action attribute as ACTION_SEND
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "gunnar_ronneberg@yahoo.no" });
-        intent.putExtra(Intent.EXTRA_SUBJECT, "sms backup");
-        intent.putExtra(Intent.EXTRA_TEXT, msg);
-        // set type of intent
-        intent.setType("message/rfc822");
-
-        // startActivity with intent with chooser
-        // as Email client using createChooser function
-        startActivity(Intent.createChooser(intent, "Choose an Email client :"));
-    }
-
     private void startBackupSms() {
         progressDialog = buildProgressDialog();
         progressDialog.show();
         // start background task for building word cloud, which may take som time, based on number of sms
-        CheckBox saveExternal = getActivity().findViewById(R.id.check_save_external);
+        CheckBox saveExternal = requireActivity().findViewById(R.id.check_save_external);
         backupTask.backupSms(saveExternal.isChecked());
     }
 

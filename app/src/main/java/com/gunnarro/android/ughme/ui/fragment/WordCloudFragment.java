@@ -28,7 +28,9 @@ import com.gunnarro.android.ughme.ui.view.WordCloudView;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
