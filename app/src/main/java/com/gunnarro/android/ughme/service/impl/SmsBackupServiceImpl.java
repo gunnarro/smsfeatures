@@ -144,7 +144,7 @@ public class SmsBackupServiceImpl {
 
     /**
      * @param filterBy holds either mobile number and contact name
-     * @param smsType     can be 1 = INBOX, 2 = OUTBOX or (.*) = All
+     * @param smsType can be 1 = INBOX, 2 = OUTBOX or (.*) = All
      * @return all sms messages bundled as a plain text string
      */
     public String getSmsBackupAsText(@NotNull String filterBy, @NonNull String smsType) {
