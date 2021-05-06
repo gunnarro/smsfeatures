@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string-array name="font_type_entries">
+        <item>DEFAULT</item>
+        <item>DEFAULT_BOLD</item>
+        <item>MONOSPACE</item>
+        <item>SERIF</item>
+        <item>SANS_SERIF</item>
+    </string-array>
+
+    <string-array name="color_schema">
+        <item>SINGLE_COLOR</item>
+        <item>MULTI_COLOR</item>
+    </string-array>
+
 </resources>

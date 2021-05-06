@@ -69,11 +69,24 @@ public class Settings {
     @ColumnInfo(name = "chart_max_bars")
     public Integer numberOfBarsInChart = 12;
 
+    /**
+     * word font type
+     */
+    @ColumnInfo(name = "font_type")
+    public String fontType = "DEFAULT";
+
+    /**
+     * color schema used for words
+     */
+    @ColumnInfo(name = "color_schema")
+    public String colorSchema = "MULTI_COLOR";
+
     @NotNull
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Settings{");
+        final StringBuffer sb = new StringBuffer("Settings{");
         sb.append("id=").append(id);
+        sb.append(", wordMatchRegexFormat='").append(wordMatchRegexFormat).append('\'');
         sb.append(", wordMatchRegex='").append(wordMatchRegex).append('\'');
         sb.append(", numberOfWords=").append(numberOfWords);
         sb.append(", radiusStep=").append(radiusStep);
@@ -84,6 +97,8 @@ public class Settings {
         sb.append(", maxWordFontSize=").append(maxWordFontSize);
         sb.append(", numberOfMobileNumbers=").append(numberOfMobileNumbers);
         sb.append(", numberOfBarsInChart=").append(numberOfBarsInChart);
+        sb.append(", fontType='").append(fontType).append('\'');
+        sb.append(", colorSchema='").append(colorSchema).append('\'');
         sb.append('}');
         return sb.toString();
     }

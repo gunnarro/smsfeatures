@@ -21,6 +21,7 @@ import com.gunnarro.android.ughme.ui.fragment.PreferencesFragment;
 import com.gunnarro.android.ughme.ui.fragment.ReportFragment;
 import com.gunnarro.android.ughme.ui.fragment.WordCloudFragment;
 import com.gunnarro.android.ughme.utility.Utility;
+import com.rohitss.uceh.UCEHandler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         Log.d(Utility.buildTag(getClass(), "onCreate"), "context: " + getApplicationContext());
         Log.d(Utility.buildTag(getClass(), "onCreate"), "app file dir: " + getApplicationContext().getFilesDir().getPath());
+
+        // Initialize exception handler
+        new UCEHandler.Builder(this).build();
 
         if (!new File(getApplicationContext().getFilesDir().getPath()).exists()) {
             Log.d(Utility.buildTag(getClass(), "onCreate"), "app file dir missing! " + getApplicationContext().getFilesDir().getPath());

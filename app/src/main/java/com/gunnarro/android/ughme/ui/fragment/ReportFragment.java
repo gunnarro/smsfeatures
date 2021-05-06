@@ -62,12 +62,14 @@ public class ReportFragment extends Fragment {
     }
 
     private void updateTextView(View view, AnalyzeReport analyseReport) {
-        TextView reportView = view.findViewById(R.id.report_view);
-        Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
-        StringWriter sw = new StringWriter();
-        gson.toJson(analyseReport, sw);
-        reportView.setText(sw.toString());
-        reportView.setMovementMethod(new ScrollingMovementMethod());
+            TextView reportView = view.findViewById(R.id.report_view);
+            Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
+            StringWriter sw = new StringWriter();
+            if (analyseReport == null) {
+                analyseReport = AnalyzeReport.builder().build();
+            }
+            gson.toJson(analyseReport, sw);
+            reportView.setText(sw.toString());
+            reportView.setMovementMethod(new ScrollingMovementMethod());
     }
-
 }

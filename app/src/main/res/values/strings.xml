@@ -23,6 +23,9 @@
     <string name="pref_word_min_font_size">pref_word_min_font_size</string>
     <string name="pref_radius_step">pref_radius_step</string>
     <string name="pref_offset_step">pref_offset_step</string>
+    <string name="pref_color_schema">pref_color_schema</string>
+    <string name="pref_font_type">pref_font_type</string>
+
     <string name="lbl_filepath">Filepath</string>
     <string name="lbl_filename">Filename</string>
     <string name="lbl_file_size">File size</string>

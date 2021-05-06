@@ -72,5 +72,30 @@
             app:summary="Word cloud offset step"
             app:title="Offset step" />
 
+        <ListPreference
+            app:defaultValue="DEFAULT"
+            app:key="pref_font_type"
+            app:singleLineTitle="true"
+            app:useSimpleSummaryProvider="true"
+            app:summary="Word cloud font type"
+            app:title="Font type"
+            android:entries="@array/font_type_entries"
+            android:entryValues="@array/font_type_entries" />
+
+        <ListPreference
+            app:defaultValue="MULTI_COLOR"
+            app:key="pref_color_schema"
+            app:persistent="true"
+            app:selectable="true"
+            app:enableCopying="true"
+            app:isPreferenceVisible="true"
+            app:shouldDisableView="true"
+            app:singleLineTitle="true"
+            app:useSimpleSummaryProvider="true"
+            app:summary="Word cloud color schema"
+            app:title="Color schema"
+            android:entries="@array/color_schema"
+            android:entryValues="@array/color_schema" />
+
     </PreferenceCategory>
 </PreferenceScreen>

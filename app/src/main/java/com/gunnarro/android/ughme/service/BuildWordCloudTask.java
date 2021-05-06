@@ -76,6 +76,7 @@ public class BuildWordCloudTask {
                                 .build());
             } catch (Exception e) {
                 smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("BuildWordCloudTask").method("buildWordCloudEventBus").executionTime(System.currentTimeMillis() - startTime).exception(e.getMessage()).build()));
+                e.printStackTrace();
                 Log.e(Utility.buildTag(getClass(), "buildWordCloudEventBus"), e.getMessage());
             }
         };

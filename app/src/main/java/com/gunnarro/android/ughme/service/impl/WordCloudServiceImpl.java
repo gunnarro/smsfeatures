@@ -1,5 +1,6 @@
 package com.gunnarro.android.ughme.service.impl;
 
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -80,7 +81,7 @@ public class WordCloudServiceImpl implements WordCloudService {
         for (Map.Entry<String, Integer> entry : wordMap.entrySet()) {
             Log.i(Utility.buildTag(getClass(), ""), String.format("x2x word=%s, count=%s", entry.getKey(), entry.getValue()));
             int wordFontSize = determineWordFontSize(entry.getValue(), highestWordCount, settings.minWordFontSize, settings.maxWordFontSize);
-            Paint wordPaint = createPaint(wordFontSize);
+            Paint wordPaint = createPaint(wordFontSize, settings.colorSchema, settings.fontType);
             Rect wordRect = new Rect();
             // Retrieve the text boundary box and store to bounds
             wordPaint.getTextBounds(entry.getKey(), 0, entry.getKey().length(), wordRect);
@@ -149,18 +150,42 @@ public class WordCloudServiceImpl implements WordCloudService {
     /**
      * Create paint object
      */
-    private Paint createPaint(int fontSize) {
+    private Paint createPaint(int fontSize, String colorSchema, String fontType) {
         Paint wordPaint = new Paint();
         // Eliminating sawtooth
         wordPaint.setAntiAlias(true);
         wordPaint.setStyle(Paint.Style.FILL);
-        wordPaint.setTypeface(Typeface.DEFAULT);
-        wordPaint.setARGB(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+
+        if ("SINGLE_COLOR".equals(colorSchema)) {
+            wordPaint.setColor(Color.BLUE);
+        } else {
+            wordPaint.setARGB(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        }
+
+        switch (fontType) {
+            case "SANS_SERIF":
+                wordPaint.setTypeface(Typeface.SANS_SERIF);
+                break;
+            case "MONOSPACE":
+                wordPaint.setTypeface(Typeface.MONOSPACE);
+                break;
+            case "SERIF":
+                wordPaint.setTypeface(Typeface.SERIF);
+                break;
+            case "DEFAULT_BOLD":
+                wordPaint.setTypeface(Typeface.DEFAULT_BOLD);
+                break;
+            default:
+                wordPaint.setTypeface(Typeface.DEFAULT);
+        }
+
         wordPaint.setTextSize(fontSize * 10);//getResources().getDisplayMetrics().density);
         wordPaint.setTextAlign(Paint.Align.CENTER);
-        Log.d(Utility.buildTag(getClass(),"createPaint"), String.format("fontSize=%s", fontSize));
+        Log.d(Utility.buildTag(getClass(),"createPaint"), String.format("fontSize=%s, fontType=%s, colorSchema=%s", fontSize, fontType, colorSchema));
         return wordPaint;
     }
+
+
 
     /**
      * word=sveen, x=430, y=789, check=true

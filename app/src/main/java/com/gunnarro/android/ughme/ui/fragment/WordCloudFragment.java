@@ -206,13 +206,17 @@ public class WordCloudFragment extends Fragment {
 
     private Settings mapPreferences() {
         Settings settings = new Settings();
+        // read selected preference values, and use settings default values if not set
         int words = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_number_of_words), settings.numberOfWords);
         int minCharsInWord = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_chars), settings.minCharsInWord);
         int maxFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_max_font_size), settings.maxWordFontSize);
         int minFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_font_size), settings.minWordFontSize);
         int radiusStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_radius_step), settings.radiusStep);
         int offsetStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_offset_step), settings.offsetStep);
+        String colorSchema = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_color_schema","");
+        String fontType = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_font_type", "");
 
+        // update setting with selected preference values
         settings.wordMatchRegex = String.format(settings.wordMatchRegexFormat, minCharsInWord);
         settings.numberOfWords = words;
         settings.minCharsInWord = minCharsInWord;
@@ -220,6 +224,9 @@ public class WordCloudFragment extends Fragment {
         settings.minWordFontSize = minFontSize;
         settings.radiusStep = radiusStep;
         settings.offsetStep = offsetStep;
+        settings.colorSchema = colorSchema;
+        settings.fontType = fontType;
+        Log.d(Utility.buildTag(getClass(), "mapPreferences"), settings.toString());
         return settings;
     }
 
