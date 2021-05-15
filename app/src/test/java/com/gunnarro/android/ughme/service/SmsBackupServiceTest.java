@@ -79,7 +79,7 @@ public class SmsBackupServiceTest {
 
     @Test
     public void readSmsBackup() {
-        List<Sms> list = smsBackupService.getSmsBackup(false);
+        List<Sms> list = smsBackupService.getSmsBackup(true);
         Assert.assertEquals(4, list.size());
         // check descending sort order, i.e newest on top
         Assert.assertNull(list.get(0).getContactName());
@@ -128,13 +128,13 @@ public class SmsBackupServiceTest {
     @Test
     public void getSmsBackupAsTextForAll() {
         String txt = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_INBOX);
-        Assert.assertEquals("inbox-message4 inbox-message2 inbox-message1", txt);
+        Assert.assertEquals("inbox-message1 inbox-message2 inbox-message4", txt);
 
         txt = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
         Assert.assertEquals("outbox-message3", txt);
 
         txt = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_ALL);
-        Assert.assertEquals("inbox-message4 outbox-message3 inbox-message2 inbox-message1", txt);
+        Assert.assertEquals("inbox-message1 inbox-message2 outbox-message3 inbox-message4", txt);
     }
 
     @Test

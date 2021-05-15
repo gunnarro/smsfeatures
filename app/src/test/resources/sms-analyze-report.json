@@ -1,13 +1,1 @@
-{
-  "textWordCount": 0,
-  "textUniqueWordCount": 0,
-  "textHighestWordCount": 0,
-  "textHighestWordCountPercent": 0.0,
-  "analyzeTimeMs": 2035,
-  "cloudWordCount": 0,
-  "cloudPlacedWordCount": 0,
-  "cloudNotPlacedWordCount": 0,
-  "reportItems": [],
-  "profileItems": [],
-  "wordMap": {}
-}
+{"textWordCount":0,"textUniqueWordCount":0,"textHighestWordCount":0,"textHighestWordCountPercent":0.0,"analyzeTimeMs":2035,"cloudWordCount":0,"cloudPlacedWordCount":0,"cloudNotPlacedWordCount":0,"reportItems":[],"profileItems":[],"wordMap":{}}
