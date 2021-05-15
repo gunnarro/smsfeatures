@@ -222,6 +222,24 @@ public class SmsBackupServiceImpl {
         }
     }
 
+    /**
+     *
+     * @param smsBakupFile external sms backup to be imported
+     */
+    public void inportSmsBackup(File smsBakupFile) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            List<Sms> smsBackupList = smsBackupList = mapper.readValue(smsBakupFile, new TypeReference<List<Sms>>() {
+            });
+            if (smsBackupList == null) {
+                smsBackupList = new ArrayList<>();
+            }
+        } catch (Exception e) {
+            Log.d(Utility.buildTag(getClass(), "inportSmsBackup"), String.format("Failed import sms backup! error: %s", e.getMessage()));
+            throw new ApplicationException("Failed import sms backup file: " + smsBakupFile.getPath(), e);
+        }
+    }
+
     public AnalyzeReport readAnalyzeReport() {
         try {
             File backUpMetaFile = getFile(SMS_ANALYZE_REPORT_FILE_NAME);
