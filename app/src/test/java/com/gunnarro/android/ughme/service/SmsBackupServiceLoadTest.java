@@ -57,14 +57,15 @@ public class SmsBackupServiceLoadTest {
         try {
             smsBackupService.backupSmsInbox(true);
         } catch (ApplicationException e) {
+            e.getCause().printStackTrace();
             Assert.fail();
         }
     }
 
     @Test
     public void getSmsBackupAsText() {
-         String allSmsTxt =  smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_ALL);
-         Assert.assertEquals(636576, allSmsTxt.length());
+        String allSmsTxt = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_ALL);
+        Assert.assertEquals(2546124, allSmsTxt.length());
 
     }
 

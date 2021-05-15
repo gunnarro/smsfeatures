@@ -346,7 +346,7 @@ public class BarChartFragment extends Fragment implements OnChartGestureListener
 
     private List<Sms> getSmsBackup(String filterBy) {
         try {
-            List<Sms> smsList = smsBackupService.getSmsBackup();
+            List<Sms> smsList = smsBackupService.getSmsBackup(true);
             Log.d(TAG, "getSmsBackup: " + smsList);
             if (filterBy != null && !filterBy.equalsIgnoreCase(BackupFragment.ALL)) {
                 return smsList.stream().filter(s -> s.getContactName().contains(filterBy)).collect(Collectors.toList());

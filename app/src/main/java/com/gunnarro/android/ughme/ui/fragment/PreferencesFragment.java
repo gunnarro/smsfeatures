@@ -1,5 +1,6 @@
 package com.gunnarro.android.ughme.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.gunnarro.android.ughme.R;
+import com.gunnarro.android.ughme.ui.MainActivity;
 
 import java.util.Objects;
 
@@ -30,12 +32,23 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Pre
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         super.setPreferencesFromResource(R.xml.preferences, rootKey);
+        Preference button = getPreferenceManager().findPreference("settings_back_button");
+        if (button != null) {
+            button.setOnPreferenceClickListener(arg0 -> {
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                intent.setAction("view_word_cloud");
+                startActivity(intent);
+                return true;
+            });
+        }
+
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_number_of_words))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_word_min_chars))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_word_max_font_size))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_word_min_font_size))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_radius_step))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_offset_step))).setOnPreferenceChangeListener(this);
+        getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_word_rotate))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_color_schema))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_font_type))).setOnPreferenceChangeListener(this);
     }

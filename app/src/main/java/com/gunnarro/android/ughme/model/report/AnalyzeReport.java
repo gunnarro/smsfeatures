@@ -1,5 +1,7 @@
 package com.gunnarro.android.ughme.model.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gunnarro.android.ughme.model.cloud.Word;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,22 +21,45 @@ import java.util.stream.Collectors;
  * Getter
  * Builder
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"createdDateTime"})
 public class AnalyzeReport {
-
-    private final String createdDateTime;
+    private String createdDateTime;
     // text analyze statistics
-    private final int textWordCount;
-    private final int textUniqueWordCount;
-    private final int textHighestWordCount;
-    private final float textHighestWordCountPercent;
-    private final long analyzeTimeMs;
+    private int textWordCount;
+    private int textUniqueWordCount;
+    private int textHighestWordCount;
+    private float textHighestWordCountPercent;
+    private long analyzeTimeMs;
     // word cloud statistic
     private int cloudWordCount;
     private int cloudPlacedWordCount;
     private int cloudNotPlacedWordCount;
 
-    private final List<ReportItem> reportItems;
-    private final List<ProfileItem> profileItems;
+    private List<ReportItem> reportItems;
+    private List<ProfileItem> profileItems;
+
+    /**
+     * Used by jackson
+     */
+    AnalyzeReport() {
+    }
+
+    AnalyzeReport(int textWordCount, int textUniqueWordCount, int textHighestWordCount, float textHighestWordCountPercent, long analyzeTimeMs, List<ReportItem> reportItems, List<ProfileItem> profileItems) {
+        this.createdDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        this.textWordCount = textWordCount;
+        this.textUniqueWordCount = textUniqueWordCount;
+        this.textHighestWordCount = textHighestWordCount;
+        this.textHighestWordCountPercent = textHighestWordCountPercent;
+        this.analyzeTimeMs = analyzeTimeMs;
+        this.reportItems = reportItems;
+        this.profileItems = profileItems;
+    }
+
+
+    public static AnalyzeReportBuilder builder() {
+        return new AnalyzeReportBuilder();
+    }
 
     public String getCreatedDateTime() {
         return createdDateTime;
@@ -52,23 +77,6 @@ public class AnalyzeReport {
         return cloudNotPlacedWordCount;
     }
 
-    AnalyzeReport(int textWordCount, int textUniqueWordCount, int textHighestWordCount, float textHighestWordCountPercent, long analyzeTimeMs, List<ReportItem> reportItems, List<ProfileItem> profileItems) {
-        this.createdDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        this.textWordCount = textWordCount;
-        this.textUniqueWordCount = textUniqueWordCount;
-        this.textHighestWordCount = textHighestWordCount;
-        this.textHighestWordCountPercent = textHighestWordCountPercent;
-        this.analyzeTimeMs = analyzeTimeMs;
-        this.reportItems = reportItems;
-        this.profileItems = profileItems;
-    }
-
-    public static AnalyzeReportBuilder builder() {
-        return new AnalyzeReportBuilder();
-    }
-
-
-
     public int getTextWordCount() {
         return this.textWordCount;
     }
@@ -77,9 +85,13 @@ public class AnalyzeReport {
         return this.textUniqueWordCount;
     }
 
-    public int getTextHighestWordCount() { return textHighestWordCount; }
+    public int getTextHighestWordCount() {
+        return textHighestWordCount;
+    }
 
-    public float getTextHighestWordCountPercent() { return textHighestWordCountPercent; }
+    public float getTextHighestWordCountPercent() {
+        return textHighestWordCountPercent;
+    }
 
     public long getAnalyzeTimeMs() {
         return this.analyzeTimeMs;
@@ -126,6 +138,7 @@ public class AnalyzeReport {
         sb.append('}');
         return sb.toString();
     }
+
 
     public static class AnalyzeReportBuilder {
         private int textWordCount;

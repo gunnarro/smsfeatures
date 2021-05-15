@@ -70,6 +70,12 @@ public class Settings {
     public Integer numberOfBarsInChart = 12;
 
     /**
+     * rotate word 90 or 270 degree
+     */
+    @ColumnInfo(name = "word_rotation")
+    public boolean wordRotation = true;
+
+    /**
      * word font type
      */
     @ColumnInfo(name = "font_type")
@@ -97,6 +103,7 @@ public class Settings {
         sb.append(", maxWordFontSize=").append(maxWordFontSize);
         sb.append(", numberOfMobileNumbers=").append(numberOfMobileNumbers);
         sb.append(", numberOfBarsInChart=").append(numberOfBarsInChart);
+        sb.append(", wordRotation=").append(wordRotation);
         sb.append(", fontType='").append(fontType).append('\'');
         sb.append(", colorSchema='").append(colorSchema).append('\'');
         sb.append('}');

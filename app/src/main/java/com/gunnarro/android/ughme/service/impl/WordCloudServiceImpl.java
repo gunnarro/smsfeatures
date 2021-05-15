@@ -1,6 +1,5 @@
 package com.gunnarro.android.ughme.service.impl;
 
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -35,6 +34,7 @@ public class WordCloudServiceImpl implements WordCloudService {
     @Inject
     public WordCloudServiceImpl() {
         wordPlacer = new TreeWordPlacer();
+        rnd.setSeed(2345667);
     }
 
     /**
@@ -52,16 +52,15 @@ public class WordCloudServiceImpl implements WordCloudService {
     }
 
     /**
-     *
-     * @param wordMap map sorted by highest occurrences of words
+     * @param wordMap            map sorted by highest occurrences of words
      * @param rectangleDimension holds dimension of the word cloud bitmap
-     * @param settings holds word cloud settings
-     * @return list of most used words
+     * @param settings           holds word cloud settings
+     * @return list of most used words, sorted by word occurrences
      */
     public List<Word> buildWordCloud(Map<String, Integer> wordMap, final Dimension rectangleDimension, Settings settings) {
         Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("number of words size=%s, rectangle: %s", wordMap.size(), rectangleDimension));
-        Log.i(Utility.buildTag(getClass(),"buildWordCloud"), String.format("%s", settings));
-        Log.d(Utility.buildTag(getClass(),"buildWordCloud"), String.format("word map: %s", wordMap.size()));
+        Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("%s", settings));
+        Log.d(Utility.buildTag(getClass(), "buildWordCloud"), String.format("word map: %s", wordMap.size()));
 
         if (rectangleDimension.getWidth() < 0 || rectangleDimension.getHeight() < 0) {
             throw new ApplicationException(String.format("width and height must both be greater than 0! rectangle: %s", rectangleDimension), null);
@@ -69,37 +68,36 @@ public class WordCloudServiceImpl implements WordCloudService {
 
         int highestWordCount = wordMap.values()
                 .stream()
-                .max(Comparator.comparing( Integer::valueOf ))
+                .max(Comparator.comparing(Integer::valueOf))
                 .orElse(0);
 
         // reset previous build
         wordPlacer.reset();
         int numberOfCollisions = 0;
-        float[] rotationAngles = {0, 90};
         Random rand = new Random();
         List<Word> wordList = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : wordMap.entrySet()) {
-            Log.i(Utility.buildTag(getClass(), ""), String.format("x2x word=%s, count=%s", entry.getKey(), entry.getValue()));
+            Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("x2x word=%s, count=%s", entry.getKey(), entry.getValue()));
             int wordFontSize = determineWordFontSize(entry.getValue(), highestWordCount, settings.minWordFontSize, settings.maxWordFontSize);
-            Paint wordPaint = createPaint(wordFontSize, settings.colorSchema, settings.fontType);
+            Paint wordPaint = createPaint(wordFontSize, settings.colorSchema, settings.fontType, 1, 46455500);
             Rect wordRect = new Rect();
             // Retrieve the text boundary box and store to bounds
             wordPaint.getTextBounds(entry.getKey(), 0, entry.getKey().length(), wordRect);
             float textWidth = wordPaint.measureText(entry.getKey());
 
             if (wordRect.width() != textWidth) {
-                Log.d(Utility.buildTag(getClass(),"buildWordCloud"), String.format("Text width not equal! word=%s, %s != %s", entry.getKey(), wordRect.width(), textWidth));
+                Log.d(Utility.buildTag(getClass(), "buildWordCloud"), String.format("Text width not equal! word=%s, %s != %s", entry.getKey(), wordRect.width(), textWidth));
             }
 
             float textHeight = wordPaint.descent() - wordPaint.ascent();
             if (wordRect.height() != textHeight) {
-                Log.d(Utility.buildTag(getClass(),"buildWordCloud"), String.format("Text height not equal! word=%s, %s != %s", entry.getKey(), wordRect.height(), textHeight));
+                Log.d(Utility.buildTag(getClass(), "buildWordCloud"), String.format("Text height not equal! word=%s, %s != %s", entry.getKey(), wordRect.height(), textHeight));
             }
 
             Word newWord = Word.builder()
                     .text(entry.getKey())
                     .size(wordFontSize)
-                    .rotationAngle(rotationAngles[rand.nextInt(1)])
+                    .rotate(settings.wordRotation)
                     .count(entry.getValue())
                     .paint(wordPaint)
                     .rect(wordRect)
@@ -123,45 +121,52 @@ public class WordCloudServiceImpl implements WordCloudService {
 
         // for debug only
         // sortedWordList.forEach(w -> Log.i(Utility.buildTag(getClass(),"buildWordCloud"), String.format("coordinates=%s, size=%s, word=%s, occurrences=%s", w.getRect().toShortString(), w.getSize(), w.getText(), w.getCount())));
-        Log.i(Utility.buildTag(getClass(),"buildWordCloud"), String.format("finished! numberOfWords=%s, numberOfCollisions=%s, totalNumberOfWords=%s", wordList.size(), numberOfCollisions, wordMap.size()));
+        Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("finished! numberOfWords=%s, numberOfCollisions=%s, totalNumberOfWords=%s", wordList.size(), numberOfCollisions, wordMap.size()));
         return sortedWordList;
     }
 
     /**
-     *
-     * @param wordCount number of words for this query
+     * @param wordCount        number of words for this query
      * @param highestWordCount highest number of occurrences for a word
-     * @param minFontSize minimum allowed font size
-     * @param maxFontSize maximum allowed font size
+     * @param minFontSize      minimum allowed font size
+     * @param maxFontSize      maximum allowed font size
      * @return font size used for this word
      */
     private int determineWordFontSize(int wordCount, int highestWordCount, int minFontSize, int maxFontSize) {
         float wordFontSize = ((float) wordCount / (float) highestWordCount) * maxFontSize;
-        Log.d(Utility.buildTag(getClass(),"determineWordSize"), String.format("wordFontSize=%s", wordFontSize));
+        Log.d(Utility.buildTag(getClass(), "determineWordSize"), String.format("wordFontSize=%s", wordFontSize));
         if (wordFontSize < minFontSize) {
             wordFontSize = minFontSize;
         } else if (wordFontSize > maxFontSize) {
             wordFontSize = maxFontSize;
         }
-        Log.d(Utility.buildTag(getClass(),"determineWordSize"), String.format("wordCount=%s, highestWordCount=%s, wordFontSize=%s", wordCount, highestWordCount, wordFontSize));
+        Log.d(Utility.buildTag(getClass(), "determineWordSize"), String.format("wordCount=%s, highestWordCount=%s, wordFontSize=%s", wordCount, highestWordCount, wordFontSize));
         return (int) wordFontSize;
     }
 
     /**
      * Create paint object
      */
-    private Paint createPaint(int fontSize, String colorSchema, String fontType) {
+    private Paint createPaint(int fontSize, String colorSchema, String fontType, int category, int mobileNumber) {
         Paint wordPaint = new Paint();
         // Eliminating sawtooth
         wordPaint.setAntiAlias(true);
         wordPaint.setStyle(Paint.Style.FILL);
 
         if ("SINGLE_COLOR".equals(colorSchema)) {
-            wordPaint.setColor(Color.BLUE);
-        } else {
-            wordPaint.setARGB(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+            // use a fixed seed in order to ensure he the same random sequence is generated every time
+            rnd.setSeed(category);
+        } else if ("SINGLE_COLOR_PER_FONT_SIZE".equals(colorSchema)) {
+            rnd.setSeed(fontSize);
+        } else if ("SINGLE_COLOR_INBOX_OUTBOX".equals(colorSchema)) {
+            rnd.setSeed(category);
+        } else if ("SINGLE_COLOR_PER_MOBILE_NUMBER".equals(colorSchema)) {
+            rnd.setSeed(mobileNumber);
+        } else if ("MULTI_COLOR".equals(colorSchema)) {
+            // for multicolor, generate a different color every time
+            rnd.setSeed(System.nanoTime());
         }
-
+        wordPaint.setARGB(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
         switch (fontType) {
             case "SANS_SERIF":
                 wordPaint.setTypeface(Typeface.SANS_SERIF);
@@ -181,10 +186,9 @@ public class WordCloudServiceImpl implements WordCloudService {
 
         wordPaint.setTextSize(fontSize * 10);//getResources().getDisplayMetrics().density);
         wordPaint.setTextAlign(Paint.Align.CENTER);
-        Log.d(Utility.buildTag(getClass(),"createPaint"), String.format("fontSize=%s, fontType=%s, colorSchema=%s", fontSize, fontType, colorSchema));
+        Log.d(Utility.buildTag(getClass(), "createPaint"), String.format("fontSize=%s, fontType=%s, colorSchema=%s", fontSize, fontType, colorSchema));
         return wordPaint;
     }
-
 
 
     /**
@@ -202,7 +206,7 @@ public class WordCloudServiceImpl implements WordCloudService {
         // reset position
         position.x = 0;
         position.y = 0;
-        Log.d(Utility.buildTag(getClass(),"place"), String.format("start, word=%s, word-position=%s, start-point=%s, max-radius=%s, rectDimension=(%s, %s)", word.getText(), position, startPoint, maxRadius, rectangleDimension.getWidth(), rectangleDimension.getHeight()));
+        Log.d(Utility.buildTag(getClass(), "place"), String.format("start, word=%s, word-position=%s, start-point=%s, max-radius=%s, rectDimension=(%s, %s)", word.getText(), position, startPoint, maxRadius, rectangleDimension.getWidth(), rectangleDimension.getHeight()));
         int radiusLoopCount = 0;
         int positionLoopCount = 0;
         long startTime = System.currentTimeMillis();
@@ -218,7 +222,7 @@ public class WordCloudServiceImpl implements WordCloudService {
                 word.getRect().offsetTo(position.x, position.y);
                 //Log.d(Utility.buildTag(getClass(),"place"), String.format("check-1, word=%s, x=%s, y=%s", word.getText(), word.getRect().left, word.getRect().left));
                 if (position.y >= 0 && position.y < rectangleDimension.getHeight() && canPlace(word.getText(), word.getRect(), rectangleDimension)) {
-                    Log.d(Utility.buildTag(getClass(),"place"), String.format("finished, placed positive adjustment, word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s, exeTime=%s", word.getText(), position, radiusLoopCount, positionLoopCount, (System.currentTimeMillis() - startTime)));
+                    Log.d(Utility.buildTag(getClass(), "place"), String.format("finished, placed positive adjustment, word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s, exeTime=%s", word.getText(), position, radiusLoopCount, positionLoopCount, (System.currentTimeMillis() - startTime)));
                     return true;
                 }
                 // try negative root (if offset != 0)
@@ -226,27 +230,29 @@ public class WordCloudServiceImpl implements WordCloudService {
                 word.getRect().offsetTo(position.x, position.y);
                 //Log.d(Utility.buildTag(getClass(),"place"), String.format("check-2, word=%s, x=%s, y=%s", word.getText(), word.getRect().left, word.getRect().left));
                 if (offset != 0 && position.y >= 0 && position.y < rectangleDimension.getHeight() && canPlace(word.getText(), word.getRect(), rectangleDimension)) {
-                    Log.d(Utility.buildTag(getClass(),"place"), String.format("finished, placed negative adjustment, word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s, exeTime=%s", word.getText(), position, radiusLoopCount, positionLoopCount, (System.currentTimeMillis() - startTime)));
+                    Log.d(Utility.buildTag(getClass(), "place"), String.format("finished, placed negative adjustment, word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s, exeTime=%s", word.getText(), position, radiusLoopCount, positionLoopCount, (System.currentTimeMillis() - startTime)));
                     return true;
                 }
 
                 // try rotate
-                Random random = new Random();
-                // rotate 90 or 270 random
-                int rotateDegrees = 90;
-                if (random.nextInt(2) == 1 ) {
-                    rotateDegrees = 270;
-                }
-                Rect rotatedRect = rotateRect(rotateDegrees, word.getRect());
-                if (canPlace(word.getText(), rotatedRect, rectangleDimension)) {
-                   // word.getRect().set(rotatedRect.left, rotatedRect.top, rotatedRect.right, rotatedRect.bottom);
-                    word.setRotationAngle(rotateDegrees);
-                    Log.d(Utility.buildTag(getClass(),"place"), String.format("finished, placed rotated, word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s, exeTime=%s", word.getText(), position, radiusLoopCount, positionLoopCount, (System.currentTimeMillis() - startTime)));
-                    return true;
+                if (word.isRotate()) {
+                    Random random = new Random();
+                    // rotate 90 or 270 random
+                    int rotateDegrees = 90;
+                    if (random.nextInt(2) == 1) {
+                        rotateDegrees = 270;
+                    }
+                    Rect rotatedRect = rotateRect(rotateDegrees, word.getRect());
+                    if (canPlace(word.getText(), rotatedRect, rectangleDimension)) {
+                        // word.getRect().set(rotatedRect.left, rotatedRect.top, rotatedRect.right, rotatedRect.bottom);
+                        word.setRotationAngle(rotateDegrees);
+                        Log.d(Utility.buildTag(getClass(), "place"), String.format("finished, placed rotated, word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s, exeTime=%s", word.getText(), position, radiusLoopCount, positionLoopCount, (System.currentTimeMillis() - startTime)));
+                        return true;
+                    }
                 }
             }
         }
-        Log.d(Utility.buildTag(getClass(),"place"), String.format("finished, word not placed,  word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s", word.getText(), position, radiusLoopCount, positionLoopCount));
+        Log.d(Utility.buildTag(getClass(), "place"), String.format("finished, word not placed,  word=%s, final-position=%s, radius-loop-count=%s, position-loop-count=%s", word.getText(), position, radiusLoopCount, positionLoopCount));
         return false;
     }
 
@@ -257,10 +263,10 @@ public class WordCloudServiceImpl implements WordCloudService {
     private boolean canPlace(final String word, final Rect wordRect, final Dimension rectangleDimension) {
         // check if inside the background
         if (wordRect.top < 0 || wordRect.top + wordRect.height() > rectangleDimension.getHeight()) {
-           // Log.d(Utility.buildTag(getClass(),"canPlace"), String.format("canPlace: NOT HEIGHT, word=%, rect-top=%s + rect-height=%s > height=%s", word, wordRect.top, wordRect.height(), rectangleDimension.getHeight()));
+            // Log.d(Utility.buildTag(getClass(),"canPlace"), String.format("canPlace: NOT HEIGHT, word=%, rect-top=%s + rect-height=%s > height=%s", word, wordRect.top, wordRect.height(), rectangleDimension.getHeight()));
             return false;
         } else if (wordRect.left < 0 || wordRect.left + wordRect.width() > rectangleDimension.getWidth()) {
-          //  Log.d(Utility.buildTag(getClass(),"canPlace"), String.format("canPlace: NOT WIDTH, word=%s, rect-left=%s + rect-width=%s > width=%s", word, wordRect.left, wordRect.width(), rectangleDimension.getWidth()));
+            //  Log.d(Utility.buildTag(getClass(),"canPlace"), String.format("canPlace: NOT WIDTH, word=%s, rect-left=%s + rect-width=%s > width=%s", word, wordRect.left, wordRect.width(), rectangleDimension.getWidth()));
             return false;
         }
         return wordPlacer.place(word, wordRect); // is there a collision with the existing words?

@@ -1,5 +1,8 @@
 package com.gunnarro.android.ughme.model.sms;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -8,6 +11,8 @@ import java.io.Serializable;
  * Delombok following annotations:
  * Builder
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SmsBackupInfo implements Serializable {
 
     BackupStatusEnum status;
@@ -19,6 +24,12 @@ public class SmsBackupInfo implements Serializable {
     Long toDateTime;
     int numberOfSms;
     int numberOfMobileNumbers;
+
+    /**
+     * needed by jackson
+     */
+    public SmsBackupInfo() {
+    }
 
     SmsBackupInfo(BackupStatusEnum status, String smsBackupFilePath, long smsBackupFileSizeBytes, long storageFreeSpaceBytes, Long lastBackupTime, Long fromDateTime, Long toDateTime, int numberOfSms, int numberOfMobileNumbers) {
         this.status = status;

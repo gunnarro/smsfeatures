@@ -6,7 +6,9 @@ import android.graphics.Rect;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Delombok follwoing annotations:
+ * Holds all information in order to place and draw a word into the word cloud
+ * <p>
+ * Delombok following annotations:
  * ToString
  * Getter
  * Builder
@@ -21,16 +23,20 @@ public class Word {
     final Paint paint;
     final Rect rect;
     final Integer count;
+    final Integer category;
     final float size;
     float rotationAngle;
+    boolean rotate;
 
-    Word(String text, Paint paint, Rect rect, Integer count, float size, float rotationAngle) {
+    Word(String text, Paint paint, Rect rect, Integer count, Integer category, float size, float rotationAngle, boolean rotate) {
         this.text = text;
         this.paint = paint;
         this.rect = rect;
         this.count = count;
+        this.category = category;
         this.size = size;
         this.rotationAngle = rotationAngle;
+        this.rotate = rotate;
     }
 
     public static WordBuilder builder() {
@@ -61,6 +67,10 @@ public class Word {
         return this.count;
     }
 
+    public Integer getCategory() {
+        return this.category;
+    }
+
     public float getSize() {
         return this.size;
     }
@@ -89,6 +99,14 @@ public class Word {
         return status.equals(StatusEnum.NOT_PLACED);
     }
 
+    public void setRotate(boolean isRotate) {
+        rotate = isRotate;
+    }
+
+    public boolean isRotate() {
+        return rotate;
+    }
+
     @NotNull
     public String toString() {
         return "Word(text=" + this.getText() + ", rect=" + this.getRect() + ", count=" + this.getCount() + ", size=" + this.getSize() + ", rotationAngle=" + this.getRotationAngle() + ")";
@@ -99,8 +117,10 @@ public class Word {
         private Paint paint;
         private Rect rect;
         private Integer count;
+        private Integer category;
         private float size;
         private float rotationAngle;
+        private boolean rotate;
 
         WordBuilder() {
         }
@@ -125,6 +145,11 @@ public class Word {
             return this;
         }
 
+        public WordBuilder category(Integer category) {
+            this.category = category;
+            return this;
+        }
+
         public WordBuilder size(float size) {
             this.size = size;
             return this;
@@ -135,8 +160,13 @@ public class Word {
             return this;
         }
 
+        public WordBuilder rotate(boolean rotate) {
+            this.rotate = rotate;
+            return this;
+        }
+
         public Word build() {
-            return new Word(text, paint, rect, count, size, rotationAngle);
+            return new Word(text, paint, rect, count, category, size, rotationAngle, rotate);
         }
 
     }

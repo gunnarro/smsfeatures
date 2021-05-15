@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -85,9 +84,9 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         Log.d(Utility.buildTag(getClass(), "clearDrawing"), "clear current drawing");
     }
 
-    private void updateCanvasText(Word word) {
-        // save current state of the canvas
-        if (word.getRotationAngle() > 0) {
+    private void updateCanvasText(final Word word) {
+        boolean isRotated = word.getRotationAngle() > 0;
+        if (isRotated) {
             this.canvas.rotate(word.getRotationAngle(),
                     word.getRect().left,
                     word.getRect().top);
@@ -102,19 +101,21 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 .build();
 
         //Log.d(Utility.buildTag(getClass(),"updateCanvasText"), String.format("padding=%s, baseline=%s, ascent=%s", sLayout.getBottomPadding(), sLayout.getLineBaseline(0), word.getPaint().getFontMetrics().descent));
+        // save the current state of the canvas
         this.canvas.save();
         this.canvas.translate(word.getX() + textWidth / 2, word.getY() - word.getPaint().getFontMetrics().descent);
         sLayout.draw(canvas);
+        // Revert the Canvas's adjustments back to the last time called save() was called
         this.canvas.restore();
-
         //Log.d(Utility.buildTag(getClass(),"updateCanvasText"), String.format("text= %s, %s, rect= %s, %s", word.getX(), word.getY(), word.getRect().left, word.getRect().top));
-        //undo the rotate, if rotated
-        if (word.getRotationAngle() > 0) {
+        // if rotated, undo the rotate
+        if (isRotated) {
             // Revert the Canvas's adjustments back to the last time called save() was called
             this.canvas.restore();
         }
+        // finally, always save the canvas state before next word is drawn
         this.canvas.save();
-        Log.d(Utility.buildTag(getClass(), "updateCanvasText"), String.format("canvas updated...word=%s", word.getText()));
+        Log.d(Utility.buildTag(getClass(), "updateCanvasText"), String.format("canvas updated... word=%s, rotated=%s", word.getText(), isRotated));
     }
 
     private void runOnUiThread(final List<Word> wordList) {
@@ -136,19 +137,19 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                                 .progressStep(10)
                                 .build());
                 clearDrawing();
-
-                // filter out not placed words
-                List<Word> placedWords = wordList.stream().filter(Word::isPlaced).collect(Collectors.toList());
-
                 // simply place each word on the bitmap
-                placedWords.forEach(this::updateCanvasText);
+                wordList.forEach(this::updateCanvasText);
                 postInvalidate();
-                smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("WordCloudView").method("updateViewTask").executionTime(System.currentTimeMillis() - startTime).build()));
-                Log.i(Utility.buildTag(getClass(), "updateViewTask"), String.format("words=%s, exeTime=%s ms", placedWords.size(), (System.currentTimeMillis() - startTime)));
+                Log.i(Utility.buildTag(getClass(), "updateViewTask"), String.format("words=%s, exeTime=%s ms", wordList.size(), (System.currentTimeMillis() - startTime)));
             } catch (Exception e) {
-                e.printStackTrace();
-                smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("WordCloudView").method("updateViewTask").executionTime(System.currentTimeMillis() - startTime).exception(e.getMessage()).build()));
                 throw new ApplicationException(e.getMessage(), e);
+            } finally {
+                try {
+                    smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("WordCloudView").method("updateViewTask").executionTime(System.currentTimeMillis() - startTime).build()));
+                } catch (Exception e) {
+                    // log and forget
+                    Log.e(Utility.buildTag(getClass(), "updateViewTask"), e.getMessage());
+                }
             }
         };
     }

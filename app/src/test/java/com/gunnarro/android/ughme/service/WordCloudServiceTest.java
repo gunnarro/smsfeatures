@@ -64,9 +64,9 @@ public class WordCloudServiceTest {
 
         Assert.assertEquals(3, words.size());
         // check placed
-        Assert.assertEquals(1, (int)words.stream().filter(Word::isPlaced).count());
+        Assert.assertEquals(1, (int) words.stream().filter(Word::isPlaced).count());
         // check not placed
-        Assert.assertEquals(2, (int)words.stream().filter(Word::isNotPlaced).count());
+        Assert.assertEquals(2, (int) words.stream().filter(Word::isNotPlaced).count());
 
         // filter out and check placed
         List<Word> placedWords = words.stream().filter(Word::isPlaced).collect(Collectors.toList());

@@ -1,7 +1,6 @@
 [
   {
-    "isRead": false,
-    "timeMs": 1620334346400,
+    "timeMs": 1621058973800,
     "address": "23545454",
     "body": "inbox-message1",
     "contactName": "gunnar",
@@ -9,11 +8,12 @@
     "numberOfReceived": 1,
     "numberOfSent": 0,
     "numberOfBlocked": 0,
-    "count": 1
+    "count": 1,
+    "read": false,
+    "name": "gunnar"
   },
   {
-    "isRead": false,
-    "timeMs": 1620334347400,
+    "timeMs": 1621058974801,
     "address": "92019486",
     "body": "inbox-message2",
     "contactName": "per",
@@ -21,11 +21,12 @@
     "numberOfReceived": 1,
     "numberOfSent": 0,
     "numberOfBlocked": 0,
-    "count": 1
+    "count": 1,
+    "read": false,
+    "name": "per"
   },
   {
-    "isRead": false,
-    "timeMs": 1620334348400,
+    "timeMs": 1621058975801,
     "address": "461230",
     "body": "outbox-message3",
     "contactName": "mom",
@@ -33,17 +34,20 @@
     "numberOfReceived": 1,
     "numberOfSent": 0,
     "numberOfBlocked": 0,
-    "count": 1
+    "count": 1,
+    "read": false,
+    "name": "mom"
   },
   {
-    "isRead": false,
-    "timeMs": 1620334349400,
+    "timeMs": 1621058976801,
     "address": "+4793019486",
     "body": "inbox-message4",
     "type": "1",
     "numberOfReceived": 1,
     "numberOfSent": 0,
     "numberOfBlocked": 0,
-    "count": 1
+    "count": 1,
+    "read": false,
+    "name": "+4793019486"
   }
 ]

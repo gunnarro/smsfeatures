@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         // navigation view select home menu by default
         navigationView.setCheckedItem(id.nav_sms_backup);
+
         if (savedInstanceState == null) {
             viewFragment(backupFragment);
         }
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(Utility.buildTag(getClass(), "viewFragment"), "fragment: " + fragment.getTag());
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(id.content_frame, fragment)
+                .replace(id.content_frame, fragment, fragment.getTag())
                 .commit();
     }
 

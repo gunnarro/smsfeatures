@@ -1,5 +1,8 @@
 package com.gunnarro.android.ughme.model.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,15 +12,23 @@ import org.jetbrains.annotations.NotNull;
  * Getter
  * Builder
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ReportItem {
 
-    private final String word;
-    private final Integer count;
-    private final Integer percentage;
+    private String word;
+    private int count;
+    private int percentage;
     // can be PLACED and NOT_PLACED
     private String status;
 
-    ReportItem(String word, Integer count, Integer percentage, String status) {
+    /**
+     * Used by jackson
+     */
+    ReportItem() {
+    }
+
+    ReportItem(String word, int count, int percentage, String status) {
         this.word = word;
         this.count = count;
         this.percentage = percentage;
@@ -32,11 +43,11 @@ public class ReportItem {
         return this.word;
     }
 
-    public Integer getCount() {
+    public int getCount() {
         return this.count;
     }
 
-    public Integer getPercentage() {
+    public int getPercentage() {
         return this.percentage;
     }
 
@@ -51,8 +62,8 @@ public class ReportItem {
 
     public static class ReportItemBuilder {
         private String word;
-        private Integer count;
-        private Integer percentage;
+        private int count;
+        private int percentage;
         private String status;
 
         ReportItemBuilder() {
@@ -63,12 +74,12 @@ public class ReportItem {
             return this;
         }
 
-        public ReportItemBuilder count(Integer count) {
+        public ReportItemBuilder count(int count) {
             this.count = count;
             return this;
         }
 
-        public ReportItemBuilder percentage(Integer percentage) {
+        public ReportItemBuilder percentage(int percentage) {
             this.percentage = percentage;
             return this;
         }

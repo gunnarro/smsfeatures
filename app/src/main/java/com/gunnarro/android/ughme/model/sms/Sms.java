@@ -1,30 +1,34 @@
 package com.gunnarro.android.ughme.model.sms;
 
-import com.google.gson.annotations.Expose;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Sms implements Serializable, Comparable<Sms> {
-    @Expose(serialize = false, deserialize = false)
     private boolean isRead;
-    @Expose(serialize = false, deserialize = false)
     private String status;
-    @Expose(serialize = false, deserialize = false)
     private String seen;
     private Long timeMs;
     private String address;
     private String body;
     private String contactName;
-    @Expose(serialize = false, deserialize = false)
     private String type;
-    @Expose(serialize = false, deserialize = false)
     private String period;
     private int numberOfReceived;
     private int numberOfSent;
     private int numberOfBlocked;
     private Integer count;
+
+    /**
+     * needed by jackson
+     */
+    public Sms() {
+    }
 
     Sms(boolean isRead, String status, String seen, Long timeMs, String address, String body, String contactName, String type, String period, int numberOfReceived, int numberOfSent, int numberOfBlocked, Integer count) {
         this.isRead = isRead;

@@ -19,6 +19,39 @@ public class UtilityTest {
     }
 
     @Test
+    public void random() {
+        Random r = new Random();
+        r.setSeed(1);
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println("---");
+        r.setSeed(2);
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println("---");
+        r.setSeed(1);
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println("---");
+        r.setSeed(2);
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println("---");
+        r.setSeed(123456789);
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println("---");
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+        System.out.println(r.nextInt(256));
+    }
+
+    @Test
     public void getTop10ValuesFromMap() {
         List<String> list = Utility.getTop10ValuesFromMap(new HashMap<>());
         Assert.assertEquals("[]", list.toString());

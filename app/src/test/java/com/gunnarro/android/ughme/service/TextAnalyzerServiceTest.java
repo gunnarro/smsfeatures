@@ -26,6 +26,7 @@ public class TextAnalyzerServiceTest {
         Assert.assertEquals(0, report.getWordMap().size());
         Assert.assertEquals(0, report.getTextHighestWordCount());
         Assert.assertEquals(0.0f, report.getTextHighestWordCountPercent(), 0);
+
     }
 
     @Test

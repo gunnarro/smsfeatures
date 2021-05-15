@@ -47,6 +47,9 @@ public class WordCloudFragment extends Fragment {
     BuildWordCloudTask buildWordCloudTask;
     @Inject
     SmsBackupServiceImpl smsBackupService;
+    @Inject
+    PreferencesFragment preferencesFragment;
+
     private WordCloudView wordCloudView;
     private Menu optionsMenu;
     private List<String> mobileNumbers;
@@ -146,6 +149,7 @@ public class WordCloudFragment extends Fragment {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_ALL);
         } else if (isOutbox) {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
+            //viewFragment(preferencesFragment);only for testing
         } else if (isInbox) {
             updateWordCloudView(mobileNumber, WordCloudEvent.MESSAGE_TYPE_INBOX);
         } else {
@@ -204,28 +208,28 @@ public class WordCloudFragment extends Fragment {
         buildWordCloudTask.buildWordCloudEventBus(mapPreferences(), Dimension.builder().width(wordCloudView.getWidth()).height(wordCloudView.getHeight()).build(), contactName, smsType);
     }
 
+    private void viewFragment(@NonNull Fragment fragment) {
+        Log.d(Utility.buildTag(getClass(), "viewFragment"), "fragment: " + fragment.getTag());
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
+    }
+
     private Settings mapPreferences() {
         Settings settings = new Settings();
         // read selected preference values, and use settings default values if not set
-        int words = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_number_of_words), settings.numberOfWords);
-        int minCharsInWord = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_chars), settings.minCharsInWord);
-        int maxFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_max_font_size), settings.maxWordFontSize);
-        int minFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_font_size), settings.minWordFontSize);
-        int radiusStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_radius_step), settings.radiusStep);
-        int offsetStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_offset_step), settings.offsetStep);
-        String colorSchema = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_color_schema","");
-        String fontType = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_font_type", "");
-
-        // update setting with selected preference values
-        settings.wordMatchRegex = String.format(settings.wordMatchRegexFormat, minCharsInWord);
-        settings.numberOfWords = words;
-        settings.minCharsInWord = minCharsInWord;
-        settings.maxWordFontSize = maxFontSize;
-        settings.minWordFontSize = minFontSize;
-        settings.radiusStep = radiusStep;
-        settings.offsetStep = offsetStep;
-        settings.colorSchema = colorSchema;
-        settings.fontType = fontType;
+        settings.numberOfWords = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_number_of_words), settings.numberOfWords);
+        settings.minCharsInWord = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_chars), settings.minCharsInWord);
+        settings.maxWordFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_max_font_size), settings.maxWordFontSize);
+        settings.minWordFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_font_size), settings.minWordFontSize);
+        settings.radiusStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_radius_step), settings.radiusStep);
+        settings.offsetStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_offset_step), settings.offsetStep);
+        settings.wordRotation = PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean("pref_word_rotate", true);
+        settings.colorSchema = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_color_schema", "");
+        settings.fontType = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_font_type", "");
+        // set regexp for word selection
+        settings.wordMatchRegex = String.format(settings.wordMatchRegexFormat, settings.minCharsInWord);
         Log.d(Utility.buildTag(getClass(), "mapPreferences"), settings.toString());
         return settings;
     }

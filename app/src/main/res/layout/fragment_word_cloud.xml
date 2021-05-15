@@ -3,10 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.WordCloudFragment">
+    tools:context=".ui.fragment.WordCloudFragment"
+    android:tag="fragment_word_cloud">
 
     <com.gunnarro.android.ughme.ui.view.WordCloudView
         android:id="@+id/word_cloud_view"
+        android:transitionName="@string/fragment_name_wordcloud"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

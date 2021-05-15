@@ -1,5 +1,4 @@
 {
-  "createdDateTime": "2021-05-06 22:52:26",
   "textWordCount": 0,
   "textUniqueWordCount": 0,
   "textHighestWordCount": 0,
@@ -9,5 +8,6 @@
   "cloudPlacedWordCount": 0,
   "cloudNotPlacedWordCount": 0,
   "reportItems": [],
-  "profileItems": []
+  "profileItems": [],
+  "wordMap": {}
 }

@@ -79,7 +79,7 @@ public class SmsBackupServiceTest {
 
     @Test
     public void readSmsBackup() {
-        List<Sms> list = smsBackupService.getSmsBackup();
+        List<Sms> list = smsBackupService.getSmsBackup(false);
         Assert.assertEquals(4, list.size());
         // check descending sort order, i.e newest on top
         Assert.assertNull(list.get(0).getContactName());
@@ -97,8 +97,8 @@ public class SmsBackupServiceTest {
 
     @Test
     public void matchSmsType() {
-        Assert.assertTrue( WordCloudEvent.MESSAGE_TYPE_INBOX.matches(WordCloudEvent.MESSAGE_TYPE_ALL));
-        Assert.assertTrue( WordCloudEvent.MESSAGE_TYPE_OUTBOX.matches(WordCloudEvent.MESSAGE_TYPE_ALL));
+        Assert.assertTrue(WordCloudEvent.MESSAGE_TYPE_INBOX.matches(WordCloudEvent.MESSAGE_TYPE_ALL));
+        Assert.assertTrue(WordCloudEvent.MESSAGE_TYPE_OUTBOX.matches(WordCloudEvent.MESSAGE_TYPE_ALL));
     }
 
     @Test
@@ -146,10 +146,13 @@ public class SmsBackupServiceTest {
     public void readSmsBackupMetaData() {
         SmsBackupInfo info = smsBackupService.readSmsBackupMetaData();
         Assert.assertEquals("BACKED_UP", info.getStatus().name());
+        Assert.assertEquals("sms-backup.json", info.getBackupFileName());
+        Assert.assertEquals("src/test/resource", info.getBackupFilePath());
+        Assert.assertEquals(0, info.getNumberOfSms().intValue());
     }
 
     @Test
-    public void saveAndReadAnalyzeReport() throws IOException {
+    public void saveAndReadAnalyzeReport() {
         smsBackupService.saveAnalyseReport(AnalyzeReport.builder().analyzeTimeMs(2035).profileItems(new ArrayList<>()).reportItems(new ArrayList<>()).build());
         AnalyzeReport report = smsBackupService.readAnalyzeReport();
         Assert.assertEquals(2035, report.getAnalyzeTimeMs());

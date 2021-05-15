@@ -10,16 +10,14 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gunnarro.android.ughme.R;
 import com.gunnarro.android.ughme.model.report.AnalyzeReport;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.io.StringWriter;
 
 import javax.inject.Inject;
 
@@ -62,14 +60,17 @@ public class ReportFragment extends Fragment {
     }
 
     private void updateTextView(View view, AnalyzeReport analyseReport) {
-            TextView reportView = view.findViewById(R.id.report_view);
-            Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
-            StringWriter sw = new StringWriter();
-            if (analyseReport == null) {
-                analyseReport = AnalyzeReport.builder().build();
-            }
-            gson.toJson(analyseReport, sw);
-            reportView.setText(sw.toString());
+        TextView reportView = view.findViewById(R.id.report_view);
+        ObjectMapper mapper = new ObjectMapper();
+        if (analyseReport == null) {
+            analyseReport = AnalyzeReport.builder().build();
+        }
+        try {
+            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(analyseReport);
+            reportView.setText(json);
             reportView.setMovementMethod(new ScrollingMovementMethod());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 }

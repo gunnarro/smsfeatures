@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -45,26 +46,15 @@ public class BuildWordCloudTask {
             long startTime = System.currentTimeMillis();
             try {
                 postProgress("analyse sms content...", 10);
-                AnalyzeReport analyzeReport = textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex, settings.numberOfWords  );
+                AnalyzeReport analyzeReport = textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex, settings.numberOfWords);
                 analyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("analyzeText").executionTime(System.currentTimeMillis() - startTime).build());
-                smsBackupService.saveAnalyseReport( analyzeReport );
-                //postProgress("build word cloud...", 25);
-                long startTimeStep2 = System.currentTimeMillis();
 
                 List<Word> wordList = wordCloudService.buildWordCloud(
                         analyzeReport.getWordMap()
                         , cloudDimension
                         , settings);
 
-                wordList.forEach(w -> analyzeReport.getReportItems().forEach( r -> updateStatus(r,w)));
-
-                analyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("buildWordCloud").executionTime(System.currentTimeMillis() - startTimeStep2).build());
-                analyzeReport.setCloudWordCount(wordList.size());
-                analyzeReport.setCloudPlacedWordCount((int)wordList.stream().filter(Word::isPlaced).count());
-                analyzeReport.setCloudNotPlacedWordCount((int)wordList.stream().filter(Word::isNotPlaced).count());
-
-                // save last analyze report
-                smsBackupService.saveAnalyseReport( analyzeReport );
+                saveAnalyseReport(analyzeReport, wordList, System.currentTimeMillis() - startTime);
                 Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("%s", analyzeReport));
                 Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("finished, exeTime=%s ms", (System.currentTimeMillis() - startTime)));
                 postProgress("finished building word list...", 15);
@@ -72,8 +62,9 @@ public class BuildWordCloudTask {
                 RxBus.getInstance().publish(
                         WordCloudEvent.builder()
                                 .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
-                                .wordList(wordList)
+                                .wordList(wordList.stream().filter(Word::isPlaced).collect(Collectors.toList()))
                                 .build());
+
             } catch (Exception e) {
                 smsBackupService.profile(Collections.singletonList(ProfileItem.builder().className("BuildWordCloudTask").method("buildWordCloudEventBus").executionTime(System.currentTimeMillis() - startTime).exception(e.getMessage()).build()));
                 e.printStackTrace();
@@ -81,6 +72,15 @@ public class BuildWordCloudTask {
             }
         };
         executor.execute(buildWordCloudRunnable);
+    }
+
+    private void saveAnalyseReport(AnalyzeReport analyzeReport, List<Word> wordList, long exeTime) {
+        wordList.forEach(w -> analyzeReport.getReportItems().forEach(r -> updateStatus(r, w)));
+        analyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("buildWordCloud").executionTime(exeTime).build());
+        analyzeReport.setCloudWordCount(wordList.size());
+        analyzeReport.setCloudPlacedWordCount((int) wordList.stream().filter(Word::isPlaced).count());
+        analyzeReport.setCloudNotPlacedWordCount((int) wordList.stream().filter(Word::isNotPlaced).count());
+        smsBackupService.saveAnalyseReport(analyzeReport);
     }
 
     private void updateStatus(ReportItem r, Word w) {

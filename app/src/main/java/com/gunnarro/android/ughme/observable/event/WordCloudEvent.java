@@ -42,9 +42,13 @@ public class WordCloudEvent {
         return wordList;
     }
 
-    public String getProgressMsg() { return progressMsg; }
+    public String getProgressMsg() {
+        return progressMsg;
+    }
 
-    public int getProgressStep() { return progressStep; }
+    public int getProgressStep() {
+        return progressStep;
+    }
 
     @NotNull
     @Override

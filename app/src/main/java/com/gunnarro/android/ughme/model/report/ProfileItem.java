@@ -1,10 +1,21 @@
 package com.gunnarro.android.ughme.model.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProfileItem {
-    private final String className;
-    private final String method;
-    private final long executionTime;
-    private final String exception;
+    private String className;
+    private String method;
+    private long executionTime;
+    private String exception;
+
+    /**
+     * Used by jackson
+     */
+    ProfileItem() {
+    }
 
     public ProfileItem(String className, String method, long executionTime, String exception) {
         this.className = className;
@@ -12,7 +23,6 @@ public class ProfileItem {
         this.executionTime = executionTime;
         this.exception = exception;
     }
-
 
     public String getClassName() {
         return className;

@@ -59,6 +59,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     SmsBackupServiceImpl smsBackupService;
 
     private Dialog progressDialog;
+
     // Check permission
     // Register the permissions callback, which handles the user's response to the
     // system permissions dialog. Save the return value, an instance of
@@ -193,7 +194,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
     public void onDialogAction(int actionCode) {
         if (actionCode == DialogActionListener.OK_ACTION) {
             // the user confirmed the operation
-            smsBackupService.clearSmsBackupFile();
+            smsBackupService.deleteSmsBackupFile();
             updateSmsBackupInfo(getView(), smsBackupService.readSmsBackupMetaData());
             Snackbar.make(requireView(), "Deleted sms backup files.", Snackbar.LENGTH_LONG).show();
         } else {

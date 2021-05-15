@@ -1,16 +1,12 @@
 package com.gunnarro.android.ughme;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.ui.fragment.WordCloudFragment;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,16 +14,14 @@ import java.util.stream.Collectors;
 public class TestData {
 
     public static List<Sms> createSmsList() {
-        Gson gson = new Gson();
-        Type smsListType = new TypeToken<List<Sms>>() {}.getType();
-        try (JsonReader reader = new JsonReader(new FileReader("src/test/resources/sms-backup-loadtest.json"))) {
-            return gson.fromJson(reader, smsListType);
-        } catch (FileNotFoundException e) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(new File("src/test/resources/sms-backup-loadtest.json"), new TypeReference<List<Sms>>() {
+            });
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static String createAllSmsAsText() {
@@ -39,8 +33,8 @@ public class TestData {
 
     public static List<Sms> generateSms(int numberOfSms) {
         List<Sms> smsList = new ArrayList<>();
-        for (int i=0; i<numberOfSms; i++) {
-            smsList.add(Sms.builder().type("1").address(Integer.toString(i*100)).body("sms msg " + 1).build());
+        for (int i = 0; i < numberOfSms; i++) {
+            smsList.add(Sms.builder().type("1").address(Integer.toString(i * 100)).body("sms msg " + 1).build());
         }
         return smsList;
     }

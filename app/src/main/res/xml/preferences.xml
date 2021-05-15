@@ -2,6 +2,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <Preference
+        app:key="settings_back_button"
+        android:drawableStart="@android:drawable/ic_media_previous"
+        app:title="word cloud" />
+
     <PreferenceCategory
         app:summary="Settings for word cloud"
         app:title="Word Cloud Settings">
@@ -72,6 +77,13 @@
             app:summary="Word cloud offset step"
             app:title="Offset step" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_word_rotate"
+            android:summaryOff="Rotate off"
+            android:summaryOn="Rotate on"
+            android:title="Rotate words" />
+
         <ListPreference
             app:defaultValue="DEFAULT"
             app:key="pref_font_type"
@@ -80,7 +92,7 @@
             app:summary="Word cloud font type"
             app:title="Font type"
             android:entries="@array/font_type_entries"
-            android:entryValues="@array/font_type_entries" />
+            android:entryValues="@array/font_type_entries_values" />
 
         <ListPreference
             app:defaultValue="MULTI_COLOR"
@@ -95,7 +107,7 @@
             app:summary="Word cloud color schema"
             app:title="Color schema"
             android:entries="@array/color_schema"
-            android:entryValues="@array/color_schema" />
+            android:entryValues="@array/color_schema_values" />
 
     </PreferenceCategory>
 </PreferenceScreen>
