@@ -10,6 +10,9 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Sms implements Serializable, Comparable<Sms> {
+    public static final Integer INBOX = 1;
+    public static final Integer OUTBOX = 2;
+
     private boolean isRead;
     private String status;
     private String seen;

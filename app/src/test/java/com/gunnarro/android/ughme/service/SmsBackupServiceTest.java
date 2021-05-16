@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SmsBackupServiceTest {
 
@@ -103,38 +104,41 @@ public class SmsBackupServiceTest {
 
     @Test
     public void getSmsBackupAsTextByName() {
-        String txt = smsBackupService.getSmsBackupAsText("gunnar", WordCloudEvent.MESSAGE_TYPE_INBOX);
-        Assert.assertEquals("inbox-message1", txt);
+        Map<String, String> map = smsBackupService.getSmsBackupAsText("gunnar", WordCloudEvent.MESSAGE_TYPE_INBOX);
+        Assert.assertEquals("inbox-message1", map.get(WordCloudEvent.MESSAGE_TYPE_INBOX));
 
-        txt = smsBackupService.getSmsBackupAsText("gunnar", WordCloudEvent.MESSAGE_TYPE_OUTBOX);
-        Assert.assertEquals("", txt);
+        map = smsBackupService.getSmsBackupAsText("gunnar", WordCloudEvent.MESSAGE_TYPE_OUTBOX);
+        Assert.assertEquals("", map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX));
 
-        txt = smsBackupService.getSmsBackupAsText("gunnar", WordCloudEvent.MESSAGE_TYPE_ALL);
-        Assert.assertEquals("inbox-message1", txt);
+        map = smsBackupService.getSmsBackupAsText("gunnar", WordCloudEvent.MESSAGE_TYPE_ALL);
+        Assert.assertEquals("inbox-message1", map.get(WordCloudEvent.MESSAGE_TYPE_INBOX));
+        Assert.assertEquals("", map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX));
     }
 
     @Test
     public void getSmsBackupAsTextByMobileNumber() {
-        String txt = smsBackupService.getSmsBackupAsText("+4793019486", WordCloudEvent.MESSAGE_TYPE_INBOX);
-        Assert.assertEquals("inbox-message4", txt);
+        Map<String, String> map = smsBackupService.getSmsBackupAsText("+4793019486", WordCloudEvent.MESSAGE_TYPE_INBOX);
+        Assert.assertEquals("inbox-message4", map.get(WordCloudEvent.MESSAGE_TYPE_INBOX));
 
-        txt = smsBackupService.getSmsBackupAsText("93019486", WordCloudEvent.MESSAGE_TYPE_OUTBOX);
-        Assert.assertEquals("", txt);
+        map = smsBackupService.getSmsBackupAsText("93019486", WordCloudEvent.MESSAGE_TYPE_OUTBOX);
+        Assert.assertEquals("", map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX));
 
-        txt = smsBackupService.getSmsBackupAsText("93019486", WordCloudEvent.MESSAGE_TYPE_ALL);
-        Assert.assertEquals("", txt);
+        map = smsBackupService.getSmsBackupAsText("93019486", WordCloudEvent.MESSAGE_TYPE_ALL);
+        Assert.assertEquals("", map.get(WordCloudEvent.MESSAGE_TYPE_INBOX));
+        Assert.assertEquals("", map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX));
     }
 
     @Test
     public void getSmsBackupAsTextForAll() {
-        String txt = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_INBOX);
-        Assert.assertEquals("inbox-message1 inbox-message2 inbox-message4", txt);
+        Map<String, String> map = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_INBOX);
+        Assert.assertEquals("inbox-message1 inbox-message2 inbox-message4", map.get(WordCloudEvent.MESSAGE_TYPE_INBOX));
 
-        txt = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
-        Assert.assertEquals("outbox-message3", txt);
+        map = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_OUTBOX);
+        Assert.assertEquals("outbox-message3", map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX));
 
-        txt = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_ALL);
-        Assert.assertEquals("inbox-message1 inbox-message2 outbox-message3 inbox-message4", txt);
+        map = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_ALL);
+        Assert.assertEquals("inbox-message1 inbox-message2 inbox-message4", map.get(WordCloudEvent.MESSAGE_TYPE_INBOX));
+        Assert.assertEquals("outbox-message3", map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX));
     }
 
     @Test

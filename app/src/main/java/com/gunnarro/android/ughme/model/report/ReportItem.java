@@ -21,6 +21,7 @@ public class ReportItem {
     private int percentage;
     // can be PLACED and NOT_PLACED
     private String status;
+    private Integer category;
 
     /**
      * Used by jackson
@@ -28,11 +29,12 @@ public class ReportItem {
     ReportItem() {
     }
 
-    ReportItem(String word, int count, int percentage, String status) {
+    ReportItem(String word, int count, int percentage, String status, Integer category) {
         this.word = word;
         this.count = count;
         this.percentage = percentage;
         this.status = status;
+        this.category = category;
     }
 
     public static ReportItemBuilder builder() {
@@ -55,6 +57,8 @@ public class ReportItem {
         status = isPlaced ? "PLACED" : "NOT_PLACED";
     }
 
+    public Integer getCategory() { return this.category; }
+
     @NotNull
     public String toString() {
         return "ReportItem(word=" + this.getWord() + ", count=" + this.getCount() + ", percentage=" + this.getPercentage() + ", status=" + status + ")";
@@ -65,6 +69,7 @@ public class ReportItem {
         private int count;
         private int percentage;
         private String status;
+        private Integer category;
 
         ReportItemBuilder() {
         }
@@ -89,8 +94,13 @@ public class ReportItem {
             return this;
         }
 
+        public ReportItemBuilder category(Integer category) {
+            this.category = category;
+            return this;
+        }
+
         public ReportItem build() {
-            return new ReportItem(word, count, percentage, status);
+            return new ReportItem(word, count, percentage, status, category);
         }
 
     }

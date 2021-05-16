@@ -52,16 +52,17 @@ public class TextAnalyzerServiceImpl {
      * @param text   text to split into single words
      * @param regexp regex which hold the word extraction rule
      */
-    public AnalyzeReport analyzeText(@NotNull final String text, String regexp, int numberOfMostUsedWords) {
+    public AnalyzeReport analyzeText(@NotNull final String text, Integer category, String regexp, int numberOfMostUsedWords) {
+        // validate input
+        if (text == null || text.isEmpty()) {
+            Log.d("TextAnalyzer.analyzeText", "text is null or empty!");
+            return getReport(new HashMap<>(), category,0);
+        }
         Map<String, Integer> sortedWordMap;
         int totalNumberOfWords = 0;
         Log.d("analyzeText", String.format("start, text.length=%s, regexp=%s", text.length(), regexp));
         long startTimeMs = System.currentTimeMillis();
         Map<String, Integer> tmpWordMap = new HashMap<>();
-        if (text.isEmpty()) {
-            Log.d("TextAnalyzer.analyzeText", "text is null or empty!");
-            return getReport(new HashMap<>(), 0);
-        }
         Pattern pattern = Pattern.compile(regexp == null ? DEFAULT_WORD_REGEXP : regexp, Pattern.MULTILINE);
         Matcher matcher = pattern.matcher(text);
         // find matching occurrence, one by one
@@ -84,17 +85,17 @@ public class TextAnalyzerServiceImpl {
 
         analyzeTimeMs = System.currentTimeMillis() - startTimeMs;
         Log.d(Utility.buildTag(getClass(), "analyzeText"), String.format("exeTime=%s ms, thread=%s", analyzeTimeMs, Thread.currentThread().getName()));
-        return getReport(sortedWordMap, totalNumberOfWords);
+        return getReport(sortedWordMap, category, totalNumberOfWords);
     }
 
-    private AnalyzeReport getReport(Map<String, Integer> wordMap, int totalNumberOfWords) {
+    private AnalyzeReport getReport(Map<String, Integer> wordMap, Integer category, int totalNumberOfWords) {
         int numberOfWords = wordMap.values()
                 .stream()
                 .mapToInt(Integer::valueOf)
                 .sum();
 
         List<ReportItem> reportItems = new ArrayList<>();
-        wordMap.forEach((k, v) -> reportItems.add(ReportItem.builder().word(k).count(v).percentage(v * 100 / numberOfWords).build()));
+        wordMap.forEach((k, v) -> reportItems.add(ReportItem.builder().word(k).category(category).count(v).percentage(v * 100 / numberOfWords).build()));
 
         int highestWordCount = wordMap.size() > 0 ? wordMap.values().iterator().next() : 0;
         float highestWordCountPercent = highestWordCount > 0 ? (float) highestWordCount * 100 / numberOfWords : 0;

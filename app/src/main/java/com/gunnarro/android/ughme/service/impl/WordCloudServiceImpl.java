@@ -12,6 +12,7 @@ import com.gunnarro.android.ughme.exception.ApplicationException;
 import com.gunnarro.android.ughme.model.cloud.Dimension;
 import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.config.Settings;
+import com.gunnarro.android.ughme.model.report.ReportItem;
 import com.gunnarro.android.ughme.service.WordCloudService;
 import com.gunnarro.android.ughme.utility.Utility;
 
@@ -52,53 +53,55 @@ public class WordCloudServiceImpl implements WordCloudService {
     }
 
     /**
-     * @param wordMap            map sorted by highest occurrences of words
+     * @param wordItems            list sorted by highest occurrences of words
      * @param rectangleDimension holds dimension of the word cloud bitmap
      * @param settings           holds word cloud settings
      * @return list of most used words, sorted by word occurrences
      */
-    public List<Word> buildWordCloud(Map<String, Integer> wordMap, final Dimension rectangleDimension, Settings settings) {
-        Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("number of words size=%s, rectangle: %s", wordMap.size(), rectangleDimension));
+    public List<Word> buildWordCloud(List<ReportItem> wordItems, final Dimension rectangleDimension, Settings settings) {
+        Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("number of words size=%s, rectangle: %s", wordItems.size(), rectangleDimension));
         Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("%s", settings));
-        Log.d(Utility.buildTag(getClass(), "buildWordCloud"), String.format("word map: %s", wordMap.size()));
+        Log.d(Utility.buildTag(getClass(), "buildWordCloud"), String.format("word map: %s", wordItems.size()));
+
+        if (wordItems == null || wordItems.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         if (rectangleDimension.getWidth() < 0 || rectangleDimension.getHeight() < 0) {
             throw new ApplicationException(String.format("width and height must both be greater than 0! rectangle: %s", rectangleDimension), null);
         }
 
-        int highestWordCount = wordMap.values()
-                .stream()
-                .max(Comparator.comparing(Integer::valueOf))
-                .orElse(0);
+        int highestWordCount = wordItems.get(0).getCount();
 
         // reset previous build
         wordPlacer.reset();
         int numberOfCollisions = 0;
         Random rand = new Random();
         List<Word> wordList = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : wordMap.entrySet()) {
-            Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("x2x word=%s, count=%s", entry.getKey(), entry.getValue()));
-            int wordFontSize = determineWordFontSize(entry.getValue(), highestWordCount, settings.minWordFontSize, settings.maxWordFontSize);
-            Paint wordPaint = createPaint(wordFontSize, settings.colorSchema, settings.fontType, 1, 46455500);
+        for (int i = 0; i < wordItems.size(); i++) {
+            ReportItem reportItem = wordItems.get(i);
+            Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("x2x word=%s, count=%s", reportItem.getWord(), reportItem.getCount()));
+            int wordFontSize = determineWordFontSize(reportItem.getCount(), highestWordCount, settings.minWordFontSize, settings.maxWordFontSize);
+            Paint wordPaint = createPaint(wordFontSize, settings.colorSchema, settings.fontType, reportItem.getCategory(), 46455500);
             Rect wordRect = new Rect();
             // Retrieve the text boundary box and store to bounds
-            wordPaint.getTextBounds(entry.getKey(), 0, entry.getKey().length(), wordRect);
-            float textWidth = wordPaint.measureText(entry.getKey());
+            wordPaint.getTextBounds(reportItem.getWord(), 0, reportItem.getWord().length(), wordRect);
+            float textWidth = wordPaint.measureText(reportItem.getWord());
 
             if (wordRect.width() != textWidth) {
-                Log.d(Utility.buildTag(getClass(), "buildWordCloud"), String.format("Text width not equal! word=%s, %s != %s", entry.getKey(), wordRect.width(), textWidth));
+                Log.d(Utility.buildTag(getClass(), "buildWordCloud"), String.format("Text width not equal! word=%s, %s != %s", reportItem.getWord(), wordRect.width(), textWidth));
             }
 
             float textHeight = wordPaint.descent() - wordPaint.ascent();
             if (wordRect.height() != textHeight) {
-                Log.d(Utility.buildTag(getClass(), "buildWordCloud"), String.format("Text height not equal! word=%s, %s != %s", entry.getKey(), wordRect.height(), textHeight));
+                Log.d(Utility.buildTag(getClass(), "buildWordCloud"), String.format("Text height not equal! word=%s, %s != %s", reportItem.getWord(), wordRect.height(), textHeight));
             }
 
             Word newWord = Word.builder()
-                    .text(entry.getKey())
+                    .text(reportItem.getWord())
                     .size(wordFontSize)
                     .rotate(settings.wordRotation)
-                    .count(entry.getValue())
+                    .count(reportItem.getCount())
                     .paint(wordPaint)
                     .rect(wordRect)
                     .build();
@@ -121,7 +124,7 @@ public class WordCloudServiceImpl implements WordCloudService {
 
         // for debug only
         // sortedWordList.forEach(w -> Log.i(Utility.buildTag(getClass(),"buildWordCloud"), String.format("coordinates=%s, size=%s, word=%s, occurrences=%s", w.getRect().toShortString(), w.getSize(), w.getText(), w.getCount())));
-        Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("finished! numberOfWords=%s, numberOfCollisions=%s, totalNumberOfWords=%s", wordList.size(), numberOfCollisions, wordMap.size()));
+        Log.i(Utility.buildTag(getClass(), "buildWordCloud"), String.format("finished! numberOfWords=%s, numberOfCollisions=%s, totalNumberOfWords=%s", wordList.size(), numberOfCollisions, wordItems.size()));
         return sortedWordList;
     }
 

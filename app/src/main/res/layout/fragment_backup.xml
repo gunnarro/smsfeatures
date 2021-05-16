@@ -227,7 +227,26 @@
                 android:text="@string/btn_sms_backup_delete"
                 android:textAllCaps="false"
                 android:textSize="14sp" />
+        </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tbl_backup_buttons"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn_choose_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Import sms backup"
+                />
+
+            <TextView
+                android:id="@+id/sms_import_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btn_choose_file"/>
         </RelativeLayout>
     </RelativeLayout>
 </FrameLayout>

@@ -2,10 +2,14 @@ package com.gunnarro.android.ughme.ui.fragment;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.provider.DocumentsContract;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +29,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.gunnarro.android.ughme.R;
+import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.BackupEvent;
@@ -35,6 +40,16 @@ import com.gunnarro.android.ughme.ui.dialog.DialogActionListener;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -92,6 +107,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         View view = inflater.inflate(R.layout.fragment_backup, container, false);
         view.findViewById(R.id.btn_sms_backup_save).setOnClickListener(this);
         view.findViewById(R.id.btn_sms_backup_delete).setOnClickListener(this);
+        view.findViewById(R.id.btn_choose_file).setOnClickListener(this);
         RxBus.getInstance().listen().observeOn(AndroidSchedulers.mainThread()).subscribe(getInputObserver());
         Log.d(Utility.buildTag(getClass(), "onCreateView"), "");
         return view;
@@ -170,6 +186,8 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         } else if (id == R.id.btn_sms_backup_delete) {
             DialogFragment confirmDialog = ConfirmDialogFragment.newInstance(getString(R.string.msg_delete_sms_backup), getString(R.string.msg_confirm_delete));
             confirmDialog.show(getChildFragmentManager(), "dialog");
+        } else if (id == R.id.btn_choose_file) {
+            showFileChooser(null);
         }
     }
 
@@ -180,6 +198,55 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
         CheckBox saveExternal = requireActivity().findViewById(R.id.check_save_external);
         backupTask.backupSms(saveExternal.isChecked());
     }
+
+    // Request code for selecting a PDF document.
+    private static final int PICK_JSON_FILE_REQUEST_CODE = 2;
+
+    private void showFileChooser(Uri pickerInitialUri) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        // Optionally, specify a URI for the file that should appear in the
+        // system file picker when it loads.
+       // intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
+        startActivityForResult(intent, PICK_JSON_FILE_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        switch (requestCode) {
+            case PICK_JSON_FILE_REQUEST_CODE:
+                if (intent.getData() == null) {
+                    Log.d(Utility.buildTag(getClass(), "onActivityResult"), "No selection");
+                    return;
+                }
+                    List<Sms> list = null;
+                    try {
+                        list = smsBackupService.inportSmsBackup(getActivity().getContentResolver().openInputStream(intent.getData()));
+                        TextView tw = getActivity().findViewById(R.id.sms_import_info);
+                        tw.setText(new Date(System.currentTimeMillis()) + " Imported " + list.size() + " sms");
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d(Utility.buildTag(getClass(), "onActivityResult"), "imported sms, " + list.size());
+                break;
+        }
+    }
+
+    private String readFile(Uri uri) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        try (InputStream inputStream =
+                     getActivity().getContentResolver().openInputStream(uri);
+             BufferedReader reader = new BufferedReader(
+                     new InputStreamReader(Objects.requireNonNull(inputStream)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        }
+        return stringBuilder.toString();
+    }
+
 
     private Dialog buildProgressDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());

@@ -13,6 +13,7 @@ import com.gunnarro.android.ughme.model.report.AnalyzeReport;
 import com.gunnarro.android.ughme.model.report.ProfileItem;
 import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.model.sms.SmsBackupInfo;
+import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
@@ -140,14 +141,37 @@ public class SmsBackupServiceImpl {
      * @param smsType  can be 1 = INBOX, 2 = OUTBOX or (.*) = All
      * @return all sms messages mergred into a plain text string
      */
-    public String getSmsBackupAsText(@NotNull String filterBy, @NonNull String smsType) {
+    public Map<String,String> getSmsBackupAsText(@NotNull String filterBy, @NonNull String smsType) {
         List<Sms> smsList = getSmsBackup(false);
         String regexp = filterBy.replace("+", "\\+");
         Log.d(Utility.buildTag(getClass(), "getSmsBackupAtText"), String.format("filterBy=%s, smsType=%s, numberOfSms=%s", regexp, smsType, smsList.size()));
-        return smsList.stream()
-                .filter(s -> s.getType().matches(smsType) && s.getName().matches(regexp))
-                .map(Sms::getBody)
-                .collect(Collectors.joining(WORD_SEPARATOR));
+
+        if (smsType.equals(WordCloudEvent.MESSAGE_TYPE_ALL)) {
+            String inbox = smsList.stream()
+                    .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_INBOX) && s.getName().matches(regexp))
+                    .map(Sms::getBody)
+                    .collect(Collectors.joining(WORD_SEPARATOR));
+
+            String outbox = smsList.stream()
+                    .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_OUTBOX) && s.getName().matches(regexp))
+                    .map(Sms::getBody)
+                    .collect(Collectors.joining(WORD_SEPARATOR));
+
+            return Map.of(WordCloudEvent.MESSAGE_TYPE_INBOX, inbox, WordCloudEvent.MESSAGE_TYPE_OUTBOX, outbox);
+        } else if (smsType.equals(WordCloudEvent.MESSAGE_TYPE_INBOX)) {
+            String inbox = smsList.stream()
+                    .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_INBOX) && s.getName().matches(regexp))
+                    .map(Sms::getBody)
+                    .collect(Collectors.joining(WORD_SEPARATOR));
+            return Map.of(WordCloudEvent.MESSAGE_TYPE_INBOX, inbox);
+        } else if (smsType.equals(WordCloudEvent.MESSAGE_TYPE_OUTBOX)) {
+            String outbox = smsList.stream()
+                    .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_OUTBOX) && s.getName().matches(regexp))
+                    .map(Sms::getBody)
+                    .collect(Collectors.joining(WORD_SEPARATOR));
+            return Map.of(WordCloudEvent.MESSAGE_TYPE_OUTBOX, outbox);
+        }
+        return Map.of();
     }
 
     public void saveSmsBackupMetaData(List<Sms> smsBackupList) {
@@ -226,7 +250,7 @@ public class SmsBackupServiceImpl {
      *
      * @param smsBakupFile external sms backup to be imported
      */
-    public void inportSmsBackup(File smsBakupFile) {
+    public List<Sms> inportSmsBackup(java.io.InputStream smsBakupFile) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             List<Sms> smsBackupList = smsBackupList = mapper.readValue(smsBakupFile, new TypeReference<List<Sms>>() {
@@ -234,9 +258,10 @@ public class SmsBackupServiceImpl {
             if (smsBackupList == null) {
                 smsBackupList = new ArrayList<>();
             }
+            return smsBackupList;
         } catch (Exception e) {
             Log.d(Utility.buildTag(getClass(), "inportSmsBackup"), String.format("Failed import sms backup! error: %s", e.getMessage()));
-            throw new ApplicationException("Failed import sms backup file: " + smsBakupFile.getPath(), e);
+            throw new ApplicationException("Failed import sms backup file!", e);
         }
     }
 

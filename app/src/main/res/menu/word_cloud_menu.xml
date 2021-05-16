@@ -23,4 +23,17 @@
             android:title="@string/lbl_sms_outbox"
             app:showAsAction="never" />
     </group>
+    <!--
+    <group
+        android:id="@+id/word_cloud_group">
+          <item
+              android:id="@+id/word_cloud_settings_menu"
+              android:title="Settings"
+              app:showAsAction="never" />
+        <item
+            android:id="@+id/word_cloud_result_menu"
+            android:title="Result"
+            app:showAsAction="never" />
+    </group>
+    -->
 </menu>

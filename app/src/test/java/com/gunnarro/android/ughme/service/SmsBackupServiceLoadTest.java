@@ -22,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 @Ignore
 public class SmsBackupServiceLoadTest {
@@ -64,8 +65,8 @@ public class SmsBackupServiceLoadTest {
 
     @Test
     public void getSmsBackupAsText() {
-        String allSmsTxt = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_ALL);
-        Assert.assertEquals(2546124, allSmsTxt.length());
+        Map<String, String> map = smsBackupService.getSmsBackupAsText(WordCloudFragment.ALL_SEARCH, WordCloudEvent.MESSAGE_TYPE_ALL);
+        Assert.assertEquals(2546124, map.get( WordCloudEvent.MESSAGE_TYPE_ALL));
 
     }
 

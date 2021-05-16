@@ -117,15 +117,6 @@ public class AnalyzeReport {
         return this.profileItems;
     }
 
-    public Map<String, Integer> getWordMap() {
-        return getReportItems()
-                .stream()
-                .sorted(Comparator.comparing(ReportItem::getCount).reversed())
-                .collect(Collectors.toMap(ReportItem::getWord, ReportItem::getCount,
-                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-    }
-
-
     @NotNull
     @Override
     public String toString() {

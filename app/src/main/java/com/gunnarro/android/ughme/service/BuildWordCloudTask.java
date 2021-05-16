@@ -8,6 +8,7 @@ import com.gunnarro.android.ughme.model.config.Settings;
 import com.gunnarro.android.ughme.model.report.AnalyzeReport;
 import com.gunnarro.android.ughme.model.report.ProfileItem;
 import com.gunnarro.android.ughme.model.report.ReportItem;
+import com.gunnarro.android.ughme.model.sms.Sms;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
@@ -16,7 +17,9 @@ import com.gunnarro.android.ughme.utility.Utility;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -46,16 +49,25 @@ public class BuildWordCloudTask {
             long startTime = System.currentTimeMillis();
             try {
                 postProgress("analyse sms content...", 10);
-                AnalyzeReport analyzeReport = textAnalyzerService.analyzeText(smsBackupService.getSmsBackupAsText(contactName, smsType), settings.wordMatchRegex, settings.numberOfWords);
-                analyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("analyzeText").executionTime(System.currentTimeMillis() - startTime).build());
+                Map<String, String> map = smsBackupService.getSmsBackupAsText(contactName, smsType);
+                AnalyzeReport inboxAnalyzeReport = textAnalyzerService.analyzeText(map.get(WordCloudEvent.MESSAGE_TYPE_INBOX), Sms.INBOX,settings.wordMatchRegex, settings.numberOfWords);
+                AnalyzeReport outboxAnalyzeReport = textAnalyzerService.analyzeText(map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX), Sms.OUTBOX, settings.wordMatchRegex, settings.numberOfWords);
+
+                inboxAnalyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("analyzeText").executionTime(System.currentTimeMillis() - startTime).build());
+
+                List<ReportItem> items = new ArrayList<>();
+                items.addAll(inboxAnalyzeReport.getReportItems());
+                items.addAll(outboxAnalyzeReport.getReportItems());
+
+                List<ReportItem> reportItems = items.stream().sorted(Comparator.comparing(ReportItem::getCount).reversed()).limit(settings.numberOfWords).collect(Collectors.toList());
 
                 List<Word> wordList = wordCloudService.buildWordCloud(
-                        analyzeReport.getWordMap()
+                        reportItems
                         , cloudDimension
                         , settings);
 
-                saveAnalyseReport(analyzeReport, wordList, System.currentTimeMillis() - startTime);
-                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("%s", analyzeReport));
+              //  saveAnalyseReport(analyzeReport, wordList, System.currentTimeMillis() - startTime);
+             //   Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("%s", analyzeReport));
                 Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("finished, exeTime=%s ms", (System.currentTimeMillis() - startTime)));
                 postProgress("finished building word list...", 15);
                 // finally, publish result so word cloud view can pick up the word list and redraw the word cloud
