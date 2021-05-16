@@ -6,7 +6,6 @@ import com.gunnarro.android.ughme.model.config.Settings;
 import com.gunnarro.android.ughme.model.report.ReportItem;
 
 import java.util.List;
-import java.util.Map;
 
 public interface WordCloudService {
 
