@@ -52,9 +52,9 @@ public class TextAnalyzerServiceImpl {
      * @param text   text to split into single words
      * @param regexp regex which hold the word extraction rule
      */
-    public AnalyzeReport analyzeText(@NotNull final String text, Integer category, String regexp, int numberOfMostUsedWords) {
+    public AnalyzeReport analyzeText(final String text, Integer category, String regexp, int numberOfMostUsedWords) {
         // validate input
-        if (text.isEmpty()) {
+        if (text == null || text.isEmpty()) {
             Log.d("TextAnalyzer.analyzeText", "text is null or empty!");
             return getReport(new HashMap<>(), category,0);
         }
