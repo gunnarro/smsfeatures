@@ -18,6 +18,7 @@ import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ public class SmsBackupServiceImpl {
     public static final String SMS_BACKUP_FILE_NAME = "sms-backup.json";
     public static final String SMS_BACKUP_METADATA_FILE_NAME = "sms-backup-metadata.json";
     public static final String SMS_ANALYZE_REPORT_FILE_NAME = "sms-analyze-report.json";
-    public static final String SMS_WORD_MAP_FILE_NAME = "sms-word-map.json";
     private static final String WORD_SEPARATOR = " ";
 
 
@@ -156,22 +156,31 @@ public class SmsBackupServiceImpl {
                     .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_OUTBOX) && s.getName().matches(regexp))
                     .map(Sms::getBody)
                     .collect(Collectors.joining(WORD_SEPARATOR));
-
-            return Map.of(WordCloudEvent.MESSAGE_TYPE_INBOX, inbox, WordCloudEvent.MESSAGE_TYPE_OUTBOX, outbox);
+            return new HashMap<String, String>()
+            {{
+                put(WordCloudEvent.MESSAGE_TYPE_INBOX, inbox);
+                put(WordCloudEvent.MESSAGE_TYPE_OUTBOX, outbox);
+            }};
         } else if (smsType.equals(WordCloudEvent.MESSAGE_TYPE_INBOX)) {
             String inbox = smsList.stream()
                     .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_INBOX) && s.getName().matches(regexp))
                     .map(Sms::getBody)
                     .collect(Collectors.joining(WORD_SEPARATOR));
-            return Map.of(WordCloudEvent.MESSAGE_TYPE_INBOX, inbox);
+            return new HashMap<String, String>()
+            {{
+                put(WordCloudEvent.MESSAGE_TYPE_INBOX, inbox);
+            }};
         } else if (smsType.equals(WordCloudEvent.MESSAGE_TYPE_OUTBOX)) {
             String outbox = smsList.stream()
                     .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_OUTBOX) && s.getName().matches(regexp))
                     .map(Sms::getBody)
                     .collect(Collectors.joining(WORD_SEPARATOR));
-            return Map.of(WordCloudEvent.MESSAGE_TYPE_OUTBOX, outbox);
+            return new HashMap<String, String>()
+            {{
+                put(WordCloudEvent.MESSAGE_TYPE_OUTBOX, outbox);
+            }};
         }
-        return Map.of();
+        return new HashMap<>();
     }
 
     public void saveSmsBackupMetaData(List<Sms> smsBackupList) {
@@ -283,15 +292,6 @@ public class SmsBackupServiceImpl {
         if (report != null && report.getProfileItems() != null) {
             profileItems.forEach(p -> report.getProfileItems().add(p));
             saveAnalyseReport(report);
-        }
-    }
-
-    public void saveWordMap(@NotNull Map<String, Integer> wordMap) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(getFile(SMS_WORD_MAP_FILE_NAME), wordMap);
-        } catch (IOException ioe) {
-            Log.e(Utility.buildTag(getClass(), "saveWordMap"), ioe.getMessage());
         }
     }
 

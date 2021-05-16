@@ -54,7 +54,7 @@ public class TextAnalyzerServiceImpl {
      */
     public AnalyzeReport analyzeText(@NotNull final String text, Integer category, String regexp, int numberOfMostUsedWords) {
         // validate input
-        if (text == null || text.isEmpty()) {
+        if (text.isEmpty()) {
             Log.d("TextAnalyzer.analyzeText", "text is null or empty!");
             return getReport(new HashMap<>(), category,0);
         }
