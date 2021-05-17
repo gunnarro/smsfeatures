@@ -208,26 +208,20 @@ public class WordCloudFragment extends Fragment {
         buildWordCloudTask.buildWordCloudEventBus(mapPreferences(), Dimension.builder().width(wordCloudView.getWidth()).height(wordCloudView.getHeight()).build(), contactName, smsType);
     }
 
-    private void viewFragment(@NonNull Fragment fragment) {
-        Log.d(Utility.buildTag(getClass(), "viewFragment"), "fragment: " + fragment.getTag());
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
-    }
-
     private Settings mapPreferences() {
         Settings settings = new Settings();
         // read selected preference values, and use settings default values if not set
         settings.numberOfWords = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_number_of_words), settings.numberOfWords);
+        settings.minWordOccurrences = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_min_word_occurrences), settings.minWordOccurrences);
         settings.minCharsInWord = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_chars), settings.minCharsInWord);
         settings.maxWordFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_max_font_size), settings.maxWordFontSize);
         settings.minWordFontSize = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_min_font_size), settings.minWordFontSize);
         settings.radiusStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_radius_step), settings.radiusStep);
         settings.offsetStep = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_offset_step), settings.offsetStep);
-        settings.wordRotation = PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean("pref_word_rotate", true);
-        settings.colorSchema = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_color_schema", "");
-        settings.fontType = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_font_type", "");
+        settings.wordAnimationInterval = PreferenceManager.getDefaultSharedPreferences(requireContext()).getInt(getResources().getString(R.string.pref_word_animation_interval), settings.wordAnimationInterval);
+        settings.wordRotation = PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean("pref_word_rotate", settings.wordRotation);
+        settings.colorSchema = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_color_schema", settings.colorSchema);
+        settings.fontType = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("pref_font_type", settings.fontType);
         // set regexp for word selection
         settings.wordMatchRegex = String.format(settings.wordMatchRegexFormat, settings.minCharsInWord);
         Log.d(Utility.buildTag(getClass(), "mapPreferences"), settings.toString());

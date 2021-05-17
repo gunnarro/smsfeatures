@@ -52,7 +52,7 @@ public class TextAnalyzerServiceImpl {
      * @param text   text to split into single words
      * @param regexp regex which hold the word extraction rule
      */
-    public AnalyzeReport analyzeText(final String text, Integer category, String regexp, int numberOfMostUsedWords) {
+    public AnalyzeReport analyzeText(final String text, Integer category, String regexp, int numberOfMostUsedWords, int minWordOccurrences) {
         // validate input
         if (text == null || text.isEmpty()) {
             Log.d("TextAnalyzer.analyzeText", "text is null or empty!");
@@ -79,6 +79,7 @@ public class TextAnalyzerServiceImpl {
         // finally sort the word map by number of word hits
         sortedWordMap = tmpWordMap.entrySet()
                 .stream()
+                .filter(e -> e.getValue() >= minWordOccurrences)
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                 .limit(numberOfMostUsedWords)
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));

@@ -1,1 +1,1 @@
-{"status":"BACKED_UP","smsBackupFilePath":"src/test/resources/sms-backup.json","smsBackupFileSizeBytes":777,"storageFreeSpaceBytes":175342264320,"lastBackupTime":1621190374055,"numberOfSms":0,"numberOfMobileNumbers":0,"backupFileName":"sms-backup.json","backupFilePath":"src/test/resource"}
+{"status":"BACKED_UP","smsBackupFilePath":"src/test/resources/sms-backup.json","smsBackupFileSizeBytes":777,"storageFreeSpaceBytes":175103266816,"lastBackupTime":1621282642544,"numberOfSms":0,"numberOfMobileNumbers":0,"backupFileName":"sms-backup.json","backupFilePath":"src/test/resource"}

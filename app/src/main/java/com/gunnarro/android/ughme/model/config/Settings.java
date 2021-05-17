@@ -46,6 +46,13 @@ public class Settings {
      */
     @ColumnInfo(name = "word_max_chars")
     public Integer maxCharsInWord = 50;
+
+    /**
+     * Minimum occurrences of a word in order to be displayed in the word cloud
+     */
+    @ColumnInfo(name = "word_min_occurrences")
+    public Integer minWordOccurrences = 1;
+
     /**
      * Minimum number of chars in a word
      */
@@ -76,6 +83,12 @@ public class Settings {
     public boolean wordRotation = true;
 
     /**
+     * time interval used for word animation given in milli seconds
+     */
+    @ColumnInfo(name ="words_animation_interval")
+    public int wordAnimationInterval = 0;
+
+    /**
      * word font type
      */
     @ColumnInfo(name = "font_type")
@@ -95,6 +108,7 @@ public class Settings {
         sb.append(", wordMatchRegexFormat='").append(wordMatchRegexFormat).append('\'');
         sb.append(", wordMatchRegex='").append(wordMatchRegex).append('\'');
         sb.append(", numberOfWords=").append(numberOfWords);
+        sb.append(", minWordOccurrences").append(minWordOccurrences);
         sb.append(", radiusStep=").append(radiusStep);
         sb.append(", offsetStep=").append(offsetStep);
         sb.append(", maxCharsInWord=").append(maxCharsInWord);
@@ -104,6 +118,7 @@ public class Settings {
         sb.append(", numberOfMobileNumbers=").append(numberOfMobileNumbers);
         sb.append(", numberOfBarsInChart=").append(numberOfBarsInChart);
         sb.append(", wordRotation=").append(wordRotation);
+        sb.append(", wordAnimationInterval=").append(wordAnimationInterval);
         sb.append(", fontType='").append(fontType).append('\'');
         sb.append(", colorSchema='").append(colorSchema).append('\'');
         sb.append('}');

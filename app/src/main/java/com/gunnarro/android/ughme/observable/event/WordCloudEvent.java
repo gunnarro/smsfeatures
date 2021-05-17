@@ -18,10 +18,12 @@ public class WordCloudEvent {
     private final List<Word> wordList;
     private final String progressMsg;
     private final int progressStep;
+    private final int animationInterval;
 
     private WordCloudEvent(Builder builder) {
         this.eventType = Objects.requireNonNull(builder.eventType, "eventType");
         this.wordList = Objects.requireNonNull(builder.wordList, "wordList");
+        this.animationInterval = builder.animationInterval;
         this.progressMsg = builder.progressMsg;
         this.progressStep = builder.progressStep;
     }
@@ -50,6 +52,8 @@ public class WordCloudEvent {
         return progressStep;
     }
 
+    public int getAnimationInterval() { return animationInterval; }
+
     @NotNull
     @Override
     public String toString() {
@@ -70,6 +74,7 @@ public class WordCloudEvent {
     public static class Builder {
         private WordCloudEventTypeEnum eventType;
         private List<Word> wordList;
+        private int animationInterval;
         private String progressMsg;
         private int progressStep;
 
@@ -86,6 +91,11 @@ public class WordCloudEvent {
             return this;
         }
 
+        public Builder animationInterval(int animationInterval) {
+            this.animationInterval = animationInterval;
+            return this;
+        }
+
         public Builder progressMsg(String progressMsg) {
             this.progressMsg = progressMsg;
             return this;
@@ -99,6 +109,7 @@ public class WordCloudEvent {
         public Builder of(WordCloudEvent wordCloudEvent) {
             this.eventType = wordCloudEvent.eventType;
             this.wordList = wordCloudEvent.wordList;
+            this.animationInterval = wordCloudEvent.animationInterval;
             this.progressMsg = wordCloudEvent.progressMsg;
             this.progressStep = wordCloudEvent.progressStep;
             return this;

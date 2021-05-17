@@ -34,6 +34,17 @@
             app:title="Number of words" />
 
         <SeekBarPreference
+            android:max="25"
+            app:defaultValue="0"
+            app:key="pref_min_word_occurrences"
+            app:min="1"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true"
+            app:singleLineTitle="true"
+            app:summary="Min occurrences of a word i order to be displayed"
+            app:title="Minimum occurrences of a word" />
+
+        <SeekBarPreference
             android:max="40"
             app:defaultValue="30"
             app:key="pref_word_max_font_size"
@@ -76,6 +87,17 @@
             app:singleLineTitle="true"
             app:summary="Word cloud offset step"
             app:title="Offset step" />
+
+        <SeekBarPreference
+            android:max="100"
+            app:defaultValue="0"
+            app:key="pref_word_animation_interval"
+            app:min="0"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true"
+            app:singleLineTitle="true"
+            app:summary="Word animation interval in milli seconds"
+            app:title="Animation interval" />
 
         <SwitchPreference
             android:defaultValue="true"

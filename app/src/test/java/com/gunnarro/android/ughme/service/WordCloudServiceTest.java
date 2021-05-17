@@ -58,7 +58,7 @@ public class WordCloudServiceTest {
 
 
         TextAnalyzerServiceImpl textAnalyzer = new TextAnalyzerServiceImpl();
-        AnalyzeReport report = textAnalyzer.analyzeText(smsPlainTxt.toString(), Sms.INBOX,null, 3);
+        AnalyzeReport report = textAnalyzer.analyzeText(smsPlainTxt.toString(), Sms.INBOX,null, 3, 1);
 
         WordCloudService builder = new WordCloudServiceImpl();
         List<Word> words = builder.buildWordCloud(report.getReportItems(), Dimension.builder().width(1440).height(1944).build(), new Settings());

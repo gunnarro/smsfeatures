@@ -41,13 +41,14 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Pre
                 return true;
             });
         }
-
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_number_of_words))).setOnPreferenceChangeListener(this);
+        getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_min_word_occurrences))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_word_min_chars))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_word_max_font_size))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_word_min_font_size))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_radius_step))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_offset_step))).setOnPreferenceChangeListener(this);
+        getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_word_animation_interval))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_word_rotate))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_color_schema))).setOnPreferenceChangeListener(this);
         getPreferenceManager().findPreference(Objects.requireNonNull(getResources().getString(R.string.pref_font_type))).setOnPreferenceChangeListener(this);

@@ -15,7 +15,7 @@ public class TextAnalyzerServiceLoadTest {
     @Test
     public void analyzeText() {
         TextAnalyzerServiceImpl service = new TextAnalyzerServiceImpl();
-        AnalyzeReport report = service.analyzeText(TestData.createAllSmsAsText(), Sms.INBOX, "\\b\\w{3,}", 10);
+        AnalyzeReport report = service.analyzeText(TestData.createAllSmsAsText(), Sms.INBOX, "\\b\\w{3,}", 10, 1);
         Assert.assertEquals(85345, report.getTextWordCount());
         Assert.assertEquals(3779, report.getTextHighestWordCount());
         Assert.assertEquals(4.427910327911377, report.getTextHighestWordCountPercent(), 0);

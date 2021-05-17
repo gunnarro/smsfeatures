@@ -50,8 +50,8 @@ public class BuildWordCloudTask {
             try {
                 postProgress("analyse sms content...", 10);
                 Map<String, String> map = smsBackupService.getSmsBackupAsText(contactName, smsType);
-                AnalyzeReport inboxAnalyzeReport = textAnalyzerService.analyzeText(map.get(WordCloudEvent.MESSAGE_TYPE_INBOX), Sms.INBOX,settings.wordMatchRegex, settings.numberOfWords);
-                AnalyzeReport outboxAnalyzeReport = textAnalyzerService.analyzeText(map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX), Sms.OUTBOX, settings.wordMatchRegex, settings.numberOfWords);
+                AnalyzeReport inboxAnalyzeReport = textAnalyzerService.analyzeText(map.get(WordCloudEvent.MESSAGE_TYPE_INBOX), Sms.INBOX,settings.wordMatchRegex, settings.numberOfWords, settings.minWordOccurrences);
+                AnalyzeReport outboxAnalyzeReport = textAnalyzerService.analyzeText(map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX), Sms.OUTBOX, settings.wordMatchRegex, settings.numberOfWords, settings.minWordOccurrences);
 
                 inboxAnalyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("analyzeText").executionTime(System.currentTimeMillis() - startTime).build());
 
@@ -75,6 +75,7 @@ public class BuildWordCloudTask {
                         WordCloudEvent.builder()
                                 .eventType(WordCloudEvent.WordCloudEventTypeEnum.UPDATE_MESSAGE)
                                 .wordList(wordList.stream().filter(Word::isPlaced).collect(Collectors.toList()))
+                                .animationInterval(settings.wordAnimationInterval)
                                 .build());
 
             } catch (Exception e) {

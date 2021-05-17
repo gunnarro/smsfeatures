@@ -19,6 +19,7 @@
     <string name="title_report">report</string>
 
     <string name="pref_number_of_words">pref_number_of_words</string>
+    <string name="pref_min_word_occurrences">pref_min_word_occurrences</string>
     <string name="pref_word_min_chars">pref_word_min_chars</string>
     <string name="pref_word_max_font_size">pref_word_max_font_size</string>
     <string name="pref_word_min_font_size">pref_word_min_font_size</string>
@@ -27,6 +28,8 @@
     <string name="pref_word_rotate">pref_word_rotate</string>
     <string name="pref_color_schema">pref_color_schema</string>
     <string name="pref_font_type">pref_font_type</string>
+    <string name="pref_word_animation">pref_word_animation</string>
+    <string name="pref_word_animation_interval">pref_word_animation_interval</string>
 
     <string name="lbl_filepath">Filepath</string>
     <string name="lbl_filename">Filename</string>

@@ -15,10 +15,7 @@ import com.gunnarro.android.ughme.model.cloud.Word;
 import com.gunnarro.android.ughme.model.report.ProfileItem;
 import com.gunnarro.android.ughme.observable.RxBus;
 import com.gunnarro.android.ughme.observable.event.WordCloudEvent;
-import com.gunnarro.android.ughme.service.BuildWordCloudTask;
-import com.gunnarro.android.ughme.service.WordCloudService;
 import com.gunnarro.android.ughme.service.impl.SmsBackupServiceImpl;
-import com.gunnarro.android.ughme.service.impl.TextAnalyzerServiceImpl;
 import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
@@ -39,12 +36,6 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
 
     @Inject
     SmsBackupServiceImpl smsBackupService;
-    @Inject
-    TextAnalyzerServiceImpl textAnalyzerService;
-    @Inject
-    WordCloudService wordCloudService;
-    @Inject
-    BuildWordCloudTask buildWordCloudTask;
     // canvas to hold the word cloud image
     private Canvas canvas;
 
@@ -111,14 +102,14 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         Log.d(Utility.buildTag(getClass(), "updateCanvasText"), String.format("canvas updated... word=%s, rotated=%s", word.getText(), word.isRotate()));
     }
 
-    private void runOnUiThread(final List<Word> wordList) {
-        new Thread(() -> post(updateViewTask(wordList))).start();
+    private void runOnUiThread(final List<Word> wordList, int animationInterval) {
+        new Thread(() -> post(updateViewTask(wordList, animationInterval))).start();
     }
 
     /**
      * Note that you cannot update the UI from any thread other than the UI thread or the "main" thread.
      */
-    private Runnable updateViewTask(final List<Word> wordList) {
+    private Runnable updateViewTask(final List<Word> wordList, int animationInterval) {
         return () -> {
             long startTime = System.currentTimeMillis();
             try {
@@ -126,13 +117,28 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                         WordCloudEvent.builder()
                                 .eventType(WordCloudEvent.WordCloudEventTypeEnum.PROGRESS)
                                 .wordList(new ArrayList<>())
+                                .animationInterval(animationInterval)
                                 .progressMsg("draw word cloud view...")
                                 .progressStep(10)
                                 .build());
                 clearDrawing();
+
                 // simply place each word on the bitmap
-                wordList.forEach(this::updateCanvasText);
-                postInvalidate();
+                for (Word word : wordList) {
+                    updateCanvasText(word);
+                    invalidate();
+                    // if animation, wait before execute next word
+                    if (animationInterval > 0) {
+                        try {
+                            Thread.sleep(animationInterval);
+                        } catch (Exception ignored) {
+                            // ignore
+                        }
+                    }
+                }
+                // method notifies the system from a non-UIThread and the View gets redrawn in the next eventloop on the UIThread as soon as possible.
+                //postInvalidate();
+                invalidate();
                 Log.i(Utility.buildTag(getClass(), "updateViewTask"), String.format("words=%s, exeTime=%s ms", wordList.size(), (System.currentTimeMillis() - startTime)));
             } catch (Exception e) {
                 throw new ApplicationException(e.getMessage(), e);
@@ -146,7 +152,6 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
             }
         };
     }
-
 
     // Listen to RxJava publish event
     private Observer<Object> getInputObserver() {
@@ -164,9 +169,9 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                     if (event.isUpdateEvent()) {
                         Log.d(Utility.buildTag(getClass(), "onNext"), String.format("handle word cloud event: %s", event.toString()));
                         if (Build.VERSION.SDK_INT < 26) {
-                            runOnUiThread(event.getWordList());
+                            runOnUiThread(event.getWordList(), event.getAnimationInterval());
                         } else {
-                            Executors.newSingleThreadExecutor().execute(updateViewTask(event.getWordList()));
+                            Executors.newSingleThreadExecutor().execute(updateViewTask(event.getWordList(), event.getAnimationInterval()));
                         }
                     }
                 }
