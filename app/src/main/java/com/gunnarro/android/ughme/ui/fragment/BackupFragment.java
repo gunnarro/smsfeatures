@@ -44,6 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -211,39 +212,24 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        switch (requestCode) {
-            case PICK_JSON_FILE_REQUEST_CODE:
-                if (intent.getData() == null) {
-                    Log.d(Utility.buildTag(getClass(), "onActivityResult"), "No selection");
-                    return;
-                }
-                    List<Sms> list = null;
-                    try {
-                        list = smsBackupService.inportSmsBackup(getActivity().getContentResolver().openInputStream(intent.getData()));
-                        TextView tw = getActivity().findViewById(R.id.sms_import_info);
-                        tw.setText(new Date(System.currentTimeMillis()) + " Imported " + list.size() + " sms");
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    Log.d(Utility.buildTag(getClass(), "onActivityResult"), "imported sms, " + list.size());
-                break;
-        }
-    }
-
-    private String readFile(Uri uri) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-        try (InputStream inputStream =
-                     getActivity().getContentResolver().openInputStream(uri);
-             BufferedReader reader = new BufferedReader(
-                     new InputStreamReader(Objects.requireNonNull(inputStream)))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
+        if (requestCode == PICK_JSON_FILE_REQUEST_CODE) {
+            if (intent == null || intent.getData() == null) {
+                Log.d(Utility.buildTag(getClass(), "onActivityResult"), "No selection");
+                return;
             }
+            List<Sms> list = new ArrayList<>();
+            try {
+                list = smsBackupService.inportSmsBackup(requireActivity().getContentResolver().openInputStream(intent.getData()));
+                TextView tw = requireActivity().findViewById(R.id.sms_import_info);
+                tw.setText(new Date(System.currentTimeMillis()) + " Imported " + list.size() + " sms");
+            } catch (FileNotFoundException e) {
+                Log.e(Utility.buildTag(getClass(), "onActivityResult"), e.getMessage());
+            }
+            Log.d(Utility.buildTag(getClass(), "onActivityResult"), "imported sms, " + list.size());
+        } else {
+            Log.d(Utility.buildTag(getClass(), "onActivityResult"), "ignore, intent=" + intent);
         }
-        return stringBuilder.toString();
     }
-
 
     private Dialog buildProgressDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
