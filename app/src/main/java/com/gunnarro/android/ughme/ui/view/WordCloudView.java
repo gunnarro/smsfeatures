@@ -102,7 +102,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
 
         // save the current state of the canvas, it may have been rotated
         this.canvas.save();
-        this.canvas.translate(word.getX() + textWidth / 2, word.getY() - word.getPaint().getFontMetrics().descent);
+        this.canvas.translate(word.getX() + textWidth / 2f, word.getY() - word.getPaint().getFontMetrics().descent);
         sLayout.draw(canvas);
         // Revert the Canvas's adjustments back to the last time called save() was called, will revert the rotation is any
         this.canvas.restore();
