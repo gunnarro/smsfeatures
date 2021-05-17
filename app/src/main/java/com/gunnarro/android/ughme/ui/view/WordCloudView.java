@@ -81,12 +81,12 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         // Create a Canvas with the bitmap.
         this.canvas = new Canvas(bitmap);
         this.canvas.drawColor(getDrawingCacheBackgroundColor());
+        canvas.save();
         Log.d(Utility.buildTag(getClass(), "clearDrawing"), "clear current drawing");
     }
 
     private void updateCanvasText(final Word word) {
-        boolean isRotated = word.getRotationAngle() > 0;
-        if (isRotated) {
+        if (word.isRotate()) {
             this.canvas.rotate(word.getRotationAngle(),
                     word.getRect().left,
                     word.getRect().top);
@@ -100,22 +100,15 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 .setMaxLines(1)
                 .build();
 
-        //Log.d(Utility.buildTag(getClass(),"updateCanvasText"), String.format("padding=%s, baseline=%s, ascent=%s", sLayout.getBottomPadding(), sLayout.getLineBaseline(0), word.getPaint().getFontMetrics().descent));
-        // save the current state of the canvas
+        // save the current state of the canvas, it may have been rotated
         this.canvas.save();
         this.canvas.translate(word.getX() + textWidth / 2, word.getY() - word.getPaint().getFontMetrics().descent);
         sLayout.draw(canvas);
-        // Revert the Canvas's adjustments back to the last time called save() was called
+        // Revert the Canvas's adjustments back to the last time called save() was called, will revert the rotation is any
         this.canvas.restore();
-        //Log.d(Utility.buildTag(getClass(),"updateCanvasText"), String.format("text= %s, %s, rect= %s, %s", word.getX(), word.getY(), word.getRect().left, word.getRect().top));
-        // if rotated, undo the rotate
-        if (isRotated) {
-            // Revert the Canvas's adjustments back to the last time called save() was called
-            this.canvas.restore();
-        }
         // finally, always save the canvas state before next word is drawn
         this.canvas.save();
-        Log.d(Utility.buildTag(getClass(), "updateCanvasText"), String.format("canvas updated... word=%s, rotated=%s", word.getText(), isRotated));
+        Log.d(Utility.buildTag(getClass(), "updateCanvasText"), String.format("canvas updated... word=%s, rotated=%s", word.getText(), word.isRotate()));
     }
 
     private void runOnUiThread(final List<Word> wordList) {
