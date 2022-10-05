@@ -6,8 +6,6 @@ import com.gunnarro.android.ughme.model.report.AnalyzeReport;
 import com.gunnarro.android.ughme.model.report.ReportItem;
 import com.gunnarro.android.ughme.utility.Utility;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,12 +53,12 @@ public class TextAnalyzerServiceImpl {
     public AnalyzeReport analyzeText(final String text, Integer category, String regexp, int numberOfMostUsedWords, int minWordOccurrences) {
         // validate input
         if (text == null || text.isEmpty()) {
-            Log.d("TextAnalyzer.analyzeText", "text is null or empty!");
+            Log.d(Utility.buildTag(getClass(), "analyzeText"), String.format("text is null or empty! category=%s, text=%s", category, text));
             return getReport(new HashMap<>(), category,0);
         }
         Map<String, Integer> sortedWordMap;
         int totalNumberOfWords = 0;
-        Log.d("analyzeText", String.format("start, text.length=%s, regexp=%s", text.length(), regexp));
+        Log.d(Utility.buildTag(getClass(), "analyzeText"), String.format("start, text.length=%s, regexp=%s", text.length(), regexp));
         long startTimeMs = System.currentTimeMillis();
         Map<String, Integer> tmpWordMap = new HashMap<>();
         Pattern pattern = Pattern.compile(regexp == null ? DEFAULT_WORD_REGEXP : regexp, Pattern.MULTILINE);
@@ -76,6 +74,8 @@ public class TextAnalyzerServiceImpl {
                 tmpWordMap.compute(word, (k, v) -> v == null ? 1 : v + 1);
             }
         }
+        Log.d(Utility.buildTag(getClass(), "analyzeText"), String.format("temp words=%s, exeTime=%s ms, thread=%s", tmpWordMap, analyzeTimeMs, Thread.currentThread().getName()));
+
         // finally sort the word map by number of word hits
         sortedWordMap = tmpWordMap.entrySet()
                 .stream()
@@ -84,12 +84,15 @@ public class TextAnalyzerServiceImpl {
                 .limit(numberOfMostUsedWords)
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 
+        Log.d(Utility.buildTag(getClass(), "analyzeText"), String.format("sorted words=%s, exeTime=%s ms, thread=%s", sortedWordMap, analyzeTimeMs, Thread.currentThread().getName()));
+
         analyzeTimeMs = System.currentTimeMillis() - startTimeMs;
         Log.d(Utility.buildTag(getClass(), "analyzeText"), String.format("exeTime=%s ms, thread=%s", analyzeTimeMs, Thread.currentThread().getName()));
         return getReport(sortedWordMap, category, totalNumberOfWords);
     }
 
     private AnalyzeReport getReport(Map<String, Integer> wordMap, Integer category, int totalNumberOfWords) {
+        Log.d(Utility.buildTag(getClass(), "getReport"), String.format("category=%s, words=%s, thread=%s", category, wordMap, Thread.currentThread().getName()));
         int numberOfWords = wordMap.values()
                 .stream()
                 .mapToInt(Integer::valueOf)
@@ -100,7 +103,6 @@ public class TextAnalyzerServiceImpl {
 
         int highestWordCount = wordMap.size() > 0 ? wordMap.values().iterator().next() : 0;
         float highestWordCountPercent = highestWordCount > 0 ? (float) highestWordCount * 100 / numberOfWords : 0;
-
         return AnalyzeReport.builder()
                 .textWordCount(totalNumberOfWords)
                 .textUniqueWordCount(wordMap.size())

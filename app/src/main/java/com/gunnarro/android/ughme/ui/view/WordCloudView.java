@@ -72,35 +72,37 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
         // Create a Canvas with the bitmap.
         this.canvas = new Canvas(bitmap);
         this.canvas.drawColor(getDrawingCacheBackgroundColor());
-        canvas.save();
+        this.canvas.save();
         Log.d(Utility.buildTag(getClass(), "clearDrawing"), "clear current drawing");
     }
 
     private void updateCanvasText(final Word word) {
+       // canvas.drawRect(word.getRect(), word.getPaint());
+       // canvas.drawText(word.getText(), word.getRect().centerX(), word.getRect().centerY(), word.getPaint());
         if (word.isRotate()) {
-            this.canvas.rotate(word.getRotationAngle(),
-                    word.getRect().left,
-                    word.getRect().top);
-        }
-        int textWidth = (int) word.getPaint().measureText(word.getText());
-        StaticLayout sLayout = StaticLayout.Builder.obtain(word.getText(), 0, word.getText().length(), new TextPaint(word.getPaint()), textWidth)
-                .setAlignment(Layout.Alignment.ALIGN_CENTER)
-                .setIncludePad(false)
-                .setLineSpacing(0, 1)
-                .setIndents(new int[]{0}, new int[]{0})
-                .setMaxLines(1)
-                .build();
+                this.canvas.rotate(word.getRotationAngle(),
+                        word.getRect().centerX(),
+                        word.getRect().centerY());
+            }
+            int textWidth = (int) word.getPaint().measureText(word.getText());
+            StaticLayout sLayout = StaticLayout.Builder.obtain(word.getText(), 0, word.getText().length(), new TextPaint(word.getPaint()), textWidth)
+                    .setAlignment(Layout.Alignment.ALIGN_CENTER)
+                    .setIncludePad(false)
+                    .setLineSpacing(0, 1)
+                    .setIndents(new int[]{0}, new int[]{0})
+                    .setMaxLines(1)
+                    .build();
 
-        // save the current state of the canvas, it may have been rotated
-        this.canvas.save();
-        this.canvas.translate(word.getX() + textWidth / 2f, word.getY() - word.getPaint().getFontMetrics().descent);
-        sLayout.draw(canvas);
-        // Revert the Canvas's adjustments back to the last time called save() was called, will revert the rotation is any
-        this.canvas.restore();
-        // finally, always save the canvas state before next word is drawn
-        this.canvas.save();
-        Log.d(Utility.buildTag(getClass(), "updateCanvasText"), String.format("canvas updated... word=%s, rotated=%s", word.getText(), word.isRotate()));
-    }
+            // save the current state of the canvas, it may have been rotated
+            this.canvas.save();
+            this.canvas.translate(word.getX() + textWidth / 2f, word.getY() - word.getPaint().getFontMetrics().descent);
+            sLayout.draw(canvas);
+            // Revert the Canvas's adjustments back to the last time called save() was called, will revert the rotation if any
+            this.canvas.restore();
+            // finally, always save the canvas state before next word is drawn
+            this.canvas.save();
+            Log.d(Utility.buildTag(getClass(), "updateCanvasText"), String.format("canvas updated... word=%s, rotated=%s", word.getText(), word.isRotate()));
+            }
 
     private void runOnUiThread(final List<Word> wordList, int animationInterval) {
         new Thread(() -> post(updateViewTask(wordList, animationInterval))).start();
@@ -126,7 +128,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 // simply place each word on the bitmap
                 for (Word word : wordList) {
                     updateCanvasText(word);
-                    invalidate();
+                    postInvalidate();
                     // if animation, wait before execute next word
                     if (animationInterval > 0) {
                         try {
@@ -137,8 +139,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                     }
                 }
                 // method notifies the system from a non-UIThread and the View gets redrawn in the next eventloop on the UIThread as soon as possible.
-                //postInvalidate();
-                invalidate();
+                postInvalidate();
                 Log.i(Utility.buildTag(getClass(), "updateViewTask"), String.format("words=%s, exeTime=%s ms", wordList.size(), (System.currentTimeMillis() - startTime)));
             } catch (Exception e) {
                 throw new ApplicationException(e.getMessage(), e);
@@ -167,7 +168,7 @@ public class WordCloudView extends androidx.appcompat.widget.AppCompatImageView 
                 if (obj instanceof WordCloudEvent) {
                     WordCloudEvent event = (WordCloudEvent) obj;
                     if (event.isUpdateEvent()) {
-                        Log.d(Utility.buildTag(getClass(), "onNext"), String.format("handle word cloud event: %s", event.toString()));
+                        Log.d(Utility.buildTag(getClass(), "onNext"), String.format("handle word cloud event: %s", event));
                         if (Build.VERSION.SDK_INT < 26) {
                             runOnUiThread(event.getWordList(), event.getAnimationInterval());
                         } else {

@@ -55,4 +55,14 @@
     <string name="lbl_save_to_download_folder">Save to Download folder</string>
     <string name="lbl_download_folder_path">Download folder path</string>
 
+    <!-- timesheet register worked hours layout-->
+    <string name="title_register_work">Register Work</string>
+    <string name="lbl_client">Client</string>
+    <string name="lbl_project">Project</string>
+    <string name="lbl_hourly_rate">Hourly rate</string>
+    <string name="lbl_from_date_time">From</string>
+    <string name="lbl_to_date_time">To</string>
+    <string name="lbl_break">Break</string>
+    <string name="lbl_worked_hours">Worked hours</string>
+    <string name="lbl_comments">Comments</string>
 </resources>

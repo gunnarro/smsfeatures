@@ -28,6 +28,11 @@
             android:icon="@drawable/baseline_settings_applications_black_24dp"
             android:title="@string/title_report" />
 
+        <item
+            android:id="@+id/nav_timesheet"
+            android:icon="@drawable/baseline_settings_applications_black_24dp"
+            android:title="@string/title_register_work" />
+
     </group>
 
 </menu>

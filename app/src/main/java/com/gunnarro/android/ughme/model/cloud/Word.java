@@ -43,12 +43,29 @@ public class Word {
         return new WordBuilder();
     }
 
+    /**
+     * top left x coordinate of the rectangle
+     */
     public int getX() {
         return rect.left;
     }
 
+    /**
+     * top left y coordinate of the rectangle
+     * @return
+     */
     public int getY() {
         return rect.top;
+    }
+
+
+    /**
+     * Calculates the text width.
+     *
+     * @return text width
+     */
+    public int determineTextWidth() {
+        return (int) this.paint.measureText(this.text);
     }
 
     public String getText() {

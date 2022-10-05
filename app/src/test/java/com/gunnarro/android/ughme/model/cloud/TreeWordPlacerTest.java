@@ -36,5 +36,6 @@ public class TreeWordPlacerTest {
 
         Assert.assertTrue(treeWordPlacer.place(word.getText(), word.getRect()));
         Assert.assertFalse(treeWordPlacer.place(word.getText(), word.getRect()));
+        treeWordPlacer.saveTreeAsImage();
     }
 }

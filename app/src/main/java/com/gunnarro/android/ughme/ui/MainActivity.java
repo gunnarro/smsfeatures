@@ -1,5 +1,8 @@
 package com.gunnarro.android.ughme.ui;
 
+import static com.gunnarro.android.ughme.R.id;
+import static com.gunnarro.android.ughme.R.string;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationView;
 import com.gunnarro.android.ughme.R;
+import com.gunnarro.android.ughme.telenor.ui.fragment.RestServiceFragment;
 import com.gunnarro.android.ughme.ui.fragment.BackupFragment;
 import com.gunnarro.android.ughme.ui.fragment.BarChartFragment;
 import com.gunnarro.android.ughme.ui.fragment.PreferencesFragment;
@@ -32,9 +36,6 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-
-import static com.gunnarro.android.ughme.R.id;
-import static com.gunnarro.android.ughme.R.string;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     PreferencesFragment preferencesFragment;
     @Inject
     ReportFragment reportFragment;
+    @Inject
+    RestServiceFragment restServiceFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +88,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // display home button for actionbar
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         // navigation view select home menu by default
-        navigationView.setCheckedItem(id.nav_sms_backup);
+        navigationView.setCheckedItem(id.nav_sms_wordcloud);
 
         if (savedInstanceState == null) {
-            viewFragment(backupFragment);
+            viewFragment(wordCloudFragment);
         }
         // Finally, check and grant or deny permissions
         checkPermissions();
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 viewFragment(preferencesFragment);
             } else if (id == R.id.nav_report) {
                 setTitle(string.title_report);
-                viewFragment(reportFragment);
+                viewFragment(restServiceFragment);
             }
             // close drawer after clicking the menu item
             DrawerLayout drawer = findViewById(R.id.drawer_layout);

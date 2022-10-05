@@ -39,15 +39,10 @@ import com.gunnarro.android.ughme.utility.Utility;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -221,7 +216,7 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
             try {
                 list = smsBackupService.inportSmsBackup(requireActivity().getContentResolver().openInputStream(intent.getData()));
                 TextView tw = requireActivity().findViewById(R.id.sms_import_info);
-                tw.setText(new Date(System.currentTimeMillis()) + " Imported " + list.size() + " sms");
+                tw.setText(String.format("%s Imported %s sms", new Date(System.currentTimeMillis()), list.size()));
             } catch (FileNotFoundException e) {
                 Log.e(Utility.buildTag(getClass(), "onActivityResult"), e.getMessage());
             }
@@ -268,10 +263,12 @@ public class BackupFragment extends Fragment implements View.OnClickListener, Di
                 //Log.d(buildTag("getInputObserver.onNext"), String.format("Received new data event of type %s", obj.getClass().getSimpleName()));
                 if (obj instanceof BackupEvent) {
                     BackupEvent event = (BackupEvent) obj;
-                    Log.d(Utility.buildTag(getClass(), "onNext"), String.format("thread=%s event= %s", Thread.currentThread().getName(), event.toString()));
+                    Log.d(Utility.buildTag(getClass(), "onNext"), String.format("thread=%s event= %s", Thread.currentThread().getName(), event));
                     if (event.isBackupFinished()) {
                         updateSmsBackupInfo(getView(), smsBackupService.readSmsBackupMetaData());
-                        progressDialog.dismiss();
+                        if (progressDialog != null) {
+                            progressDialog.dismiss();
+                        }
                     }
                 }
             }

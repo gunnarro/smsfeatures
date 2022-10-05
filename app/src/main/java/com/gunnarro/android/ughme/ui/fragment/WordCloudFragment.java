@@ -170,7 +170,7 @@ public class WordCloudFragment extends Fragment {
             public void onNext(@NotNull Object obj) {
                 if (obj instanceof WordCloudEvent) {
                     WordCloudEvent event = (WordCloudEvent) obj;
-                    Log.d(Utility.buildTag(getClass(), "getInputObserver.onNext"), String.format("handle event: %s", event.toString()));
+                    Log.d(Utility.buildTag(getClass(), "getInputObserver.onNext"), String.format("handle event: %s", event));
                     if (event.isUpdateEvent()) {
                         // hide progress dialog
                         if (progressDialog != null) {
@@ -200,6 +200,9 @@ public class WordCloudFragment extends Fragment {
         };
     }
 
+    /**
+     * Update the word cloud view, but first of all,
+     */
     private void updateWordCloudView(String contactName, String smsType) {
         Log.d(Utility.buildTag(getClass(), "updateWordCloudView"), String.format("mobile=%s, smsType=%s", contactName, smsType));
         progressDialog = buildAlertDialog();

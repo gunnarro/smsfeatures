@@ -56,11 +56,10 @@ public class WordCloudServiceTest {
 
         smsPlainTxt.append("Dette, dette, dette er kun en enhets test, og dette er ingenting å tulle med, spør du meg. antall enhets tester er kun 1");
 
-
         TextAnalyzerServiceImpl textAnalyzer = new TextAnalyzerServiceImpl();
         AnalyzeReport report = textAnalyzer.analyzeText(smsPlainTxt.toString(), Sms.INBOX,null, 3, 1);
 
-        WordCloudService builder = new WordCloudServiceImpl();
+        WordCloudServiceImpl builder = new WordCloudServiceImpl();
         List<Word> words = builder.buildWordCloud(report.getReportItems(), Dimension.builder().width(1440).height(1944).build(), new Settings());
 
         Assert.assertEquals(3, words.size());
@@ -79,5 +78,6 @@ public class WordCloudServiceTest {
         Assert.assertEquals("[Word(text=kun, rect=null, count=2, size=100.0, rotationAngle=0.0), Word(text=enhets, rect=null, count=2, size=100.0, rotationAngle=0.0)]", notPlacedWords.toString());
 
         words.forEach(w -> Log.i("unit-test", String.format("x=%s, y=%s, size=%s, word=%s, occurrences=%s", w.getRect().left, w.getRect().top, w.getSize(), w.getText(), w.getCount())));
+        builder.saveWordCloudAsImage();
     }
 }

@@ -33,4 +33,11 @@
         <item>SINGLE_COLOR_PER_MOBILE_NUMBER</item>
     </string-array>
 
+    <!-- timesheet -->
+    <string-array name="timesheet_statuses">
+        <item>Open</item>
+        <item>Billed</item>
+        <item>Payed</item>
+    </string-array>
+
 </resources>

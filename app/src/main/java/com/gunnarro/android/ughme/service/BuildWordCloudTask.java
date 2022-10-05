@@ -44,13 +44,14 @@ public class BuildWordCloudTask {
     }
 
     public void buildWordCloudEventBus(final Settings settings, final Dimension cloudDimension, final String contactName, final String smsType) {
-        Log.d("", "Start build word cloud task..." + settings.toString());
+        Log.d(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("Start build word cloud task... %s", settings));
         Runnable buildWordCloudRunnable = () -> {
             long startTime = System.currentTimeMillis();
             try {
                 postProgress("analyse sms content...", 10);
                 Map<String, String> map = smsBackupService.getSmsBackupAsText(contactName, smsType);
-                AnalyzeReport inboxAnalyzeReport = textAnalyzerService.analyzeText(map.get(WordCloudEvent.MESSAGE_TYPE_INBOX), Sms.INBOX,settings.wordMatchRegex, settings.numberOfWords, settings.minWordOccurrences);
+                Log.d(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("messages map: %s, inbox=%s, outbox=%s", map, map.get(WordCloudEvent.MESSAGE_TYPE_INBOX), map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX)));
+                AnalyzeReport inboxAnalyzeReport = textAnalyzerService.analyzeText(map.get(WordCloudEvent.MESSAGE_TYPE_INBOX), Sms.INBOX, settings.wordMatchRegex, settings.numberOfWords, settings.minWordOccurrences);
                 AnalyzeReport outboxAnalyzeReport = textAnalyzerService.analyzeText(map.get(WordCloudEvent.MESSAGE_TYPE_OUTBOX), Sms.OUTBOX, settings.wordMatchRegex, settings.numberOfWords, settings.minWordOccurrences);
 
                 inboxAnalyzeReport.getProfileItems().add(ProfileItem.builder().className("BuildWordCloudTask").method("analyzeText").executionTime(System.currentTimeMillis() - startTime).build());
@@ -58,7 +59,7 @@ public class BuildWordCloudTask {
                 List<ReportItem> items = new ArrayList<>();
                 items.addAll(inboxAnalyzeReport.getReportItems());
                 items.addAll(outboxAnalyzeReport.getReportItems());
-
+                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("inbox words=%s, outbox words=%s", inboxAnalyzeReport.getReportItems(), outboxAnalyzeReport.getReportItems()));
                 List<ReportItem> reportItems = items.stream().sorted(Comparator.comparing(ReportItem::getCount).reversed()).limit(settings.numberOfWords).collect(Collectors.toList());
 
                 List<Word> wordList = wordCloudService.buildWordCloud(
@@ -66,9 +67,9 @@ public class BuildWordCloudTask {
                         , cloudDimension
                         , settings);
 
-              //  saveAnalyseReport(analyzeReport, wordList, System.currentTimeMillis() - startTime);
+                saveAnalyseReport(inboxAnalyzeReport, wordList, System.currentTimeMillis() - startTime);
              //   Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("%s", analyzeReport));
-                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("finished, exeTime=%s ms", (System.currentTimeMillis() - startTime)));
+                Log.i(Utility.buildTag(getClass(), "buildWordCloudEventBus"), String.format("finished, words=%s, exeTime=%s ms", wordList.size(), (System.currentTimeMillis() - startTime)));
                 postProgress("finished building word list...", 15);
                 // finally, publish result so word cloud view can pick up the word list and redraw the word cloud
                 RxBus.getInstance().publish(

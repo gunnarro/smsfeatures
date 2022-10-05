@@ -33,7 +33,7 @@ public class SmsBackupTask {
             long startTime = System.currentTimeMillis();
             try {
                 smsBackupService.backupSmsInbox(saveToExternalFolder);
-                // when finished publish result so fragment can pick up the word list
+                // when finished publish result so fragment can pick up the backup finished event
                 RxBus.getInstance().publish(
                         BackupEvent.builder()
                                 .eventType(BackupEvent.BackupEventEventTypeEnum.BACKUP_FINISHED)

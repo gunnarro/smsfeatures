@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -53,9 +54,33 @@ public class Sms implements Serializable, Comparable<Sms> {
         return new SmsBuilder();
     }
 
+    /**
+     * used to sort sms
+     * @param sms
+     * @return
+     */
     @Override
     public int compareTo(Sms sms) {
         return this.count.compareTo(sms.count);
+    }
+
+
+    /**
+     * Sms is considered as equals if both time and mobile number equals
+     * Used when we diff list of sms with list removeAll and contains methods
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sms sms = (Sms) o;
+        return timeMs.equals(sms.timeMs) &&
+                address.equals(sms.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timeMs, address);
     }
 
     public boolean isRead() {

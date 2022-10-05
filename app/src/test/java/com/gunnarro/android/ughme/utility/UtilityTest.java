@@ -64,14 +64,52 @@ public class UtilityTest {
     }
 
     @Test
-    public void diffList() {
+    public void diffListNotEqual() {
         List<Sms> smsList = new ArrayList<>();
-        List<Sms> backupList = new ArrayList<>();
-        backupList.add(Sms.builder().address("235454").timeMs(System.currentTimeMillis()).build());
-        smsList.add(Sms.builder().address("235454").timeMs(System.currentTimeMillis() + 1000).build());
-        Assert.assertEquals(1, Utility.diffLists(backupList, smsList).size());
+        List<Sms> backedupList = new ArrayList<>();
+        long time = System.currentTimeMillis();
+        backedupList.add(Sms.builder().address("235454").timeMs(time).build());
+        smsList.add(Sms.builder().address("235454").timeMs(time).build());
+        smsList.add(Sms.builder().address("461230").timeMs(System.currentTimeMillis() + 1000).build());
+        Assert.assertEquals(1, Utility.diffLists(smsList, backedupList).size());
     }
 
+    @Test
+    public void diffListEqual() {
+        List<Sms> smsList = new ArrayList<>();
+        List<Sms> backedupList = new ArrayList<>();
+        long time = System.currentTimeMillis();
+        backedupList.add(Sms.builder().address("235454").timeMs(time).build());
+        smsList.add(Sms.builder().address("235454").timeMs(time).build());
+        Assert.assertEquals(0, Utility.diffLists(smsList, backedupList).size());
+    }
+
+    @Test
+    public void diffListLargeAllEquals() {
+        List<Sms> smsList = new ArrayList<>();
+        List<Sms> backedupList = new ArrayList<>();
+        for (int i = 0; i<10000; i++) {
+            long time = System.currentTimeMillis();
+            backedupList.add(Sms.builder().address("0047 23" + i).timeMs(time).build());
+            smsList.add(Sms.builder().address("0047 23" + i).timeMs(time).build());
+        }
+        Assert.assertEquals(0, Utility.diffLists(smsList, backedupList).size());
+    }
+
+    @Test
+    public void diffListLargeNotEquals() {
+        List<Sms> smsList = new ArrayList<>();
+        List<Sms> backedupList = new ArrayList<>();
+        for (int i = 0; i<10000; i++) {
+            backedupList.add(Sms.builder().address("0047 23" + i).timeMs(System.currentTimeMillis()).build());
+            smsList.add(Sms.builder().address("0047 46" + i).timeMs(System.currentTimeMillis()).build());
+        }
+        // add one equal
+        long time = System.currentTimeMillis();
+        backedupList.add(Sms.builder().address("235454").timeMs(time).build());
+        smsList.add(Sms.builder().address("235454").timeMs(time).build());
+        Assert.assertEquals(10000, Utility.diffLists(smsList, backedupList).size());
+    }
 
     @Test
     public void mergeListEmptyLists() {
@@ -84,11 +122,15 @@ public class UtilityTest {
     @Test
     public void mergeListDifferentList() {
         List<Sms> smsList = new ArrayList<>();
-        List<Sms> backupList = new ArrayList<>();
-        backupList.add(Sms.builder().address("235454").timeMs(System.currentTimeMillis()).build());
+        List<Sms> backedupList = new ArrayList<>();
+        backedupList.add(Sms.builder().address("235454").timeMs(System.currentTimeMillis()).build());
         smsList.add(Sms.builder().address("235454").timeMs(System.currentTimeMillis() + 1000).build());
-        Utility.mergeList(backupList, smsList);
-        Assert.assertEquals(2, backupList.size());
+        // add one equal
+        long time = System.currentTimeMillis();
+        backedupList.add(Sms.builder().address("235454").timeMs(time).build());
+        smsList.add(Sms.builder().address("235454").timeMs(time).build());
+        Utility.mergeList(backedupList, smsList);
+        Assert.assertEquals(3, backedupList.size());
     }
 
     @Test
@@ -99,7 +141,7 @@ public class UtilityTest {
         backupList.add(sms);
         smsList.add(sms);
         Utility.mergeList(backupList, smsList);
-        Assert.assertEquals(2, backupList.size());
+        Assert.assertEquals(1, backupList.size());
     }
 
 

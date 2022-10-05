@@ -39,8 +39,8 @@ public class Utility {
     public static String buildTag(Class<?> clazz, String tagName) {
         return new StringBuilder(clazz.getSimpleName())
                 .append(".").append(tagName)
-                .append(", thread=").append(Thread.currentThread().getName())
                 .append(", UUID=").append(currentUUID)
+                .append(", thread=").append(Thread.currentThread().getName())
                 .toString();
     }
 
@@ -68,32 +68,22 @@ public class Utility {
         return new ArrayList<>(getTop10Values(map).keySet());
     }
 
-
-    public static List<Sms> diffLists(@NotNull List<Sms> smsInbox, @NotNull List<Sms> smsBackup) {
+    public static List<Sms> diffLists(@NotNull List<Sms> smsInbox, @NotNull List<Sms> smsBackedUp) {
         // take a local copy in order to not delete from original list
         List<Sms> tmpSmsInbox = new ArrayList<>(smsInbox);
-        List<Sms> tmpSmsBackup = new ArrayList<>(smsBackup);
-
-        Log.d(LOG_TAG, String.format("diffLists: diff sms inbox (%s) and sms backup (%s)", tmpSmsInbox.size(), tmpSmsBackup.size()));
-        List<Sms> diffList = new ArrayList<>();
+        List<Sms> tmpSmsBackedUp = new ArrayList<>(smsBackedUp);
         // Get already backed sms from inbox,
-        List<Sms> unChangedObjects = tmpSmsInbox.stream().filter(tmpSmsBackup::contains).distinct().collect(Collectors.toList());
+        List<Sms> unChangedObjects = tmpSmsInbox.stream().filter(tmpSmsBackedUp::contains).distinct().collect(Collectors.toList());
+        Log.d(LOG_TAG + ".diffLists", String.format("diff sms inbox: %s and sms backed up: %s, unchanged sms: %s", tmpSmsInbox.size(), tmpSmsBackedUp.size(), unChangedObjects.size()));
         // Remove unchanged objects from both lists
         tmpSmsInbox.removeAll(unChangedObjects);
-        tmpSmsBackup.removeAll(unChangedObjects);
-        if (tmpSmsInbox.equals(tmpSmsBackup)) {
-            Log.d(LOG_TAG, "diffLists: sms inbox and sms backup are equal!");
-        } else {
-            diffList = tmpSmsInbox;
-        }
-        Log.d(LOG_TAG, String.format("diffLists: Number of sms diff: %s", diffList.size()));
-        return diffList;
+        Log.d(LOG_TAG + ".diffLists", String.format("Number of sms diff: %s", tmpSmsInbox.size()));
+        return tmpSmsInbox;
     }
 
-    public static void mergeList(@NotNull List<Sms> smsBackupList, @NotNull List<Sms> smsNewList) {
-        Log.d("Utility", String.format("merge list, backupList: %s, new list: %s ", smsBackupList.size(), smsNewList.size()));
-        smsBackupList.addAll(smsNewList);
-        smsBackupList.sort((Sms s1, Sms s2) -> s1.getTimeMs().compareTo(s2.getTimeMs()));
-        Log.d("Utility", String.format("merged list: %s", smsBackupList.size()));
+    public static void mergeList(@NotNull List<Sms> smsBackedupList, @NotNull List<Sms> smsNewList) {
+        Log.d("Utility.mergeList", String.format("backed up list: %s, new list: %s ", smsBackedupList.size(), smsNewList.size()));
+        smsBackedupList.addAll(diffLists(smsNewList, smsBackedupList));
+        Log.d("Utility.mergeList", String.format("merged: %s", smsBackedupList.size()));
     }
 }

@@ -93,19 +93,10 @@ public class SmsBackupServiceImpl {
             // only get sms that is not already in the backup list
             List<Sms> inbox = getSmsInbox(SmsReaderServiceImpl.SMS_ALL, lastBackupSmsTimeMs);
             profileItems.add(ProfileItem.builder().className("SmsBackupServiceImpl").method("getSmsInbox").executionTime(System.currentTimeMillis() - startTime).build());
-
-            List<Sms> newSmsList = Utility.diffLists(inbox, smsBackupList);
-            profileItems.add(ProfileItem.builder().className("SmsBackupServiceImpl").method("diffLists").executionTime(System.currentTimeMillis() - startTime).build());
-
-            Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("diff sms inbox (%s) and sms backup (%s)", inbox.size(), smsBackupList.size()));
-            if (!newSmsList.isEmpty()) {
-                Utility.mergeList(smsBackupList, newSmsList);
-                Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Update backup, new sms: %s, current: %s", newSmsList.size(), smsBackupList.size()));
-                saveSmsBackup(smsBackupList, isSaveExternal);
-                Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Saved sms (%s) backup, path: %s", smsBackupList.size(), SMS_BACKUP_FILE_NAME));
-            } else {
-                Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Backup up to date, %s", SMS_BACKUP_FILE_NAME));
-            }
+            Utility.mergeList(smsBackupList, inbox);
+            profileItems.add(ProfileItem.builder().className("SmsBackupServiceImpl").method("mergedSms").executionTime(System.currentTimeMillis() - startTime).build());
+            saveSmsBackup(smsBackupList, isSaveExternal);
+            Log.d(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("Saved sms (%s) backup, path: %s", smsBackupList.size(), SMS_BACKUP_FILE_NAME));
             saveSmsBackupMetaData(smsBackupList);
             profile(profileItems);
             Log.i(Utility.buildTag(getClass(), "backupSmsInbox"), String.format("exeTime= %s ms", (System.currentTimeMillis() - startTime)));
@@ -137,7 +128,7 @@ public class SmsBackupServiceImpl {
     }
 
     /**
-     * @param filterBy holds either mobile number and contact name
+     * @param filterBy holds either mobile number or contact name
      * @param smsType  can be 1 = INBOX, 2 = OUTBOX or (.*) = All
      * @return all sms messages mergred into a plain text string
      */
@@ -147,6 +138,7 @@ public class SmsBackupServiceImpl {
         Log.d(Utility.buildTag(getClass(), "getSmsBackupAtText"), String.format("filterBy=%s, smsType=%s, numberOfSms=%s", regexp, smsType, smsList.size()));
 
         if (smsType.equals(WordCloudEvent.MESSAGE_TYPE_ALL)) {
+            /*
             String inbox = smsList.stream()
                     .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_INBOX) && s.getName().matches(regexp))
                     .map(Sms::getBody)
@@ -156,31 +148,45 @@ public class SmsBackupServiceImpl {
                     .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_OUTBOX) && s.getName().matches(regexp))
                     .map(Sms::getBody)
                     .collect(Collectors.joining(WORD_SEPARATOR));
+            */
             return new HashMap<String, String>()
             {{
-                put(WordCloudEvent.MESSAGE_TYPE_INBOX, inbox);
-                put(WordCloudEvent.MESSAGE_TYPE_OUTBOX, outbox);
+                put(WordCloudEvent.MESSAGE_TYPE_INBOX, filterSmsListToString(smsList, WordCloudEvent.MESSAGE_TYPE_INBOX, regexp));
+                put(WordCloudEvent.MESSAGE_TYPE_OUTBOX, filterSmsListToString(smsList, WordCloudEvent.MESSAGE_TYPE_OUTBOX, regexp));
             }};
         } else if (smsType.equals(WordCloudEvent.MESSAGE_TYPE_INBOX)) {
+            /*
             String inbox = smsList.stream()
                     .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_INBOX) && s.getName().matches(regexp))
                     .map(Sms::getBody)
                     .collect(Collectors.joining(WORD_SEPARATOR));
+            */
             return new HashMap<String, String>()
             {{
-                put(WordCloudEvent.MESSAGE_TYPE_INBOX, inbox);
+                put(WordCloudEvent.MESSAGE_TYPE_INBOX, filterSmsListToString(smsList, WordCloudEvent.MESSAGE_TYPE_INBOX, regexp));
             }};
         } else if (smsType.equals(WordCloudEvent.MESSAGE_TYPE_OUTBOX)) {
+            /*
             String outbox = smsList.stream()
                     .filter(s -> s.getType().equals(WordCloudEvent.MESSAGE_TYPE_OUTBOX) && s.getName().matches(regexp))
                     .map(Sms::getBody)
                     .collect(Collectors.joining(WORD_SEPARATOR));
+             */
             return new HashMap<String, String>()
             {{
-                put(WordCloudEvent.MESSAGE_TYPE_OUTBOX, outbox);
+                put(WordCloudEvent.MESSAGE_TYPE_OUTBOX, filterSmsListToString(smsList, WordCloudEvent.MESSAGE_TYPE_OUTBOX, regexp));
             }};
         }
-        return new HashMap<>();
+        throw new RuntimeException(String.format("Unkown sms type! smsType=%s", smsType));
+    }
+
+    private String filterSmsListToString(List<Sms> smsList, String smsType, String regexp) {
+        String messages = smsList.stream()
+                .filter(s -> s.getType().equals(smsType) && s.getName().matches(regexp))
+                .map(Sms::getBody)
+                .collect(Collectors.joining(WORD_SEPARATOR));
+        Log.d(Utility.buildTag(getClass(), "filterSmsListToString"), String.format("smsType=%s, messages=%s", smsType, messages));
+        return messages;
     }
 
     public void saveSmsBackupMetaData(List<Sms> smsBackupList) {
@@ -232,8 +238,8 @@ public class SmsBackupServiceImpl {
         }
     }
 
-
     public void saveSmsBackup(@NotNull List<Sms> smsList, boolean isSaveExternal) throws IOException {
+        Log.d(Utility.buildTag(getClass(), "saveSmsBackup"), String.format("number of sms: %s", smsList.size()));
         File smsBackupFile = getFile(SMS_BACKUP_FILE_NAME);
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(smsBackupFile, smsList);
@@ -242,7 +248,7 @@ public class SmsBackupServiceImpl {
             // before android 10
             File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             mapper.writeValue(new File(folder, SMS_BACKUP_FILE_NAME), smsList);
-            Log.d(Utility.buildTag(getClass(), "saveSmsBackup"), String.format("Saved sms (%s) backup, path: %s/%s", smsList.size(), folder.getPath(), SMS_BACKUP_FILE_NAME));
+            Log.d(Utility.buildTag(getClass(), "saveSmsBackup"), String.format("Saved sms (%s) backup, path: %s/%s", smsList.size(), folder, SMS_BACKUP_FILE_NAME));
         }
     }
 
